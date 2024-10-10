@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
+import 'list.dart';
+import 'expandable.dart';
 import '../widgets/NextPageAnimation.dart';
+import '../models/data.dart';
 
 class LegendPage extends StatefulWidget {
   const LegendPage({super.key});
@@ -23,23 +26,31 @@ class _LegendPageState extends State<LegendPage> {
             children: [
               Expanded(
                 child: Container(
-                    child: const DefaultTextStyle(
-                  style: TextStyle(color: Colors.red),
-                  child: const Column(
-                    children: [
-                      const Text(
-                          "Benvingut/benvinguda als Itineraris Saludables de la UdG! Hem dissenyat unes rutes a cada un dels campus, especialment per a la comunitat universitària. Hi ha dos tipus d'itineraris, depenent del temps que vulguis invertir per desconnectar de la jornada laboral i acadèmica."),
-                      const Padding(padding: EdgeInsets.all(8)),
-                      const Text(
-                          "Pots triar un recorregut curt (d'uns 20 minuts), per aprofitar els moments de descans, o un recorregut més llarg (d'uns 45 minuts). Dins dels itineraris, et recomanem uns exercicis físics (icones roses) amb tres nivells d'intensitat i una sèrie de punts d'interès (icones verdes) per conèixer a fons els serveis del teu campus"),
-                      const Padding(padding: EdgeInsets.all(8)),
-                      const Text("Al mapa trobaràs aquestes icones: ")
-                    ],
+                    child: const SingleChildScrollView(
+                  child: DefaultTextStyle(
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 30,
+                    ),
+                    child: const Column(
+                      children: [
+                        const Text(
+                          "Benvingut/benvinguda als Itineraris Saludables de la UdG! Hem dissenyat unes rutes a cada un dels campus, especialment per a la comunitat universitària. Hi ha dos tipus d'itineraris, depenent del temps que vulguis invertir per desconnectar de la jornada laboral i acadèmica.",
+                        ),
+                        const Padding(padding: EdgeInsets.all(18)),
+                        const Text(
+                            "Pots triar un recorregut curt (d'uns 20 minuts), per aprofitar els moments de descans, o un recorregut més llarg (d'uns 45 minuts). Dins dels itineraris, et recomanem uns exercicis físics (icones roses) amb tres nivells d'intensitat i una sèrie de punts d'interès (icones verdes) per conèixer a fons els serveis del teu campus"),
+                        const Padding(padding: EdgeInsets.all(18)),
+                        const Text("Al mapa trobaràs aquestes icones: ")
+                      ],
+                    ),
                   ),
                 )),
               ),
+              Padding(padding: EdgeInsets.all(20)),
               NextPageAnimation(
-                nextPage: HomePage(),
+                // nextPage: ListPage(),
+                nextPage: ExpansionPanelListExampleApp(routes: routes),
               )
             ],
           ),

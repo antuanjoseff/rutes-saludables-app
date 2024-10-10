@@ -14,30 +14,36 @@ class NextPageAnimation extends StatefulWidget {
 
 class _NextPageAnimationState extends State<NextPageAnimation>
     with SingleTickerProviderStateMixin {
-  late Animation<double> animation;
-  late AnimationController controller;
+  late Animation<double> _animation;
+  late AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
+    _controller = AnimationController(
         duration: const Duration(milliseconds: 800), vsync: this);
-    animation = Tween(begin: 0.4, end: 1.0).animate(controller);
+    _animation = Tween(begin: 0.4, end: 1.0).animate(_controller);
 
-    controller.addStatusListener((status) {
+    _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        controller.reverse();
+        // _controller.reverse();
       } else if (status == AnimationStatus.dismissed) {
-        controller.forward();
+        _controller.forward();
       }
     });
-    controller.forward();
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Dispose of TextEditingController
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
-      opacity: animation,
+      opacity: _animation,
       child: GestureDetector(
         onTap: () {
           Navigator.push(
