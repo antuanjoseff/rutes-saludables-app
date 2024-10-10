@@ -27,7 +27,10 @@ class _MyHomePageState extends State<HomePage> {
         child: Column(
           children: [
             const Padding(padding: EdgeInsets.all(10)),
-            const Center(child: FlutterLogo(size: 100)),
+            Center(
+                child: Image(
+                    color: Colors.white,
+                    image: AssetImage('assets/images/salut.png'))),
             const Padding(padding: EdgeInsets.all(20)),
             Container(
               decoration: BoxDecoration(
