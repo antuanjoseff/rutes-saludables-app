@@ -1,44 +1,29 @@
 import 'package:flutter/material.dart';
-import '../models/data.dart';
+import 'package:rutes_saludables/models/data.dart';
+import '../widgets/campusRoutes.dart';
 
 class ExpansionPanelListExampleApp extends StatelessWidget {
-  const ExpansionPanelListExampleApp({super.key});
+  final List itineraries;
+  const ExpansionPanelListExampleApp({
+    super.key,
+    required this.itineraries,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('ExpansionPanelList Sample')),
-        body: const ExpansionPanelListExample(),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Routes')),
+      body: ExpansionPanelListExample(itineraries: itineraries),
     );
   }
 }
 
-// stores ExpansionPanel state information
-class Item {
-  Item({
-    required this.expandedValue,
-    required this.headerValue,
-    this.isExpanded = false,
-  });
-
-  String expandedValue;
-  String headerValue;
-  bool isExpanded;
-}
-
-List<Item> generateItems(int numberOfItems) {
-  return List<Item>.generate(numberOfItems, (int index) {
-    return Item(
-      headerValue: 'Panel $index',
-      expandedValue: 'This is item number $index',
-    );
-  });
-}
-
 class ExpansionPanelListExample extends StatefulWidget {
-  const ExpansionPanelListExample({super.key});
+  final List itineraries;
+  const ExpansionPanelListExample({
+    super.key,
+    required this.itineraries,
+  });
 
   @override
   State<ExpansionPanelListExample> createState() =>
@@ -46,7 +31,14 @@ class ExpansionPanelListExample extends StatefulWidget {
 }
 
 class _ExpansionPanelListExampleState extends State<ExpansionPanelListExample> {
-  final List<Item> _data = generateItems(8);
+  late List _data;
+
+  @override
+  void initState() {
+    widget.itineraries.sort((a, b) => a.campus.compareTo(b.campus));
+    _data = organizeRoutes(widget.itineraries);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,29 +53,44 @@ class _ExpansionPanelListExampleState extends State<ExpansionPanelListExample> {
     return ExpansionPanelList(
       expansionCallback: (int index, bool isExpanded) {
         setState(() {
-          _data[index].isExpanded = isExpanded;
+          _data[index]['isExpanded'] = isExpanded;
         });
       },
-      children: _data.map<ExpansionPanel>((Item item) {
+      children: _data.map<ExpansionPanel>((item) {
         return ExpansionPanel(
           headerBuilder: (BuildContext context, bool isExpanded) {
             return ListTile(
-              title: Text(item.headerValue),
+              title: Text(item['campus']),
             );
           },
-          body: ListTile(
-              title: Text(item.expandedValue),
-              subtitle:
-                  const Text('To delete this panel, tap the trash can icon'),
-              trailing: const Icon(Icons.delete),
-              onTap: () {
-                setState(() {
-                  _data.removeWhere((Item currentItem) => item == currentItem);
-                });
-              }),
-          isExpanded: item.isExpanded,
+          canTapOnHeader: true,
+          body: CampusRoutes(campusRoutes: item['itineraries']),
+          isExpanded: item['isExpanded'],
         );
       }).toList(),
     );
   }
+}
+
+List organizeRoutes(itineraries) {
+  var campuses = [
+    {"campus": itineraries[0].campus, "isExpanded": false, "itineraries": []}
+  ];
+
+  for (var i = 0; i < itineraries.length; i++) {
+    var r = itineraries[i];
+    int idx = campuses.indexWhere((item) {
+      return item['campus'] == r.campus;
+    });
+    if (idx == -1) {
+      campuses.add({
+        "campus": r.campus,
+        "isExpanded": false,
+        "itineraries": [r]
+      });
+    } else {
+      campuses[idx]['itineraries'].add(r);
+    }
+  }
+  return campuses;
 }

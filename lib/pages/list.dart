@@ -15,8 +15,8 @@ class _ListPageState extends State<ListPage> {
   List data = [];
   @override
   void initState() {
-    routes.sort((a, b) => a.campus.compareTo(b.campus));
-    data = sortRoutes(routes);
+    itineraries.sort((a, b) => a.campus.compareTo(b.campus));
+    data = sortRoutes(itineraries);
     super.initState();
   }
 

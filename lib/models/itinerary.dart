@@ -4,11 +4,11 @@
 
 import 'dart:convert';
 
-Route routeFromJson(String str) => Route.fromJson(json.decode(str));
+Itinerary routeFromJson(String str) => Itinerary.fromJson(json.decode(str));
 
-String routeToJson(Route data) => json.encode(data.toJson());
+String routeToJson(Itinerary data) => json.encode(data.toJson());
 
-class Route {
+class Itinerary {
   String campus;
   String title;
   double distance;
@@ -16,7 +16,7 @@ class Route {
   Path path;
   Points points;
 
-  Route({
+  Itinerary({
     required this.campus,
     required this.title,
     required this.distance,
@@ -25,7 +25,7 @@ class Route {
     required this.points,
   });
 
-  factory Route.fromJson(Map<String, dynamic> json) => Route(
+  factory Itinerary.fromJson(Map<String, dynamic> json) => Itinerary(
         campus: json["campus"],
         title: json["title"],
         distance: json['distance'],
@@ -133,7 +133,7 @@ class Geometry {
 }
 
 class Properties {
-  int id;
+  String id;
   String title;
   String description;
 

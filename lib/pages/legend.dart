@@ -50,7 +50,9 @@ class _LegendPageState extends State<LegendPage> {
               Padding(padding: EdgeInsets.all(20)),
               NextPageAnimation(
                 // nextPage: ListPage(),
-                nextPage: ExpansionPanelListExampleApp(routes: routes),
+                nextPage:
+                    // ExpansionPanelListExampleApp(itineraries: itineraries),
+                    AccordionPage(itineraries: itineraries),
               )
             ],
           ),
