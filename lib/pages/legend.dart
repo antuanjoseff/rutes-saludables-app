@@ -26,11 +26,11 @@ class _LegendPageState extends State<LegendPage> {
             children: [
               Expanded(
                 child: Container(
-                    child: const SingleChildScrollView(
+                    child: SingleChildScrollView(
                   child: DefaultTextStyle(
                     style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 30,
+                      color: blueUdG,
+                      fontSize: 23,
                     ),
                     child: const Column(
                       children: [

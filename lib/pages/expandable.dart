@@ -103,5 +103,15 @@ List organizeRoutes(itineraries) {
       campuses[idx]['itineraries'].add(r);
     }
   }
+
+  for (var i = 0; i < campuses.length; i++) {
+    for (var b = 0; b < campuses[i]['itineraries'].length; b++) {
+      var name = campuses[i]['campus'];
+      var tit = campuses[i]['itineraries'][b].title;
+      var equ = campuses[i]['itineraries'][b].path.coordinates[0].length;
+
+      print('$name          $tit           $equ');
+    }
+  }
   return campuses;
 }
