@@ -610,7 +610,26 @@ List<Itinerary> itineraries = [
           [2.824106, 41.974258, 70.0]
         ]
       ]),
-      points: pts),
+      points: Points(type: "FeatureCollection", features: [
+        Feature(
+            type: "Feature",
+            geometry:
+                Geometry(type: "Point", coordinates: [2.825257, 41.974304]),
+            properties: Properties(
+                id: "1",
+                title: "Exercici 1",
+                description:
+                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/2UaZWYCwx4k\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;</span><span>&lt;b</span><span>r&gt;</span><span>&lt;/<span></span>p</span><span></span>")),
+        Feature(
+            type: "Feature",
+            geometry:
+                Geometry(type: "Point", coordinates: [2.830458, 41.97349]),
+            properties: Properties(
+                id: "1",
+                title: "Exercici 2",
+                description:
+                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/Jw9jvHiVBmE\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;</span><span>&lt;b</span><span>r&gt;</span><span>&lt;/<span></span>p</span><span>&gt;"))
+      ])),
   Itinerary(
       campus: "Campus centre",
       title: "Llarg",
@@ -766,7 +785,71 @@ List<Itinerary> itineraries = [
           [2.824106, 41.974258, 70.0]
         ]
       ]),
-      points: pts),
+      points: Points(type: "FeatureCollection", features: [
+        Feature(
+            type: "Feature",
+            geometry:
+                Geometry(type: "Point", coordinates: [2.825231, 41.974342]),
+            properties: Properties(
+                id: "7",
+                title: "Exercici 1",
+                description:
+                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/2UaZWYCwx4k\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp; &amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+        Feature(
+            type: "Feature",
+            geometry:
+                Geometry(type: "Point", coordinates: [2.830502, 41.973494]),
+            properties: Properties(
+                id: "8",
+                title: "Exercici 2",
+                description:
+                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/Jw9jvHiVBmE\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp; &amp;nbsp;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+        Feature(
+            type: "Feature",
+            geometry:
+                Geometry(type: "Point", coordinates: [2.833381, 41.972461]),
+            properties: Properties(
+                id: "26",
+                title: "Exercici 3",
+                description:
+                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/7uNCSi7qQo0\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+        Feature(
+            type: "Feature",
+            geometry:
+                Geometry(type: "Point", coordinates: [2.834743, 41.972098]),
+            properties: Properties(
+                id: "27",
+                title: "Exercici 4",
+                description:
+                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/-A62WkOOepg\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+        Feature(
+            type: "Feature",
+            geometry:
+                Geometry(type: "Point", coordinates: [2.836479, 41.967899]),
+            properties: Properties(
+                id: "28",
+                title: "Exercici 5",
+                description:
+                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/HB2XNHpsT_4\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+        Feature(
+            type: "Feature",
+            geometry:
+                Geometry(type: "Point", coordinates: [2.839082, 41.964975]),
+            properties: Properties(
+                id: "29",
+                title: "Exercici 6",
+                description:
+                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/0OtU3QNZIks\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+        Feature(
+            type: "Feature",
+            geometry:
+                Geometry(type: "Point", coordinates: [2.837595, 41.959211]),
+            properties: Properties(
+                id: "30",
+                title: "Exercici 7",
+                description:
+                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/h5VVxOYA4j4\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;"))
+      ]))
 ];
 
 Color blueUdG = Color(0xff3242a0);

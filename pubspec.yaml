@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.6
 
 dev_dependencies:
+  flutter_svg: ^2.0.10+1
   accordion: ^2.6.0
   geoxml: ^2.6.1
   maplibre_gl: ^0.20.0

@@ -3,6 +3,7 @@ import 'home.dart';
 import 'list.dart';
 import 'expandable.dart';
 import '../widgets/NextPageAnimation.dart';
+import '../widgets/map_legend.dart';
 import '../models/data.dart';
 
 class LegendPage extends StatefulWidget {
@@ -41,7 +42,8 @@ class _LegendPageState extends State<LegendPage> {
                         const Text(
                             "Pots triar un recorregut curt (d'uns 20 minuts), per aprofitar els moments de descans, o un recorregut més llarg (d'uns 45 minuts). Dins dels itineraris, et recomanem uns exercicis físics (icones roses) amb tres nivells d'intensitat i una sèrie de punts d'interès (icones verdes) per conèixer a fons els serveis del teu campus"),
                         const Padding(padding: EdgeInsets.all(18)),
-                        const Text("Al mapa trobaràs aquestes icones: ")
+                        const Text("Al mapa trobaràs aquestes icones: "),
+                        MapLegend()
                       ],
                     ),
                   ),
