@@ -102,8 +102,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "18",
                 title: "Exercici 1",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/ZF_dnv5UFfo\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+                description: "www.youtube.com/embed/ZF_dnv5UFfo")),
         Feature(
             type: "Feature",
             geometry:
@@ -111,8 +110,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "20",
                 title: "Exercici 3",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/hv8J1jaglZo\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+                description: "www.youtube.com/embed/hv8J1jaglZo")),
         Feature(
             type: "Feature",
             geometry:
@@ -120,8 +118,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "21",
                 title: "Exercici 4",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/tAZtcJWH6kY\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>"))
+                description: "www.youtube.com/embed/tAZtcJWH6kY"))
       ])),
   Itinerary(
     campus: "Campus Barri Vell",
@@ -270,32 +267,28 @@ List<Itinerary> itineraries = [
           properties: Properties(
               id: "22",
               title: "Exercici 1",
-              description:
-                  "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/mcgcTvV20k8\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+              description: "www.youtube.com/embed/mcgcTvV20k8")),
       Feature(
           type: "Feature",
           geometry: Geometry(type: "Point", coordinates: [2.829711, 41.986751]),
           properties: Properties(
               id: "23",
               title: "Exercici 2",
-              description:
-                  "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/lUnM-OP799A\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+              description: "www.youtube.com/embed/lUnM-OP799A")),
       Feature(
           type: "Feature",
           geometry: Geometry(type: "Point", coordinates: [2.830856, 41.987166]),
           properties: Properties(
               id: "24",
               title: "Exercici 3",
-              description:
-                  "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/RHF6kcG7ewA\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+              description: "www.youtube.com/embed/RHF6kcG7ewA")),
       Feature(
           type: "Feature",
           geometry: Geometry(type: "Point", coordinates: [2.826404, 41.98657]),
           properties: Properties(
               id: "25",
               title: "Exercici 4",
-              description:
-                  "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/ZrGe1lgsNl0\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>"))
+              description: "www.youtube.com/embed/ZrGe1lgsNl0"))
     ]),
   ),
   Itinerary(
@@ -359,8 +352,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "10",
                 title: "Exercici 2",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/c-KfhMfkbdw\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+                description: "www.youtube.com/embed/c-KfhMfkbdw")),
         Feature(
             type: "Feature",
             geometry:
@@ -368,8 +360,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "9",
                 title: "Exercici 1",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/Vg541Q0hG8U\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+                description: "www.youtube.com/embed/Vg541Q0hG8U")),
         Feature(
             type: "Feature",
             geometry:
@@ -377,8 +368,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "11",
                 title: "Exercici 3",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/lmPiAqneJc0\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe>&nbsp;</p>")),
+                description: "www.youtube.com/embed/lmPiAqneJc0")),
         Feature(
             type: "Feature",
             geometry:
@@ -386,8 +376,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "12",
                 title: "Exercici 4",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/5gb9F_lCh7g\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe>&nbsp;</p>"))
+                description: "www.youtube.com/embed/5gb9F_lCh7g"))
       ])),
   Itinerary(
       campus: "Campus Montilivi",
@@ -518,8 +507,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "13",
                 title: "Exercici 1",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/Vg541Q0hG8U\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+                description: "www.youtube.com/embed/Vg541Q0hG8U")),
         Feature(
             type: "Feature",
             geometry:
@@ -527,8 +515,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "20",
                 title: "",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/c-KfhMfkbdw\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+                description: "www.youtube.com/embed/c-KfhMfkbdw")),
         Feature(
             type: "Feature",
             geometry:
@@ -536,8 +523,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "15",
                 title: "Exercici 3",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/lmPiAqneJc0\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+                description: "www.youtube.com/embed/lmPiAqneJc0")),
         Feature(
             type: "Feature",
             geometry:
@@ -545,8 +531,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "16",
                 title: "Exercici 4",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/5gb9F_lCh7g\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>")),
+                description: "www.youtube.com/embed/5gb9F_lCh7g")),
         Feature(
             type: "Feature",
             geometry:
@@ -554,8 +539,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "16",
                 title: "Exercici 4",
-                description:
-                    "<p><iframe frameborder=\"0\" src=\"//www.youtube.com/embed/5gb9F_lCh7g\" width=\"640\" height=\"360\" class=\"note-video-clip\"></iframe><br></p>"))
+                description: "www.youtube.com/embed/5gb9F_lCh7g"))
       ])),
   Itinerary(
       campus: "Campus centre",
@@ -618,8 +602,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "1",
                 title: "Exercici 1",
-                description:
-                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/2UaZWYCwx4k\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;</span><span>&lt;b</span><span>r&gt;</span><span>&lt;/<span></span>p</span><span></span>")),
+                description: "www.youtube.com/embed/2UaZWYCwx4k")),
         Feature(
             type: "Feature",
             geometry:
@@ -627,8 +610,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "1",
                 title: "Exercici 2",
-                description:
-                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/Jw9jvHiVBmE\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;</span><span>&lt;b</span><span>r&gt;</span><span>&lt;/<span></span>p</span><span>&gt;"))
+                description: "www.youtube.com/embed/Jw9jvHiVBmE"))
       ])),
   Itinerary(
       campus: "Campus centre",
@@ -793,8 +775,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "7",
                 title: "Exercici 1",
-                description:
-                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/2UaZWYCwx4k\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp; &amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+                description: "www.youtube.com/embed/2UaZWYCwx4k")),
         Feature(
             type: "Feature",
             geometry:
@@ -802,8 +783,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "8",
                 title: "Exercici 2",
-                description:
-                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/Jw9jvHiVBmE\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp; &amp;nbsp;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+                description: "www.youtube.com/embed/Jw9jvHiVBmE")),
         Feature(
             type: "Feature",
             geometry:
@@ -811,8 +791,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "26",
                 title: "Exercici 3",
-                description:
-                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/7uNCSi7qQo0\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+                description: "www.youtube.com/embed/7uNCSi7qQo0")),
         Feature(
             type: "Feature",
             geometry:
@@ -820,8 +799,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "27",
                 title: "Exercici 4",
-                description:
-                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/-A62WkOOepg\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+                description: "www.youtube.com/embed/-A62WkOOepg")),
         Feature(
             type: "Feature",
             geometry:
@@ -829,8 +807,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "28",
                 title: "Exercici 5",
-                description:
-                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/HB2XNHpsT_4\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+                description: "www.youtube.com/embed/HB2XNHpsT_4")),
         Feature(
             type: "Feature",
             geometry:
@@ -838,8 +815,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "29",
                 title: "Exercici 6",
-                description:
-                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/0OtU3QNZIks\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;")),
+                description: "www.youtube.com/embed/0OtU3QNZIks")),
         Feature(
             type: "Feature",
             geometry:
@@ -847,8 +823,7 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "30",
                 title: "Exercici 7",
-                description:
-                    "</span><span>&lt;p</span><span>&gt;</span><span>&lt;i</span><span>frame frameborder=\"0\" src=\"//www.youtube.com/embed/h5VVxOYA4j4\" width=\"640\" height=\"360\" class=\"note-video-clip\"&gt;</span><span>&lt;/<span></span>i</span><span>frame&gt;&amp;nbsp;</span><span>&lt;/<span></span>p</span><span>&gt;"))
+                description: "www.youtube.com/embed/h5VVxOYA4j4"))
       ]))
 ];
 

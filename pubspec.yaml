@@ -37,6 +37,7 @@ dependencies:
 
 dev_dependencies:
   flutter_svg: ^2.0.10+1
+  youtube_player_flutter: ^8.1.2
   accordion: ^2.6.0
   geoxml: ^2.6.1
   maplibre_gl: ^0.20.0

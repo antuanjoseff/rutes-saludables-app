@@ -7,6 +7,9 @@ import '../models/itinerary.dart';
 import '../models/track.dart';
 import 'package:geoxml/geoxml.dart';
 
+import '../widgets/play_youtube.dart';
+import '../utils/lib.dart';
+
 class MapPage extends StatelessWidget {
   final Path path;
   final Points points;
@@ -55,31 +58,17 @@ class _MapWidgetState extends State<MapWidget> {
     _points = widget.points;
   }
 
-  Future<void> _dialogBuilder(BuildContext context, String content) {
+  Future<void> _dialogBuilder(BuildContext context, String videoUrl) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Informació del punt'),
-          content: Text(content),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(context).textTheme.labelLarge,
-              ),
-              child: const Text('Ok'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
+        return MyVideo(url: videoUrl);
       },
     );
   }
 
   void onFeatureTap(dynamic featureId, Point<double> point, LatLng latLng) {
-    var prop = getPointProperties(featureId, _points, latLng);
+    var prop = getVideoUrl(featureId, _points, latLng);
     if (prop != '') {
       _dialogBuilder(context, prop);
     }
@@ -140,6 +129,9 @@ class _MapWidgetState extends State<MapWidget> {
       trackCameraPosition: true,
       onMapCreated: _onMapCreated,
       onStyleLoadedCallback: () async {
+        addImageFromAsset(mapController!, "exercisePoint",
+            "assets/images/exercise_point.png");
+
         trackLine = await mapController!.addLine(LineOptions(
           geometry: track!.getCoordsList(),
           lineColor: trackColor.toHexStringRGB(),
@@ -149,21 +141,30 @@ class _MapWidgetState extends State<MapWidget> {
 
         var pts = _points.features;
         for (var i = 0; i < pts.length; i++) {
-          var p = await mapController!.addCircle(
-            CircleOptions(
-                circleRadius: 20,
-                geometry: LatLng(pts[i].geometry.coordinates[1],
-                    pts[i].geometry.coordinates[0]),
-                circleColor: "#FF0000"),
-          );
-          pts[i].properties.id = p.id;
+          final symbolOptions = <SymbolOptions>[];
+          String image = 'exercisePoint';
+
+          symbolOptions.add(SymbolOptions(
+              iconImage: image,
+              geometry: LatLng(pts[i].geometry.coordinates[1],
+                  pts[i].geometry.coordinates[0])));
+
+          var sym = await mapController!.addSymbols(symbolOptions);
+
+          // var p = await mapController!.addCircle(
+          //   CircleOptions(
+          //       circleRadius: 20,
+          //       geometry: LatLng(pts[i].geometry.coordinates[1],
+          //           pts[i].geometry.coordinates[0]),
+          //       circleColor: "#FF0000"),
+          // );
+          pts[i].properties.id = sym[0].id;
         }
       },
       initialCameraPosition: const CameraPosition(
         target: LatLng(42.0, 3.0),
         zoom: 13.0,
       ),
-      // onStyleLoadedCallback: _onStyleLoadedCallback,
       styleString:
           // 'https://geoserveis.icgc.cat/contextmaps/icgc_mapa_base_gris_simplificat.json',
           'https://geoserveis.icgc.cat/contextmaps/icgc_orto_hibrida.json',
@@ -171,12 +172,12 @@ class _MapWidgetState extends State<MapWidget> {
   }
 }
 
-String getPointProperties(String id, Points pts, LatLng coords) {
+String getVideoUrl(String id, Points pts, LatLng coords) {
   var features = pts.features;
   for (var i = 0; i < features.length; i++) {
     var f = features[i];
     if (f.properties.id == id) {
-      return f.properties.description;
+      return 'https://' + f.properties.description;
     }
   }
   return '';
