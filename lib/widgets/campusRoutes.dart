@@ -62,8 +62,7 @@ class _CampusRoutesState extends State<CampusRoutes> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                MapPage(path: item.path, points: item.points),
+                            builder: (context) => MapPage(itinerary: item),
                           ));
                     },
                     child: const CircleAvatar(

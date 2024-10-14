@@ -44,6 +44,8 @@ class _AccordionPageState extends State<AccordionPage> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text('Itineraris saludables'),
+          backgroundColor: Color(0xff3242a0),
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
         body: Accordion(
           maxOpenSections: 2,
@@ -85,7 +87,7 @@ class _AccordionPageState extends State<AccordionPage> {
 
 List organizeRoutes(itineraries) {
   var campuses = [
-    {"campus": itineraries[0].campus, "isExpanded": true, "itineraries": []}
+    {"campus": itineraries[0].campus, "isExpanded": false, "itineraries": []}
   ];
 
   for (var i = 0; i < itineraries.length; i++) {
@@ -96,7 +98,7 @@ List organizeRoutes(itineraries) {
     if (idx == -1) {
       campuses.add({
         "campus": r.campus,
-        "isExpanded": true,
+        "isExpanded": false,
         "itineraries": [r]
       });
     } else {
