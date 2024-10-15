@@ -18,6 +18,8 @@ class _LegendPageState extends State<LegendPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Color(0xff3242a0),
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
           title: const Text('Llegenda del mapa'),
         ),
         body: Padding(

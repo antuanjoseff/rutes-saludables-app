@@ -11,31 +11,31 @@ import '../widgets/play_youtube.dart';
 import '../utils/lib.dart';
 
 class MapPage extends StatelessWidget {
-  final Path path;
-  final Points points;
+  final Itinerary itinerary;
 
   MapPage({
     super.key,
-    required this.path,
-    required this.points,
+    required this.itinerary,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Itinerari')),
-        body: MapWidget(path: this.path, points: this.points));
+        appBar: AppBar(
+          title: Text(this.itinerary.campus + ' - ' + this.itinerary.title),
+          backgroundColor: Color(0xff3242a0),
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        ),
+        body: MapWidget(itinerary: this.itinerary));
   }
 }
 
 class MapWidget extends StatefulWidget {
-  final Path path;
-  final Points points;
+  final Itinerary itinerary;
 
   const MapWidget({
     super.key,
-    required this.path,
-    required this.points,
+    required this.itinerary,
   });
 
   @override
@@ -46,6 +46,8 @@ class _MapWidgetState extends State<MapWidget> {
   MapLibreMapController? mapController;
   late Path _path;
   late Points _points;
+  late String _title;
+  late String _campus;
   late Line trackLine;
 
   Track? track;
@@ -54,15 +56,17 @@ class _MapWidgetState extends State<MapWidget> {
 
   void initState() {
     super.initState(); //comes first for initState();
-    _path = widget.path;
-    _points = widget.points;
+    _campus = widget.itinerary.campus;
+    _title = widget.itinerary.title;
+    _path = widget.itinerary.path;
+    _points = widget.itinerary.points;
   }
 
   Future<void> _dialogBuilder(BuildContext context, String videoUrl) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return MyVideo(url: videoUrl);
+        return MyVideo(url: videoUrl, title: _title, campus: _campus);
       },
     );
   }
@@ -129,8 +133,8 @@ class _MapWidgetState extends State<MapWidget> {
       trackCameraPosition: true,
       onMapCreated: _onMapCreated,
       onStyleLoadedCallback: () async {
-        addImageFromAsset(mapController!, "exercisePoint",
-            "assets/images/exercise_point.png");
+        addImageFromAsset(
+            mapController!, "exercisePoint", "assets/images/marker_salut.png");
 
         trackLine = await mapController!.addLine(LineOptions(
           geometry: track!.getCoordsList(),
