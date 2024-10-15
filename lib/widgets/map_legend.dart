@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../models/bluedUdG.dart';
 
 class MapLegend extends StatelessWidget {
   const MapLegend({super.key});
@@ -20,6 +21,7 @@ class MapLegend extends StatelessWidget {
               'assets/images/salut_no_text.svg',
               width: 50,
               height: 50,
+              colorFilter: ColorFilter.mode(blueUdG, BlendMode.srcIn),
             ),
             const SizedBox(
               width: 5,
@@ -27,31 +29,35 @@ class MapLegend extends StatelessWidget {
             Text('Exercici recomanat de l\itinerari', style: defaultStyle)
           ],
         ),
+        Padding(padding: EdgeInsets.all(1)),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SvgPicture.asset(
-              'assets/images/poi.svg',
-              width: 50,
-              height: 50,
-            ),
-            SizedBox(
+            SvgPicture.asset('assets/images/poi.svg',
+                width: 50,
+                height: 50,
+                colorFilter: ColorFilter.mode(Colors.red, BlendMode.srcIn)),
+            const SizedBox(
               width: 5,
             ),
             Text('Punt d\interès proper', style: defaultStyle)
           ],
         ),
+        Padding(padding: EdgeInsets.all(1)),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Icon(Icons.abc),
-            SizedBox(
-              width: 30,
+            SvgPicture.asset('assets/images/legend_position.svg',
+                width: 50,
+                height: 50,
+                colorFilter:
+                    const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
+            const SizedBox(
+              width: 5,
             ),
-            Text('Text legend', style: defaultStyle)
+            Text('La teva posició', style: defaultStyle)
           ],
         ),
-        Padding(padding: EdgeInsets.all(10)),
       ],
     );
   }

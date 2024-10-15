@@ -40,6 +40,7 @@ dev_dependencies:
   youtube_player_flutter: ^8.1.2
   accordion: ^2.6.0
   geoxml: ^2.6.1
+  location: ^5.0.3
   maplibre_gl: ^0.20.0
   flutter_test:
     sdk: flutter

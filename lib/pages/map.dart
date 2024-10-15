@@ -54,6 +54,10 @@ class _MapWidgetState extends State<MapWidget> {
   double trackWidth = 6;
   Color trackColor = Colors.orange; // Selects a mid-range green.
 
+  MyLocationRenderMode _myLocationRenderMode = MyLocationRenderMode.compass;
+  MyLocationTrackingMode _myLocationTrackingMode =
+      MyLocationTrackingMode.trackingGps;
+
   void initState() {
     super.initState(); //comes first for initState();
     _campus = widget.itinerary.campus;
@@ -77,16 +81,6 @@ class _MapWidgetState extends State<MapWidget> {
       _dialogBuilder(context, prop);
     }
   }
-
-  // final snackBar = SnackBar(
-  //   content: Text(
-  //     'Tapped feature with id $featureId',
-  //     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-  //   ),
-  //   backgroundColor: Theme.of(context).primaryColor,
-  // );
-  // ScaffoldMessenger.of(context).clearSnackBars();
-  // ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
   void _onMapCreated(MapLibreMapController controller) async {
     mapController = controller;
@@ -114,24 +108,16 @@ class _MapWidgetState extends State<MapWidget> {
         bottom: 25,
       ),
     );
-
-    var a = track!.getCoordsList();
-    print(a.length);
-    for (var i = 0; i < a.length; i++) {
-      print(a[i].latitude);
-      print('*' * 10);
-      print(a[i].longitude);
-    }
-    print(mapController == null);
   }
 
   @override
   Widget build(BuildContext context) {
     return MapLibreMap(
-      compassEnabled: false,
-      myLocationEnabled: true,
       trackCameraPosition: true,
       onMapCreated: _onMapCreated,
+      myLocationEnabled: true,
+      myLocationTrackingMode: _myLocationTrackingMode,
+      myLocationRenderMode: _myLocationRenderMode,
       onStyleLoadedCallback: () async {
         addImageFromAsset(
             mapController!, "exercisePoint", "assets/images/marker_salut.png");
