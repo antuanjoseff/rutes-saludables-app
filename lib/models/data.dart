@@ -1,20 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:rutes_saludables/models/itinerary.dart';
 import 'coordinates.dart';
+import 'pois.dart';
 
-Feature fa = Feature(
-    type: "Feature",
-    geometry: Geometry(type: "Point", coordinates: [2.827357, 41.985692]),
-    properties: Properties(
-        id: "18", title: "Exercici 1", description: "bla, bla, bla..."));
-
-Feature fb = Feature(
-    type: "Feature",
-    geometry: Geometry(type: "Point", coordinates: [2.827906, 41.984199]),
-    properties: Properties(
-        id: "18", title: "Exercici 1", description: "más bla, bla, bla..."));
-
-Points pts = Points(type: "FeatureCollection", features: [fa, fb]);
+Points pois = Points(type: "FeatureCollection", features: pointsOfInterest);
 
 List<Itinerary> itineraries = [
   Itinerary(
