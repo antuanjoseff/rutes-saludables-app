@@ -32,7 +32,7 @@ class _MyHomePageState extends State<HomePage> {
         child: Column(
           children: [
             const Padding(padding: EdgeInsets.all(10)),
-            Center(
+            const Center(
                 child: Image(
                     color: Colors.white,
                     image: AssetImage('assets/images/salut.png'))),

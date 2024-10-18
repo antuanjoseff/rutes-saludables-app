@@ -105,19 +105,45 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
-  Future<void> _dialogBuilder(BuildContext context, String videoUrl) {
+  Widget launchButton(contect, videoUrl) {
+    return ElevatedButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop(); // dismiss dialog
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    MyVideo(url: videoUrl, title: _title, campus: _campus)));
+      },
+    );
+  }
+
+  Widget cancelButton(contect) {
+    return ElevatedButton(
+      child: Text("CANCEL"),
+      onPressed: () {
+        Navigator.of(context).pop(); // dismiss dialog
+      },
+    );
+  }
+
+  Future<void> _dialogBuilder(BuildContext context, String url) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return MyVideo(url: videoUrl, title: _title, campus: _campus);
+        return AlertDialog(
+            title: Text('Exercici!'),
+            content: Text('Vols veure el video?'),
+            actions: [launchButton(context, url), cancelButton(context)]);
       },
     );
   }
 
   void onFeatureTap(dynamic featureId, Point<double> point, LatLng latLng) {
-    var prop = getVideoUrl(featureId, _points);
-    if (prop != '') {
-      _dialogBuilder(context, prop);
+    var url = getVideoUrl(featureId, _points);
+    if (url != '') {
+      _dialogBuilder(context, url);
     }
   }
 
@@ -194,6 +220,7 @@ class _MapWidgetState extends State<MapWidget> {
         pointsOnTrack += 1;
       }
     }
+
     // Loop through all track points
     bool inRange = false;
     for (var a = 0; a < _points.features.length && !inRange; a++) {
@@ -240,22 +267,15 @@ class _MapWidgetState extends State<MapWidget> {
         var pts = _points.features;
         for (var i = 0; i < pts.length; i++) {
           final symbolOptions = <SymbolOptions>[];
-          String image = 'exercisePoint';
 
           symbolOptions.add(SymbolOptions(
               iconImage: "exercisePoint",
+              iconAnchor: 'bottom',
               geometry: LatLng(pts[i].geometry.coordinates[1],
                   pts[i].geometry.coordinates[0])));
 
           var sym = await mapController!.addSymbols(symbolOptions);
 
-          // var p = await mapController!.addCircle(
-          //   CircleOptions(
-          //       circleRadius: 20,
-          //       geometry: LatLng(pts[i].geometry.coordinates[1],
-          //           pts[i].geometry.coordinates[0]),
-          //       circleColor: "#FF0000"),
-          // );
           pts[i].properties.id = sym[0].id;
         }
       },
