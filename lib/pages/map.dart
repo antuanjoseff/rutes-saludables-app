@@ -55,8 +55,12 @@ class _MapWidgetState extends State<MapWidget> {
   late String _campus;
   late Line trackLine;
   bool onTrack = false;
-  int tolerance = 15;
+  int tolerance = 15; //meters
+  int onTrackDistance = 20; //meters
+  int offTrackDistance = 50; //meters
 
+  int pointsOffTrack = 0;
+  int pointsOnTrack = 0;
   Location location = new Location();
   List<String> alreadyReached = [];
 
@@ -169,17 +173,25 @@ class _MapWidgetState extends State<MapWidget> {
     double distanceToTrack =
         track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
     if (!onTrack && (loc.accuracy! < tolerance)) {
-      if (distanceToTrack < tolerance) {
+      if (distanceToTrack < onTrackDistance) {
         onTrack = true;
+        pointsOffTrack = 0;
+        pointsOnTrack += 1;
         playSound('sounds/on_track.mp3');
+      } else {
+        pointsOffTrack += 1;
       }
     } else {
       if (onTrack &&
-          (distanceToTrack > tolerance && loc.accuracy! < tolerance)) {
+          (distanceToTrack > offTrackDistance && loc.accuracy! < tolerance)) {
         // Location is moving away
         onTrack = false;
+        pointsOffTrack += 1;
+        pointsOnTrack = 0;
         playSound('sounds/off_track.mp3');
         _dialogMessageBuilder(context, 'Moving away from track');
+      } else {
+        pointsOnTrack += 1;
       }
     }
     // Loop through all track points
