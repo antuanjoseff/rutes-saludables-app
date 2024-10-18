@@ -37,6 +37,7 @@ dependencies:
 
 dev_dependencies:
   shared_preferences: ^2.3.2
+  audioplayers: ^6.1.0
   flutter_svg: ^2.0.10+1
   youtube_player_flutter: ^8.1.2
   accordion: ^2.6.0
@@ -68,6 +69,7 @@ flutter:
   assets:
     - assets/images/
     - assets/marker_salut.png
+    - assets/sounds/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

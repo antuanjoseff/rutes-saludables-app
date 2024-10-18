@@ -13,6 +13,8 @@ import '../utils/user_simple_preferences.dart';
 import '../utils/util.dart';
 import 'package:location/location.dart';
 
+import 'package:audioplayers/audioplayers.dart';
+
 class MapPage extends StatelessWidget {
   final Itinerary itinerary;
 
@@ -64,6 +66,8 @@ class _MapWidgetState extends State<MapWidget> {
   MyLocationRenderMode _myLocationRenderMode = MyLocationRenderMode.compass;
   MyLocationTrackingMode _myLocationTrackingMode =
       MyLocationTrackingMode.trackingGps;
+
+  final player = AudioPlayer();
 
   void initState() {
     super.initState(); //comes first for initState();
@@ -132,23 +136,30 @@ class _MapWidgetState extends State<MapWidget> {
     }
   }
 
-  void manageNewPosition(LocationData loc) {
+  Future<void> playExerciseSound() async {
+    await player.setVolume(1);
+    // await player.setReleaseMode(ReleaseMode.loop);
+    player.play(AssetSource('sounds/small_sound.mp3'));
+  }
+
+  void manageNewPosition(LocationData loc) async {
     counter++;
     location.changeNotificationOptions(
       title: 'Geolocation ' + counter.toString(),
       subtitle: 'Geolocation detection ' + counter.toString(),
     );
     bool inRange = false;
+
     for (var a = 0; a < _points.features.length && !inRange; a++) {
       var p = _points.features[a];
       var coords = p.geometry.coordinates;
       double distance = getDistanceFromLatLonInMeters(
           LatLng(coords[1], coords[0]), LatLng(loc.latitude!, loc.longitude!));
-
       if (distance < snapDistance) {
         inRange = true;
         String url = getVideoUrl(p.properties.id, _points);
         if (!alreadyReached.contains(url)) {
+          await playExerciseSound();
           alreadyReached.add(url);
           _dialogBuilder(context, url);
         }

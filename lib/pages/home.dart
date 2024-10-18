@@ -12,6 +12,11 @@ class HomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<HomePage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
