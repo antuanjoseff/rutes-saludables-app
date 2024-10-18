@@ -54,8 +54,9 @@ class _MapWidgetState extends State<MapWidget> {
   late String _title;
   late String _campus;
   late Line trackLine;
-  int snapDistance = 15;
-  int counter = 0;
+  bool onTrack = false;
+  int tolerance = 15;
+
   Location location = new Location();
   List<String> alreadyReached = [];
 
@@ -80,6 +81,23 @@ class _MapWidgetState extends State<MapWidget> {
     location.changeNotificationOptions(
       title: 'Geolocation',
       subtitle: 'Geolocation detection',
+    );
+  }
+
+  Future<void> _dialogMessageBuilder(BuildContext context, String msg) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: Text('Hello world!'),
+            content: Text(msg),
+            actions: [
+              FloatingActionButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text('OK'),
+              ),
+            ]);
+      },
     );
   }
 
@@ -136,30 +154,46 @@ class _MapWidgetState extends State<MapWidget> {
     }
   }
 
-  Future<void> playExerciseSound() async {
+  Future<void> playSound(String sound) async {
     await player.setVolume(1);
     // await player.setReleaseMode(ReleaseMode.loop);
-    player.play(AssetSource('sounds/small_sound.mp3'));
+    player.play(AssetSource(sound));
   }
 
   void manageNewPosition(LocationData loc) async {
-    counter++;
     location.changeNotificationOptions(
-      title: 'Geolocation ' + counter.toString(),
-      subtitle: 'Geolocation detection ' + counter.toString(),
+      title: 'Geolocation ',
+      subtitle: 'Current accuracy ' + loc.accuracy.toString(),
     );
+    // Check if location is in track
+    double distanceToTrack =
+        track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
+    if (!onTrack && (loc.accuracy! < tolerance)) {
+      if (distanceToTrack < tolerance) {
+        onTrack = true;
+        playSound('sounds/on_track.mp3');
+      }
+    } else {
+      if (onTrack &&
+          (distanceToTrack > tolerance && loc.accuracy! < tolerance)) {
+        // Location is moving away
+        onTrack = false;
+        playSound('sounds/off_track.mp3');
+        _dialogMessageBuilder(context, 'Moving away from track');
+      }
+    }
+    // Loop through all track points
     bool inRange = false;
-
     for (var a = 0; a < _points.features.length && !inRange; a++) {
       var p = _points.features[a];
       var coords = p.geometry.coordinates;
       double distance = getDistanceFromLatLonInMeters(
           LatLng(coords[1], coords[0]), LatLng(loc.latitude!, loc.longitude!));
-      if (distance < snapDistance) {
+      if (distance < tolerance) {
         inRange = true;
         String url = getVideoUrl(p.properties.id, _points);
         if (!alreadyReached.contains(url)) {
-          await playExerciseSound();
+          await playSound('sounds/small_sound.mp3');
           alreadyReached.add(url);
           _dialogBuilder(context, url);
         }

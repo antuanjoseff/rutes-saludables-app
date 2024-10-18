@@ -90,6 +90,11 @@ class Track {
     return (dist, numSegment, P);
   }
 
+  double trackToPointDistance(LatLng location) {
+    var (distance, numSement, point) = getCandidateNode(location);
+    return distance;
+  }
+
   int getClosestSegmentToLatLng(gpxCoords, point) {
     if (gpxCoords.length <= 0) return -1;
     int closestSegment = 0;
