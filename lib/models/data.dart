@@ -586,6 +586,13 @@ List<Itinerary> itineraries = [
       points: Points(type: "FeatureCollection", features: [
         Feature(
             type: "Feature",
+            geometry: Geometry(type: "Point", coordinates: [2.81598, 41.98366]),
+            properties: Properties(
+                id: "1",
+                title: "Exercici 1",
+                description: "www.youtube.com/embed/2UaZWYCwx4k")),
+        Feature(
+            type: "Feature",
             geometry:
                 Geometry(type: "Point", coordinates: [2.825257, 41.974304]),
             properties: Properties(
@@ -816,4 +823,4 @@ List<Itinerary> itineraries = [
       ]))
 ];
 
-Color blueUdG = Color(0xff3242a0);
+const Color blueUdG = Color(0xff3242a0);

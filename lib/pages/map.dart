@@ -8,7 +8,10 @@ import '../models/track.dart';
 import 'package:geoxml/geoxml.dart';
 
 import '../widgets/play_youtube.dart';
-import '../utils/lib.dart';
+import 'package:flutter/services.dart';
+import '../utils/user_simple_preferences.dart';
+import '../utils/util.dart';
+import 'package:location/location.dart';
 
 class MapPage extends StatelessWidget {
   final Itinerary itinerary;
@@ -49,6 +52,10 @@ class _MapWidgetState extends State<MapWidget> {
   late String _title;
   late String _campus;
   late Line trackLine;
+  int snapDistance = 15;
+  int counter = 0;
+  Location location = new Location();
+  List<String> alreadyReached = [];
 
   Track? track;
   double trackWidth = 6;
@@ -64,6 +71,12 @@ class _MapWidgetState extends State<MapWidget> {
     _title = widget.itinerary.title;
     _path = widget.itinerary.path;
     _points = widget.itinerary.points;
+
+    location.enableBackgroundMode(enable: true);
+    location.changeNotificationOptions(
+      title: 'Geolocation',
+      subtitle: 'Geolocation detection',
+    );
   }
 
   Future<void> _dialogBuilder(BuildContext context, String videoUrl) {
@@ -76,7 +89,7 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   void onFeatureTap(dynamic featureId, Point<double> point, LatLng latLng) {
-    var prop = getVideoUrl(featureId, _points, latLng);
+    var prop = getVideoUrl(featureId, _points);
     if (prop != '') {
       _dialogBuilder(context, prop);
     }
@@ -108,6 +121,45 @@ class _MapWidgetState extends State<MapWidget> {
         bottom: 25,
       ),
     );
+
+    bool gpEnabled = UserSimplePreferences.getGpsEnabled() ?? false;
+    bool gpsPermission = UserSimplePreferences.getHasPermission() ?? false;
+
+    if (gpsPermission) {
+      location.onLocationChanged.listen((LocationData currentLocation) {
+        manageNewPosition(currentLocation);
+      });
+    }
+  }
+
+  void manageNewPosition(LocationData loc) {
+    counter++;
+    location.changeNotificationOptions(
+      title: 'Geolocation ' + counter.toString(),
+      subtitle: 'Geolocation detection ' + counter.toString(),
+    );
+    bool inRange = false;
+    for (var a = 0; a < _points.features.length && !inRange; a++) {
+      var p = _points.features[a];
+      var coords = p.geometry.coordinates;
+      double distance = getDistanceFromLatLonInMeters(
+          LatLng(coords[1], coords[0]), LatLng(loc.latitude!, loc.longitude!));
+
+      if (distance < snapDistance) {
+        inRange = true;
+        String url = getVideoUrl(p.properties.id, _points);
+        if (!alreadyReached.contains(url)) {
+          alreadyReached.add(url);
+          _dialogBuilder(context, url);
+        }
+      }
+    }
+  }
+
+  Future<void> addImageFromAsset(String name, String assetName) async {
+    final bytes = await rootBundle.load(assetName);
+    final list = bytes.buffer.asUint8List();
+    return mapController!.addImage(name, list);
   }
 
   @override
@@ -119,8 +171,7 @@ class _MapWidgetState extends State<MapWidget> {
       myLocationTrackingMode: _myLocationTrackingMode,
       myLocationRenderMode: _myLocationRenderMode,
       onStyleLoadedCallback: () async {
-        addImageFromAsset(
-            mapController!, "exercisePoint", "assets/images/marker_salut.png");
+        addImageFromAsset("exercisePoint", "assets/marker_salut.png");
 
         trackLine = await mapController!.addLine(LineOptions(
           geometry: track!.getCoordsList(),
@@ -135,7 +186,7 @@ class _MapWidgetState extends State<MapWidget> {
           String image = 'exercisePoint';
 
           symbolOptions.add(SymbolOptions(
-              iconImage: image,
+              iconImage: "exercisePoint",
               geometry: LatLng(pts[i].geometry.coordinates[1],
                   pts[i].geometry.coordinates[0])));
 
@@ -162,7 +213,7 @@ class _MapWidgetState extends State<MapWidget> {
   }
 }
 
-String getVideoUrl(String id, Points pts, LatLng coords) {
+String getVideoUrl(String id, Points pts) {
   var features = pts.features;
   for (var i = 0; i < features.length; i++) {
     var f = features[i];

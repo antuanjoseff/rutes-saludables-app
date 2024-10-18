@@ -7,7 +7,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 /// Adds an asset image to the currently displayed style
-Future<void> addImageFromAsset(
+Future<void> addImageFromAsset_(
     MapLibreMapController controller, String name, String assetName) async {
   final bytes = await rootBundle.load(assetName);
   final list = bytes.buffer.asUint8List();
