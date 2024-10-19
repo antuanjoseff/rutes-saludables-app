@@ -18,7 +18,7 @@ class MapLegend extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(
-              'assets/images/salut_no_text.svg',
+              'assets/images/marker_salut.svg',
               width: 50,
               height: 50,
               colorFilter: ColorFilter.mode(blueUdG, BlendMode.srcIn),
@@ -29,20 +29,20 @@ class MapLegend extends StatelessWidget {
             Text('Exercici recomanat de l\itinerari', style: defaultStyle)
           ],
         ),
-        Padding(padding: EdgeInsets.all(1)),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgPicture.asset('assets/images/poi.svg',
-                width: 50,
-                height: 50,
-                colorFilter: ColorFilter.mode(Colors.red, BlendMode.srcIn)),
-            const SizedBox(
-              width: 5,
-            ),
-            Text('Punt d\interès proper', style: defaultStyle)
-          ],
-        ),
+        // Padding(padding: EdgeInsets.all(1)),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.start,
+        //   children: [
+        //     SvgPicture.asset('assets/images/poi.svg',
+        //         width: 50,
+        //         height: 50,
+        //         colorFilter: ColorFilter.mode(Colors.red, BlendMode.srcIn)),
+        //     const SizedBox(
+        //       width: 5,
+        //     ),
+        //     Text('Punt d\interès proper', style: defaultStyle)
+        //   ],
+        // ),
         Padding(padding: EdgeInsets.all(1)),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,

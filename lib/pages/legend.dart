@@ -33,7 +33,7 @@ class _LegendPageState extends State<LegendPage> {
                   child: DefaultTextStyle(
                     style: TextStyle(
                       color: blueUdG,
-                      fontSize: 17,
+                      fontSize: 15,
                     ),
                     child: const Column(
                       children: [

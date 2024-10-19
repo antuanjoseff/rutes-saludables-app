@@ -133,8 +133,8 @@ class _MapWidgetState extends State<MapWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text('Exercici!'),
-            content: Text('Vols veure el video?'),
+            title: const Text('Has arribat a un punt de salut!!'),
+            content: const Text("Vols veure el video de l'exercici recomanat?"),
             actions: [launchButton(context, url), cancelButton(context)]);
       },
     );
