@@ -36,6 +36,7 @@ class _LegendPageState extends State<LegendPage> {
                       fontSize: 15,
                     ),
                     child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         const Text(
                           "Benvingut/benvinguda als Itineraris Saludables de la UdG! Hem dissenyat unes rutes a cada un dels campus, especialment per a la comunitat universitària. Hi ha dos tipus d'itineraris, depenent del temps que vulguis invertir per desconnectar de la jornada laboral i acadèmica.",

@@ -17,43 +17,39 @@ class MapLegend extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SvgPicture.asset(
-              'assets/images/marker_salut.svg',
-              width: 50,
-              height: 50,
-              colorFilter: ColorFilter.mode(blueUdG, BlendMode.srcIn),
+            const Image(
+              image: AssetImage('assets/images/marker_salut.png'),
+              width: 25,
             ),
             const SizedBox(
-              width: 5,
+              width: 10,
             ),
             Text('Exercici recomanat de l\itinerari', style: defaultStyle)
           ],
         ),
-        // Padding(padding: EdgeInsets.all(1)),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.start,
-        //   children: [
-        //     SvgPicture.asset('assets/images/poi.svg',
-        //         width: 50,
-        //         height: 50,
-        //         colorFilter: ColorFilter.mode(Colors.red, BlendMode.srcIn)),
-        //     const SizedBox(
-        //       width: 5,
-        //     ),
-        //     Text('Punt d\interès proper', style: defaultStyle)
-        //   ],
-        // ),
-        Padding(padding: EdgeInsets.all(1)),
+        const Padding(padding: EdgeInsets.all(1)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Image(
+              image: AssetImage('assets/images/marker_poi.png'),
+              width: 25,
+            ),
+            const SizedBox(width: 10),
+            Text("Punt d'interès proper", style: defaultStyle)
+          ],
+        ),
+        const Padding(padding: EdgeInsets.all(1)),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset('assets/images/legend_position.svg',
-                width: 50,
-                height: 50,
+                width: 25,
+                height: 25,
                 colorFilter:
                     const ColorFilter.mode(Colors.blue, BlendMode.srcIn)),
             const SizedBox(
-              width: 5,
+              width: 10,
             ),
             Text('La teva posició', style: defaultStyle)
           ],

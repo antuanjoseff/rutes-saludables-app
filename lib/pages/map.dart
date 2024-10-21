@@ -1,19 +1,21 @@
 import 'dart:async';
 import 'dart:math';
-
+import 'package:flutter/services.dart';
+import 'package:location/location.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:flutter/material.dart';
-import '../models/itinerary.dart';
-import '../models/track.dart';
 import 'package:geoxml/geoxml.dart';
 
 import '../widgets/play_youtube.dart';
-import 'package:flutter/services.dart';
+
 import '../utils/user_simple_preferences.dart';
 import '../utils/util.dart';
-import 'package:location/location.dart';
 
-import 'package:audioplayers/audioplayers.dart';
+import '../models/itinerary.dart';
+import '../models/track.dart';
+import '../models/pois.dart';
+import 'poi_details.dart';
 
 class MapPage extends StatelessWidget {
   final Itinerary itinerary;
@@ -51,6 +53,7 @@ class _MapWidgetState extends State<MapWidget> {
   MapLibreMapController? mapController;
   late Path _path;
   late Points _points;
+  late List<Feature> _pois;
   late String _title;
   late String _campus;
   late Line trackLine;
@@ -80,6 +83,7 @@ class _MapWidgetState extends State<MapWidget> {
     _title = widget.itinerary.title;
     _path = widget.itinerary.path;
     _points = widget.itinerary.points;
+    _pois = pointsOfInterest;
 
     location.enableBackgroundMode(enable: true);
     location.changeNotificationOptions(
@@ -144,6 +148,13 @@ class _MapWidgetState extends State<MapWidget> {
     var url = getVideoUrl(featureId, _points);
     if (url != '') {
       _dialogBuilder(context, url);
+    }
+    //check if tap on some POI
+    Properties? info = getPoiInfo(featureId, _pois);
+    if (info != null) {
+      print(info.description);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => PoiDetails()));
     }
   }
 
@@ -256,6 +267,7 @@ class _MapWidgetState extends State<MapWidget> {
       myLocationRenderMode: _myLocationRenderMode,
       onStyleLoadedCallback: () async {
         addImageFromAsset("exercisePoint", "assets/marker_salut.png");
+        addImageFromAsset("poi", "assets/marker_poi.png");
 
         trackLine = await mapController!.addLine(LineOptions(
           geometry: track!.getCoordsList(),
@@ -264,6 +276,7 @@ class _MapWidgetState extends State<MapWidget> {
           lineOpacity: 0.9,
         ));
 
+        // ADD TRACK POINTS TO MAP. EXERCISES
         var pts = _points.features;
         for (var i = 0; i < pts.length; i++) {
           final symbolOptions = <SymbolOptions>[];
@@ -277,6 +290,21 @@ class _MapWidgetState extends State<MapWidget> {
           var sym = await mapController!.addSymbols(symbolOptions);
 
           pts[i].properties.id = sym[0].id;
+        }
+
+        // ADD POINTS OF INTEREST TO MAP
+        for (var i = 0; i < _pois.length; i++) {
+          final symbolOptions = <SymbolOptions>[];
+
+          symbolOptions.add(SymbolOptions(
+              iconImage: "poi",
+              iconAnchor: 'bottom',
+              geometry: LatLng(_pois[i].geometry.coordinates[1],
+                  _pois[i].geometry.coordinates[0])));
+
+          var sym = await mapController!.addSymbols(symbolOptions);
+
+          _pois[i].properties.id = sym[0].id;
         }
       },
       initialCameraPosition: const CameraPosition(
@@ -299,4 +327,14 @@ String getVideoUrl(String id, Points pts) {
     }
   }
   return '';
+}
+
+Properties? getPoiInfo(String id, List<Feature> pois) {
+  for (var i = 0; i < pois.length; i++) {
+    var f = pois[i];
+    if (f.properties.id == id) {
+      return f.properties;
+    }
+  }
+  return null;
 }

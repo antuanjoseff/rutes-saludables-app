@@ -70,10 +70,7 @@ class Points {
   String type;
   List<Feature> features;
 
-  Points({
-    required this.type,
-    required this.features,
-  });
+  Points({required this.type, required this.features});
 
   factory Points.fromJson(Map<String, dynamic> json) => Points(
         type: json["type"],
@@ -136,12 +133,13 @@ class Properties {
   String id;
   String title;
   String description;
+  String? url;
 
-  Properties({
-    required this.id,
-    required this.title,
-    required this.description,
-  });
+  Properties(
+      {required this.id,
+      required this.title,
+      required this.description,
+      this.url});
 
   factory Properties.fromJson(Map<String, dynamic> json) => Properties(
         id: json["id"],
