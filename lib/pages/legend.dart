@@ -23,7 +23,7 @@ class _LegendPageState extends State<LegendPage> {
           title: const Text('Llegenda del mapa'),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(30.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -41,10 +41,10 @@ class _LegendPageState extends State<LegendPage> {
                         const Text(
                           "Benvingut/benvinguda als Itineraris Saludables de la UdG! Hem dissenyat unes rutes a cada un dels campus, especialment per a la comunitat universitària. Hi ha dos tipus d'itineraris, depenent del temps que vulguis invertir per desconnectar de la jornada laboral i acadèmica.",
                         ),
-                        const Padding(padding: EdgeInsets.all(18)),
+                        const Padding(padding: EdgeInsets.all(10)),
                         const Text(
                             "Pots triar un recorregut curt (d'uns 20 minuts), per aprofitar els moments de descans, o un recorregut més llarg (d'uns 45 minuts). Dins dels itineraris, et recomanem uns exercicis físics (icones roses) amb tres nivells d'intensitat i una sèrie de punts d'interès (icones verdes) per conèixer a fons els serveis del teu campus"),
-                        const Padding(padding: EdgeInsets.all(18)),
+                        const Padding(padding: EdgeInsets.all(10)),
                         const Text("Al mapa trobaràs aquestes icones: "),
                         MapLegend()
                       ],
@@ -52,7 +52,7 @@ class _LegendPageState extends State<LegendPage> {
                   ),
                 )),
               ),
-              Padding(padding: EdgeInsets.all(20)),
+              const Padding(padding: EdgeInsets.all(5)),
               NextPageAnimation(
                 // nextPage: ListPage(),
                 nextPage:

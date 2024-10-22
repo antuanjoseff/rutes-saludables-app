@@ -13,18 +13,20 @@ void main() async {
 }
 
 Future<void> _checkPermission() async {
-  bool hasPermission = false;
+  bool? hasPermission = false;
   final gps = new Gps();
 
   bool enabled = await gps.checkService();
   if (enabled) {
-    hasPermission = await gps.checkPermission();
+    // hasPermission = await gps.checkPermission();
+    hasPermission = await gps.listenOnBackground(printLocation) ?? false;
+
     // if (hasPermission) {
     //   gps.listenOnBackground(printLocation);
     // }
   }
   await UserSimplePreferences.setGpsEnabled(enabled);
-  await UserSimplePreferences.setHasPermission(hasPermission);
+  await UserSimplePreferences.setHasPermission(hasPermission!);
   return;
 }
 
@@ -39,6 +41,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

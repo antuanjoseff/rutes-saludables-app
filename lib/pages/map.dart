@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:flutter/material.dart';
 import 'package:geoxml/geoxml.dart';
+import 'package:rutes_saludables/models/data.dart';
 
 import '../widgets/play_youtube.dart';
 
@@ -75,6 +77,9 @@ class _MapWidgetState extends State<MapWidget> {
   MyLocationTrackingMode _myLocationTrackingMode =
       MyLocationTrackingMode.trackingGps;
 
+  ButtonStyle udgStyle = ElevatedButton.styleFrom(
+      backgroundColor: blueUdG, foregroundColor: Colors.white);
+
   final player = AudioPlayer();
 
   void initState() {
@@ -111,7 +116,13 @@ class _MapWidgetState extends State<MapWidget> {
 
   Widget launchButton(contect, videoUrl) {
     return ElevatedButton(
-      child: Text("OK"),
+      style: udgStyle,
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text("OK"),
+        ],
+      ),
       onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
         Navigator.push(
@@ -125,6 +136,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   Widget cancelButton(contect) {
     return ElevatedButton(
+      style: udgStyle,
       child: Text("CANCEL"),
       onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
@@ -137,9 +149,29 @@ class _MapWidgetState extends State<MapWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: const Text('Has arribat a un punt de salut!!'),
-            content: const Text("Vols veure el video de l'exercici recomanat?"),
-            actions: [launchButton(context, url), cancelButton(context)]);
+            title: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('UdG Salut',
+                    style: TextStyle(
+                      color: blueUdG,
+                    )),
+                // SizedBox(width: 10),
+                // Image(
+                //   image: AssetImage('assets/images/salut_no_text.png'),
+                //   height: 25,
+                // ),
+              ],
+            ),
+            content: const Text("Vols veure el video de l'exercici recomanat?",
+                style: TextStyle(color: blueUdG, fontSize: 18)),
+            actions: [
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                launchButton(context, url),
+                SizedBox(width: 10),
+                cancelButton(context),
+              ])
+            ]);
       },
     );
   }
@@ -154,7 +186,12 @@ class _MapWidgetState extends State<MapWidget> {
     if (info != null) {
       print(info.description);
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => PoiDetails()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => PoiDetails(
+                  title: info.title,
+                  content: info.description,
+                  moreInfo: info.url)));
     }
   }
 
