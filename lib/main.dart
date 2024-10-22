@@ -6,9 +6,9 @@ import 'utils/user_simple_preferences.dart';
 
 void main() async {
   // await _checkPermission();
-  WidgetsFlutterBinding.ensureInitialized();
-  await UserSimplePreferences.init();
-  await _checkPermission();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await UserSimplePreferences.init();
+  // await _checkPermission();
   runApp(const MyApp());
 }
 
@@ -18,20 +18,21 @@ Future<void> _checkPermission() async {
 
   bool enabled = await gps.checkService();
   if (enabled) {
-    // hasPermission = await gps.checkPermission();
+    hasPermission = await gps.checkPermission();
     hasPermission = await gps.listenOnBackground(printLocation) ?? false;
 
-    // if (hasPermission) {
+    // if (hasPermission!) {
     //   gps.listenOnBackground(printLocation);
     // }
   }
+  print('................$hasPermission');
   await UserSimplePreferences.setGpsEnabled(enabled);
   await UserSimplePreferences.setHasPermission(hasPermission!);
   return;
 }
 
 void printLocation(LocationData loc) {
-  print('${loc.latitude}                    ${loc.longitude}');
+  debugPrint('${loc.latitude}                    ${loc.longitude}');
 }
 
 class MyApp extends StatelessWidget {

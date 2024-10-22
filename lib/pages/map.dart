@@ -17,6 +17,8 @@ import '../utils/util.dart';
 import '../models/itinerary.dart';
 import '../models/track.dart';
 import '../models/pois.dart';
+import '../models/gps.dart';
+
 import 'poi_details.dart';
 
 class MapPage extends StatelessWidget {
@@ -81,6 +83,7 @@ class _MapWidgetState extends State<MapWidget> {
       backgroundColor: blueUdG, foregroundColor: Colors.white);
 
   final player = AudioPlayer();
+  final gps = new Gps();
 
   void initState() {
     super.initState(); //comes first for initState();
@@ -222,13 +225,16 @@ class _MapWidgetState extends State<MapWidget> {
       ),
     );
 
-    bool gpEnabled = UserSimplePreferences.getGpsEnabled() ?? false;
-    bool gpsPermission = UserSimplePreferences.getHasPermission() ?? false;
+    // bool gpsEnabled = UserSimplePreferences.getGpsEnabled();
+    // bool gpsPermission = UserSimplePreferences.getHasPermission();
 
-    if (gpsPermission) {
-      location.onLocationChanged.listen((LocationData currentLocation) {
-        manageNewPosition(currentLocation);
-      });
+    bool enabled = await gps.checkService();
+    if (enabled) {
+      bool hasPermission = await gps.checkPermission();
+
+      if (hasPermission!) {
+        gps.listenOnBackground(manageNewPosition);
+      }
     }
   }
 
@@ -239,6 +245,7 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   void manageNewPosition(LocationData loc) async {
+    print('..........................${loc.accuracy}');
     location.changeNotificationOptions(
       title: 'Geolocation ',
       subtitle: 'Current accuracy ' + loc.accuracy.toString(),
