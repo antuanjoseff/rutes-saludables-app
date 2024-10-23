@@ -42,50 +42,52 @@ class _PoiDetailsState extends State<PoiDetails> {
           backgroundColor: Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              (_moreInfo != null)
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        // ElevatedButton(
-                        //   style: ElevatedButton.styleFrom(
-                        //       backgroundColor: Color(0xff6a1a32),
-                        //       foregroundColor: Colors.white,
-                        //       padding: EdgeInsets.symmetric(
-                        //           horizontal: 10, vertical: 0),
-                        //       textStyle: TextStyle(
-                        //           fontWeight: FontWeight.bold, fontSize: 15)),
-                        //   onPressed: () => launchUrl(Uri.parse(_moreInfo!)),
-                        //   child: const Text('+ INFORMACIÓ'),
-                        // ),
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(top: 0, right: 0, bottom: 10),
-                          child: Text('+ '),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 0, right: 15, bottom: 10),
-                          child: GestureDetector(
-                            onTap: () {
-                              launchUrl(Uri.parse(_moreInfo!));
-                            },
-                            child: const Text('Informació',
-                                style: TextStyle(
-                                    color: Color(0xff6a1a32),
-                                    fontSize: 20,
-                                    decoration: TextDecoration.underline)),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                (_moreInfo != null)
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          // ElevatedButton(
+                          //   style: ElevatedButton.styleFrom(
+                          //       backgroundColor: Color(0xff6a1a32),
+                          //       foregroundColor: Colors.white,
+                          //       padding: EdgeInsets.symmetric(
+                          //           horizontal: 10, vertical: 0),
+                          //       textStyle: TextStyle(
+                          //           fontWeight: FontWeight.bold, fontSize: 15)),
+                          //   onPressed: () => launchUrl(Uri.parse(_moreInfo!)),
+                          //   child: const Text('+ INFORMACIÓ'),
+                          // ),
+                          const Padding(
+                            padding:
+                                EdgeInsets.only(top: 0, right: 0, bottom: 10),
+                            child: Text('+ '),
                           ),
-                        ),
-                      ],
-                    )
-                  : Container(),
-              HtmlWidget(_content),
-            ],
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 0, right: 15, bottom: 10),
+                            child: GestureDetector(
+                              onTap: () {
+                                launchUrl(Uri.parse(_moreInfo!));
+                              },
+                              child: const Text('Informació',
+                                  style: TextStyle(
+                                      color: Color(0xff6a1a32),
+                                      fontSize: 20,
+                                      decoration: TextDecoration.underline)),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
+                HtmlWidget(_content),
+              ],
+            ),
           ),
         ));
   }

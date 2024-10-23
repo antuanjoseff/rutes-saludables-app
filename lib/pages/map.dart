@@ -245,7 +245,7 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> playSound(String sound) async {
-    await player.setVolume(0.5);
+    await player.setVolume(0.8);
     // await player.setReleaseMode(ReleaseMode.loop);
     player.play(AssetSource(sound));
   }
