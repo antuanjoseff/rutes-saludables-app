@@ -14,8 +14,9 @@ class TrackStats extends StatefulWidget {
 class _TrackStatsState extends State<TrackStats> {
   late Track _track;
   Timer? _timer;
-  String trackLength = '';
-  String trackTime = '';
+  late String trackLength;
+  late String trackTime;
+  late String trackAltitude;
 
   String _formatDuration(Duration duration) {
     String negativeSign = duration.isNegative ? '-' : '';
@@ -48,6 +49,7 @@ class _TrackStatsState extends State<TrackStats> {
 
     trackLength = UserSimplePreferences.getTrackLength();
     trackTime = UserSimplePreferences.getTrackTime();
+    trackAltitude = UserSimplePreferences.getTrackAltitude();
 
     // defines a timer
     _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
@@ -55,6 +57,9 @@ class _TrackStatsState extends State<TrackStats> {
         trackLength = formatDistance(_track.getLength());
         trackTime =
             _formatDuration(DateTime.now().difference(_track.getStartTime()));
+        trackAltitude = _track.getElevation() != null
+            ? _track.getElevation().toString() + 'm'
+            : '--';
       });
     });
   }
@@ -66,13 +71,14 @@ class _TrackStatsState extends State<TrackStats> {
     super.dispose();
     await UserSimplePreferences.setTrackLength(trackLength);
     await UserSimplePreferences.setTrackTime(trackTime);
+    await UserSimplePreferences.setTrackAltitude(trackAltitude);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Informaició de l'itinerari"),
+          title: const Text("Informació de l'itinerari"),
           backgroundColor: Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
@@ -82,15 +88,22 @@ class _TrackStatsState extends State<TrackStats> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Distància'),
+                const Text('Distància', style: TextStyle(fontSize: 25)),
                 Text(
                   trackLength,
-                  style: const TextStyle(fontSize: 40),
+                  style: const TextStyle(fontSize: 45),
                 ),
-                const Text('Temps en moviment'),
+                SizedBox(height: 15),
+                const Text('Altitud', style: TextStyle(fontSize: 25)),
+                Text(
+                  trackAltitude,
+                  style: const TextStyle(fontSize: 45),
+                ),
+                SizedBox(height: 15),
+                const Text('Temps en moviment', style: TextStyle(fontSize: 25)),
                 Text(
                   trackTime,
-                  style: const TextStyle(fontSize: 40),
+                  style: const TextStyle(fontSize: 45),
                 )
               ],
             ),

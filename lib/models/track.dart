@@ -12,10 +12,13 @@ class Track {
   List<LatLng> gpxCoords = [];
 
   // Start recording time
-  late DateTime startAt;
+  DateTime startAt = DateTime.now();
 
   // Track length
-  late double length;
+  double length = 0;
+
+  // Current altitud
+  int? altitude = null;
 
   // Constructor
   Track(this.trackSegment);
@@ -25,8 +28,6 @@ class Track {
 
   Future<void> init() async {
     LatLng cur;
-    startAt = DateTime.now();
-    length = 0;
 
     // Init track bounds with first track point
     bounds = my.Bounds(LatLng(trackSegment.first.lat!, trackSegment.first.lon!),
@@ -56,6 +57,10 @@ class Track {
     return length;
   }
 
+  int? getElevation() {
+    return altitude;
+  }
+
   DateTime getStartTime() {
     return startAt;
   }
@@ -76,6 +81,7 @@ class Track {
     gpxCoords.add(P);
     trackSegment.add(wpt);
     length += inc;
+    altitude = wpt.ele!.floor();
   }
 
   void insert(int position, Wpt wpt) {

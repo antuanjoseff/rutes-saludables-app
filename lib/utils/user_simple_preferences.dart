@@ -8,6 +8,7 @@ class UserSimplePreferences {
   static const _hasPermission = 'hasPermission';
   static const _trackLength = 'trackLength';
   static const _trackTime = 'trackTime';
+  static const _trackAltitude = 'trackAltitude';
 
   static Future init() async =>
       _preferences = await SharedPreferences.getInstance();
@@ -33,6 +34,11 @@ class UserSimplePreferences {
     return trackTime == null ? '' : trackTime;
   }
 
+  static String getTrackAltitude() {
+    final trackAltitude = _preferences.getString(_trackAltitude);
+    return trackAltitude == null ? '' : trackAltitude;
+  }
+
   // SETTERS
   static Future setGpsEnabled(bool enabled) async =>
       await _preferences.setBool(_gpsEnabled, enabled);
@@ -45,4 +51,7 @@ class UserSimplePreferences {
 
   static Future setTrackTime(String duration) async =>
       await _preferences.setString(_trackTime, duration);
+
+  static Future setTrackAltitude(String altitude) async =>
+      await _preferences.setString(_trackAltitude, altitude);
 }

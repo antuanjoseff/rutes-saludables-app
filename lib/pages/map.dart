@@ -91,6 +91,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   void initState() {
     super.initState(); //comes first for initState();
+    print('                    RESET USERTRACK');
     userTrack = Track([]);
     _campus = widget.itinerary.campus;
     _title = widget.itinerary.title;
@@ -246,10 +247,13 @@ class _MapWidgetState extends State<MapWidget> {
   Future<void> playSound(String sound) async {
     await player.setVolume(0.5);
     // await player.setReleaseMode(ReleaseMode.loop);
-    // player.play(AssetSource(sound));
+    player.play(AssetSource(sound));
   }
 
   void manageNewPosition(LocationData loc) async {
+    print(loc);
+    print(loc.altitude);
+
     location.changeNotificationOptions(
       title: 'Geolocation ',
       subtitle: 'Current accuracy ' + loc.accuracy.toString(),
@@ -368,16 +372,24 @@ class _MapWidgetState extends State<MapWidget> {
               'https://geoserveis.icgc.cat/contextmaps/icgc_orto_hibrida.json',
         ),
         Positioned(
-            right: 20,
+            left: 10,
             top: 20,
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size.zero, // Set this
+                padding: EdgeInsets.zero, // and this
+              ),
               onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => TrackStats(track: userTrack!)));
               },
-              child: Icon(Icons.info),
+              child: const Icon(
+                Icons.info,
+                size: 40,
+                color: redUdG,
+              ),
             ))
       ],
     );
