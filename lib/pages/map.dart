@@ -20,6 +20,7 @@ import '../models/pois.dart';
 import '../models/gps.dart';
 
 import 'poi_details.dart';
+import 'track_stats.dart';
 
 class MapPage extends StatelessWidget {
   final Itinerary itinerary;
@@ -62,8 +63,9 @@ class _MapWidgetState extends State<MapWidget> {
   late String _campus;
   late Line trackLine;
   bool onTrack = false;
-  int tolerance = 15; //meters
-  int onTrackDistance = 20; //meters
+  int minAccuracy = 15; //meters
+  int exerciseDistance = 15; //meters
+  int onTrackDistance = 10; //meters
   int offTrackDistance = 50; //meters
 
   int pointsOffTrack = 0;
@@ -72,6 +74,8 @@ class _MapWidgetState extends State<MapWidget> {
   List<String> alreadyReached = [];
 
   Track? track;
+  late Track userTrack;
+
   double trackWidth = 6;
   Color trackColor = Colors.orange; // Selects a mid-range green.
 
@@ -87,6 +91,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   void initState() {
     super.initState(); //comes first for initState();
+    userTrack = Track([]);
     _campus = widget.itinerary.campus;
     _title = widget.itinerary.title;
     _path = widget.itinerary.path;
@@ -239,21 +244,22 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> playSound(String sound) async {
-    await player.setVolume(1);
+    await player.setVolume(0.5);
     // await player.setReleaseMode(ReleaseMode.loop);
-    player.play(AssetSource(sound));
+    // player.play(AssetSource(sound));
   }
 
   void manageNewPosition(LocationData loc) async {
-    print('..........................${loc.accuracy}');
     location.changeNotificationOptions(
       title: 'Geolocation ',
       subtitle: 'Current accuracy ' + loc.accuracy.toString(),
     );
+    userTrack.push(createWptFromLocation(loc));
+
     // Check if location is in track
     double distanceToTrack =
         track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
-    if (!onTrack && (loc.accuracy! < tolerance)) {
+    if (!onTrack && (loc.accuracy! < minAccuracy)) {
       if (distanceToTrack < onTrackDistance) {
         onTrack = true;
         pointsOffTrack = 0;
@@ -264,7 +270,7 @@ class _MapWidgetState extends State<MapWidget> {
       }
     } else {
       if (onTrack &&
-          (distanceToTrack > offTrackDistance && loc.accuracy! < tolerance)) {
+          (distanceToTrack > offTrackDistance && loc.accuracy! < minAccuracy)) {
         // Location is moving away
         onTrack = false;
         pointsOffTrack += 1;
@@ -283,7 +289,7 @@ class _MapWidgetState extends State<MapWidget> {
       var coords = p.geometry.coordinates;
       double distance = getDistanceFromLatLonInMeters(
           LatLng(coords[1], coords[0]), LatLng(loc.latitude!, loc.longitude!));
-      if (distance < tolerance) {
+      if (distance < exerciseDistance) {
         inRange = true;
         String url = getVideoUrl(p.properties.id, _points);
         if (!alreadyReached.contains(url)) {
@@ -303,61 +309,77 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return MapLibreMap(
-      trackCameraPosition: true,
-      onMapCreated: _onMapCreated,
-      myLocationEnabled: true,
-      myLocationTrackingMode: _myLocationTrackingMode,
-      myLocationRenderMode: _myLocationRenderMode,
-      onStyleLoadedCallback: () async {
-        addImageFromAsset("exercisePoint", "assets/marker_salut.png");
-        addImageFromAsset("poi", "assets/marker_poi.png");
+    return Stack(
+      children: [
+        MapLibreMap(
+          trackCameraPosition: true,
+          onMapCreated: _onMapCreated,
+          myLocationEnabled: true,
+          myLocationTrackingMode: _myLocationTrackingMode,
+          myLocationRenderMode: _myLocationRenderMode,
+          onStyleLoadedCallback: () async {
+            addImageFromAsset("exercisePoint", "assets/marker_salut.png");
+            addImageFromAsset("poi", "assets/marker_poi.png");
 
-        trackLine = await mapController!.addLine(LineOptions(
-          geometry: track!.getCoordsList(),
-          lineColor: trackColor.toHexStringRGB(),
-          lineWidth: trackWidth,
-          lineOpacity: 0.9,
-        ));
+            trackLine = await mapController!.addLine(LineOptions(
+              geometry: track!.getCoordsList(),
+              lineColor: trackColor.toHexStringRGB(),
+              lineWidth: trackWidth,
+              lineOpacity: 0.9,
+            ));
 
-        // ADD TRACK POINTS TO MAP. EXERCISES
-        var pts = _points.features;
-        for (var i = 0; i < pts.length; i++) {
-          final symbolOptions = <SymbolOptions>[];
+            // ADD TRACK POINTS TO MAP. EXERCISES
+            var pts = _points.features;
+            for (var i = 0; i < pts.length; i++) {
+              final symbolOptions = <SymbolOptions>[];
 
-          symbolOptions.add(SymbolOptions(
-              iconImage: "exercisePoint",
-              iconAnchor: 'bottom',
-              geometry: LatLng(pts[i].geometry.coordinates[1],
-                  pts[i].geometry.coordinates[0])));
+              symbolOptions.add(SymbolOptions(
+                  iconImage: "exercisePoint",
+                  iconAnchor: 'bottom',
+                  geometry: LatLng(pts[i].geometry.coordinates[1],
+                      pts[i].geometry.coordinates[0])));
 
-          var sym = await mapController!.addSymbols(symbolOptions);
+              var sym = await mapController!.addSymbols(symbolOptions);
 
-          pts[i].properties.id = sym[0].id;
-        }
+              pts[i].properties.id = sym[0].id;
+            }
 
-        // ADD POINTS OF INTEREST TO MAP
-        for (var i = 0; i < _pois.length; i++) {
-          final symbolOptions = <SymbolOptions>[];
+            // ADD POINTS OF INTEREST TO MAP
+            for (var i = 0; i < _pois.length; i++) {
+              final symbolOptions = <SymbolOptions>[];
 
-          symbolOptions.add(SymbolOptions(
-              iconImage: "poi",
-              iconAnchor: 'bottom',
-              geometry: LatLng(_pois[i].geometry.coordinates[1],
-                  _pois[i].geometry.coordinates[0])));
+              symbolOptions.add(SymbolOptions(
+                  iconImage: "poi",
+                  iconAnchor: 'bottom',
+                  geometry: LatLng(_pois[i].geometry.coordinates[1],
+                      _pois[i].geometry.coordinates[0])));
 
-          var sym = await mapController!.addSymbols(symbolOptions);
+              var sym = await mapController!.addSymbols(symbolOptions);
 
-          _pois[i].properties.id = sym[0].id;
-        }
-      },
-      initialCameraPosition: const CameraPosition(
-        target: LatLng(42.0, 3.0),
-        zoom: 13.0,
-      ),
-      styleString:
-          // 'https://geoserveis.icgc.cat/contextmaps/icgc_mapa_base_gris_simplificat.json',
-          'https://geoserveis.icgc.cat/contextmaps/icgc_orto_hibrida.json',
+              _pois[i].properties.id = sym[0].id;
+            }
+          },
+          initialCameraPosition: const CameraPosition(
+            target: LatLng(42.0, 3.0),
+            zoom: 13.0,
+          ),
+          styleString:
+              // 'https://geoserveis.icgc.cat/contextmaps/icgc_mapa_base_gris_simplificat.json',
+              'https://geoserveis.icgc.cat/contextmaps/icgc_orto_hibrida.json',
+        ),
+        Positioned(
+            right: 20,
+            top: 20,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TrackStats(track: userTrack!)));
+              },
+              child: Icon(Icons.info),
+            ))
+      ],
     );
   }
 }
@@ -381,4 +403,14 @@ Properties? getPoiInfo(String id, List<Feature> pois) {
     }
   }
   return null;
+}
+
+Wpt createWptFromLocation(LocationData location) {
+  Wpt wpt = new Wpt();
+  wpt.lat = location.latitude;
+  wpt.lon = location.longitude;
+  wpt.ele = location.altitude;
+  wpt.time = DateTime.now();
+
+  return wpt;
 }

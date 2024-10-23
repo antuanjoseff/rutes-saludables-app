@@ -41,9 +41,6 @@ Wpt halfSegmentWpt(Wpt first, Wpt last) {
   half.lat = (first.lat! + last.lat!) / 2;
   half.lon = (first.lon! + last.lon!) / 2;
   half.time = avgTime(first.time, last.time);
-  print('FIRST TIME ................ ${first.time}');
-  print('LAST TIME ................ ${last.time}');
-  print('AVG TIME ................ ${half.time}');
 
   return half;
 }
@@ -73,6 +70,7 @@ Wpt cloneWpt(Wpt wpt) {
       extensions: wpt.extensions);
 }
 
+// Min distance between a segment (two points line) and a thirth point
 double minDistance(LatLng A, LatLng B, LatLng P) {
   // vector AB
   List<double> AB = [];
@@ -129,6 +127,7 @@ double minDistance(LatLng A, LatLng B, LatLng P) {
   return reqAns;
 }
 
+// ¿?
 LatLng projectionPoint(LatLng X, LatLng Y, LatLng P) {
   double slope = (Y.latitude - X.latitude) / (Y.longitude - X.longitude);
   double perpendicular = -1 / slope;
@@ -146,6 +145,7 @@ double deg2rad(double deg) {
   return deg / 180.0 * pi;
 }
 
+// Return ditance in meters between two latlng coordinates
 double getDistanceFromLatLonInMeters(LatLng origin, LatLng target) {
   double lat1 = origin.latitude;
   double lat2 = target.latitude;

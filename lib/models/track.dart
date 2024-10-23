@@ -11,6 +11,12 @@ class Track {
   // Array of coordinates to draw a linestring on map
   List<LatLng> gpxCoords = [];
 
+  // Start recording time
+  late DateTime startAt;
+
+  // Track length
+  late double length;
+
   // Constructor
   Track(this.trackSegment);
 
@@ -19,6 +25,8 @@ class Track {
 
   Future<void> init() async {
     LatLng cur;
+    startAt = DateTime.now();
+    length = 0;
 
     // Init track bounds with first track point
     bounds = my.Bounds(LatLng(trackSegment.first.lat!, trackSegment.first.lon!),
@@ -44,18 +52,39 @@ class Track {
     return bounds!;
   }
 
+  double getLength() {
+    return length;
+  }
+
+  DateTime getStartTime() {
+    return startAt;
+  }
+
   void reset() {
     gpxCoords = [];
     trackSegment = [];
   }
 
-  void addNode(int position, Wpt wpt) {
+  void push(Wpt wpt) {
+    double inc = 0;
+    LatLng P = LatLng(wpt.lat!, wpt.lon!);
+    if (gpxCoords.isNotEmpty) {
+      LatLng prev = gpxCoords[gpxCoords.length - 1];
+      inc = getDistanceFromLatLonInMeters(P, prev);
+    }
+
+    gpxCoords.add(P);
+    trackSegment.add(wpt);
+    length += inc;
+  }
+
+  void insert(int position, Wpt wpt) {
     LatLng P = LatLng(wpt.lat!, wpt.lon!);
     gpxCoords.insert(position + 1, P);
     trackSegment.insert(position + 1, wpt);
   }
 
-  void removeNode(int index) {
+  void remove(int index) {
     trackSegment.removeAt(index);
     gpxCoords.removeAt(index);
   }

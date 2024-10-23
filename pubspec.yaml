@@ -28,14 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  flutter:
-    sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.6
-
-dev_dependencies:
+  flutter_native_splash: ^2.4.2
   url_launcher: ^6.3.1
   flutter_widget_from_html: ^0.15.2
   shared_preferences: ^2.3.2
@@ -47,6 +40,14 @@ dev_dependencies:
   geolocator: ^13.0.1
   location: ^5.0.3
   maplibre_gl: ^0.20.0
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
   flutter_test:
     sdk: flutter
 
@@ -70,6 +71,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/images/splashscreen.png
     - assets/marker_salut.png
     - assets/marker_poi.png
     - assets/sounds/
@@ -101,3 +103,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_native_splash:
+  color: "ffffff"
+  image: "assets/images/splashscreen.png"

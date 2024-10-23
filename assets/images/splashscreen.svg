@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="300"
+   height="400"
+   viewBox="0 0 18 24"
+   version="1.1"
+   id="svg2"
+   sodipodi:docname="splashscreen.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="0.79019183"
+     inkscape:cx="254.58613"
+     inkscape:cy="400"
+     inkscape:window-width="1680"
+     inkscape:window-height="987"
+     inkscape:window-x="-8"
+     inkscape:window-y="18"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <title
+     id="title1">location-point-of-interest</title>
+  <g
+     transform="matrix(0.01140495,0,0,-0.01931848,-1.3414104,27.060246)"
+     id="g2"
+     style="fill:#3242a0;fill-opacity:1;stroke:none">
+    <path
+       d="M 577,1310 C 392,1263 276,1079 310,882 324,800 372,692 435,605 510,501 750,276 831,235 c 28,-15 33,-15 55,0 29,19 45,54 37,84 -3,11 -46,51 -96,88 -170,126 -309,286 -360,416 -30,78 -29,179 4,243 34,66 92,106 163,112 73,6 118,-11 182,-69 30,-27 59,-49 65,-49 19,0 52,22 78,53 76,90 238,88 315,-4 46,-54 59,-95 54,-169 -5,-63 -31,-138 -66,-190 l -17,-25 -5,59 c -4,49 -9,62 -31,79 -22,15 -33,17 -55,10 -49,-16 -55,-41 -52,-220 3,-140 5,-165 21,-180 15,-16 41,-18 187,-21 l 170,-3 25,25 c 30,31 32,55 4,90 -19,24 -26,26 -101,26 h -80 l 18,28 c 95,143 119,212 119,337 0,80 -4,98 -32,157 -38,81 -97,141 -172,177 -102,48 -280,31 -351,-34 -15,-13 -24,-11 -86,20 -76,39 -174,53 -247,35 z"
+       id="path1-3"
+       style="fill:#3242a0;fill-opacity:1"
+       inkscape:connector-curvature="0" />
+  </g>
+  <metadata
+     id="metadata2">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>location-point-of-interest</dc:title>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

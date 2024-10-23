@@ -26,7 +26,7 @@ class _NextPageAnimationState extends State<NextPageAnimation>
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // _controller.reverse();
+        _controller.reverse();
       } else if (status == AnimationStatus.dismissed) {
         _controller.forward();
       }
