@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:rutes_saludables/pages/legend.dart';
 import '../widgets/NextPageAnimation.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({super.key});
@@ -23,7 +24,7 @@ class _MyHomePageState extends State<HomePage> {
           backgroundColor: Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
           // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text('UdG Salut')),
+          title: Text(AppLocalizations.of(context)!.udgHealth)),
       body: DecoratedBox(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -46,17 +47,17 @@ class _MyHomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(20),
               ),
               padding: EdgeInsets.all(20),
-              child: const Column(
+              child: Column(
                 children: [
-                  const Text(
-                    'Itineraris saludables',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.healthyTracks,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 30,
                     ),
                   ),
-                  Padding(padding: EdgeInsets.all(15)),
-                  NextPageAnimation(
+                  const Padding(padding: EdgeInsets.all(15)),
+                  const NextPageAnimation(
                     nextPage: LegendPage(),
                   )
                 ],

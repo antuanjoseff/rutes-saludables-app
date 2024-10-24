@@ -5,6 +5,7 @@ import 'expandable.dart';
 import '../widgets/NextPageAnimation.dart';
 import '../widgets/map_legend.dart';
 import '../models/data.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LegendPage extends StatefulWidget {
   const LegendPage({super.key});
@@ -20,7 +21,7 @@ class _LegendPageState extends State<LegendPage> {
         appBar: AppBar(
           backgroundColor: Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
-          title: const Text('Llegenda del mapa'),
+          title: Text(AppLocalizations.of(context)!.mapLegendTitle),
         ),
         body: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -29,23 +30,20 @@ class _LegendPageState extends State<LegendPage> {
             children: [
               Expanded(
                 child: Container(
-                    child: const SingleChildScrollView(
+                    child: SingleChildScrollView(
                   child: DefaultTextStyle(
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: blueUdG,
                       fontSize: 15,
                     ),
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Benvingut/benvinguda als Itineraris Saludables de la UdG! Hem dissenyat unes rutes a cada un dels campus, especialment per a la comunitat universitària. Hi ha dos tipus d'itineraris, depenent del temps que vulguis invertir per desconnectar de la jornada laboral i acadèmica.",
-                        ),
+                        Text(AppLocalizations.of(context)!.wellcomePart1),
                         const Padding(padding: EdgeInsets.all(10)),
-                        const Text(
-                            "Pots triar un recorregut curt (d'uns 20 minuts), per aprofitar els moments de descans, o un recorregut més llarg (d'uns 45 minuts). Dins dels itineraris, et recomanem uns exercicis físics (icones roses) amb tres nivells d'intensitat i una sèrie de punts d'interès (icones verdes) per conèixer a fons els serveis del teu campus"),
+                        Text(AppLocalizations.of(context)!.wellcomePart2),
                         const Padding(padding: EdgeInsets.all(10)),
-                        const Text("Al mapa trobaràs aquestes icones: "),
+                        Text(AppLocalizations.of(context)!.mapIconsText),
                         MapLegend()
                       ],
                     ),

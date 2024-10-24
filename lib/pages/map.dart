@@ -21,6 +21,7 @@ import '../models/gps.dart';
 
 import 'poi_details.dart';
 import 'track_stats.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MapPage extends StatelessWidget {
   final Itinerary itinerary;
@@ -111,12 +112,12 @@ class _MapWidgetState extends State<MapWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text('Hello world!'),
+            title: Text(AppLocalizations.of(context)!.alert),
             content: Text(msg),
             actions: [
               FloatingActionButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text('OK'),
+                child: Text(AppLocalizations.of(context)!.ok),
               ),
             ]);
       },
@@ -126,10 +127,10 @@ class _MapWidgetState extends State<MapWidget> {
   Widget launchButton(contect, videoUrl) {
     return ElevatedButton(
       style: udgStyle,
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("OK"),
+          Text(AppLocalizations.of(context)!.ok),
         ],
       ),
       onPressed: () {
@@ -146,7 +147,7 @@ class _MapWidgetState extends State<MapWidget> {
   Widget cancelButton(contect) {
     return ElevatedButton(
       style: udgStyle,
-      child: Text("CANCEL"),
+      child: Text(AppLocalizations.of(context)!.cancel),
       onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
       },
@@ -158,11 +159,11 @@ class _MapWidgetState extends State<MapWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: const Row(
+            title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('UdG Salut',
-                    style: TextStyle(
+                Text(AppLocalizations.of(context)!.udgHealth,
+                    style: const TextStyle(
                       color: blueUdG,
                     )),
                 // SizedBox(width: 10),
@@ -172,7 +173,7 @@ class _MapWidgetState extends State<MapWidget> {
                 // ),
               ],
             ),
-            content: const Text("Vols veure el video de l'exercici recomanat?",
+            content: Text(AppLocalizations.of(context)!.wantToSeeVideo,
                 style: TextStyle(color: blueUdG, fontSize: 18)),
             actions: [
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -391,7 +392,7 @@ class _MapWidgetState extends State<MapWidget> {
                       MaterialPageRoute(
                           builder: (context) => TrackStats(track: userTrack!)));
                 },
-                child: const Text('Dades',
+                child: Text(AppLocalizations.of(context)!.trackData,
                     style: TextStyle(color: Colors.white, fontSize: 18))
                 // child: const Icon(
                 //   Icons.info,

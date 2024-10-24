@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/bluedUdG.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MapLegend extends StatelessWidget {
   const MapLegend({super.key});
@@ -24,7 +25,8 @@ class MapLegend extends StatelessWidget {
             const SizedBox(
               width: 10,
             ),
-            Text('Exercici recomanat de l\itinerari', style: defaultStyle)
+            Text(AppLocalizations.of(context)!.recommendedExercises,
+                style: defaultStyle)
           ],
         ),
         const Padding(padding: EdgeInsets.all(1)),
@@ -36,7 +38,7 @@ class MapLegend extends StatelessWidget {
               width: 25,
             ),
             const SizedBox(width: 10),
-            Text("Punt d'interès proper", style: defaultStyle)
+            Text(AppLocalizations.of(context)!.nearbyPois, style: defaultStyle)
           ],
         ),
         const Padding(padding: EdgeInsets.all(1)),
@@ -51,7 +53,8 @@ class MapLegend extends StatelessWidget {
             const SizedBox(
               width: 10,
             ),
-            Text('La teva posició', style: defaultStyle)
+            Text(AppLocalizations.of(context)!.yourLocation,
+                style: defaultStyle)
           ],
         ),
       ],

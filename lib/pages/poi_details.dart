@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PoiDetails extends StatefulWidget {
   final String title;
@@ -75,8 +76,9 @@ class _PoiDetailsState extends State<PoiDetails> {
                               onTap: () {
                                 launchUrl(Uri.parse(_moreInfo!));
                               },
-                              child: const Text('Informació',
-                                  style: TextStyle(
+                              child: Text(
+                                  AppLocalizations.of(context)!.information,
+                                  style: const TextStyle(
                                       color: Color(0xff6a1a32),
                                       fontSize: 20,
                                       decoration: TextDecoration.underline)),

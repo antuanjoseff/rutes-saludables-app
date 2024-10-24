@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/track.dart';
 import 'dart:async';
 import '../utils/user_simple_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrackStats extends StatefulWidget {
   final Track track;
@@ -78,7 +79,7 @@ class _TrackStatsState extends State<TrackStats> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Informació de l'itinerari"),
+          title: Text(AppLocalizations.of(context)!.trackUserInfo),
           backgroundColor: Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
@@ -88,19 +89,22 @@ class _TrackStatsState extends State<TrackStats> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Distància', style: TextStyle(fontSize: 25)),
+                Text(AppLocalizations.of(context)!.distance,
+                    style: TextStyle(fontSize: 25)),
                 Text(
                   trackLength,
                   style: const TextStyle(fontSize: 45),
                 ),
                 SizedBox(height: 15),
-                const Text('Altitud', style: TextStyle(fontSize: 25)),
+                Text(AppLocalizations.of(context)!.altitude,
+                    style: TextStyle(fontSize: 25)),
                 Text(
                   trackAltitude,
                   style: const TextStyle(fontSize: 45),
                 ),
-                SizedBox(height: 15),
-                const Text('Temps en moviment', style: TextStyle(fontSize: 25)),
+                const SizedBox(height: 15),
+                Text(AppLocalizations.of(context)!.movingTime,
+                    style: TextStyle(fontSize: 25)),
                 Text(
                   trackTime,
                   style: const TextStyle(fontSize: 45),

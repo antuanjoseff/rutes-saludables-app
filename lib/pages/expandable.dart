@@ -7,19 +7,16 @@ import 'package:accordion/accordion.dart';
 import 'package:accordion/controllers.dart';
 
 import 'package:get/get.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AccordionPage extends StatefulWidget //__
 {
   static const headerStyle = TextStyle(
       color: Color(0xff000000), fontSize: 18, fontWeight: FontWeight.bold);
-  static const contentStyleHeader = TextStyle(
-      color: Color(0xff999999), fontSize: 14, fontWeight: FontWeight.w700);
-  static const contentStyle = TextStyle(
-      color: Color(0xff999999), fontSize: 14, fontWeight: FontWeight.normal);
-  static const loremIpsum =
-      '''Lorem ipsum is typically a corrupted version of 'De finibus bonorum et malorum', a 1st century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin.''';
-  static const slogan =
-      'Do not forget to play around with all sorts of colors, backgrounds, borders, etc.';
+  // static const contentStyleHeader = TextStyle(
+  //     color: Color(0xff999999), fontSize: 14, fontWeight: FontWeight.w700);
+  // static const contentStyle = TextStyle(
+  //     color: Color(0xff999999), fontSize: 14, fontWeight: FontWeight.normal);
 
   final List itineraries;
   const AccordionPage({
@@ -43,7 +40,7 @@ class _AccordionPageState extends State<AccordionPage> {
   build(context) => Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text('Itineraris saludables'),
+          title: Text(AppLocalizations.of(context)!.healthyTracks),
           backgroundColor: Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),

@@ -1,0 +1,26 @@
+{
+    "udgHealth": "UdG Health",
+    "healthyTracks": "Healthy itineraries",
+    "mapLegendTitle": "Map legend",
+    "wellcomePart1": "Welcome to the Healthy Itineraries of the UdG! We have designed routes to each of the campuses, especially for the university community. There are two types of itineraries, depending on the time you want to invest to disconnect from the working and academic day.",
+    "wellcomePart2": "You can choose a short tour (about 20 minutes), to take advantage of the moments of rest, or a longer tour (about 45 minutes). Within the itineraries, we recommend some physical exercises (pink icons) with three levels of intensity and a series of points of interest (green icons) to get to know your campus services in depth.",
+    "mapIconsText": "On the map you will find these icons",
+    "recommendedExercises": "Recommended exercises of the itinerary",
+    "nearbyPois": "Nearby points of interest",
+    "yourLocation": "Your location",
+    "campus": "Campus",
+    "short": "Curt",
+    "long": "Llarg",
+    "trackData": "Data",
+    "distance": "Distance",
+    "altitude": "Altitude",
+    "movingTime": "Moving time",
+    "alert": "Alert!",
+    "movingAway": "You are moving away from track",
+    "wantToSeeVideo": "Do you want to see a recommended exercise?",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "information": "Information",
+    "trackUserInfo": "Data"
+}
+
