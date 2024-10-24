@@ -48,7 +48,7 @@ class _AccordionPageState extends State<AccordionPage> {
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
         body: Accordion(
-          maxOpenSections: 2,
+          maxOpenSections: 1,
           // headerBorderColor: blueUdG,
           headerBackgroundColor: Colors.blueGrey[100],
           // headerBorderColorOpened: Colors.transparent,
@@ -60,7 +60,7 @@ class _AccordionPageState extends State<AccordionPage> {
           contentHorizontalPadding: 20,
           scaleWhenAnimating: true,
           openAndCloseAnimation: true,
-          rightIcon: CircleAvatar(
+          rightIcon: const CircleAvatar(
             backgroundColor: blueUdG,
             radius: 15,
             child: Icon(

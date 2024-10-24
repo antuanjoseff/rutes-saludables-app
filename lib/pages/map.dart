@@ -242,6 +242,9 @@ class _MapWidgetState extends State<MapWidget> {
         gps.listenOnBackground(manageNewPosition);
       }
     }
+
+    await mapController!.setSymbolIconAllowOverlap(true);
+    // await controller!.setSymbolTextAllowOverlap(_iconAllowOverlap);
   }
 
   Future<void> playSound(String sound) async {
@@ -316,6 +319,7 @@ class _MapWidgetState extends State<MapWidget> {
     return Stack(
       children: [
         MapLibreMap(
+          minMaxZoomPreference: MinMaxZoomPreference(8, 19),
           trackCameraPosition: true,
           onMapCreated: _onMapCreated,
           myLocationEnabled: true,
@@ -375,22 +379,26 @@ class _MapWidgetState extends State<MapWidget> {
             left: 10,
             top: 20,
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size.zero, // Set this
-                padding: EdgeInsets.zero, // and this
-              ),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => TrackStats(track: userTrack!)));
-              },
-              child: const Icon(
-                Icons.info,
-                size: 40,
-                color: redUdG,
-              ),
-            ))
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size.zero,
+                  backgroundColor: redUdG,
+                  padding: const EdgeInsets.only(
+                      bottom: 6, top: 6, left: 15, right: 15), // and this
+                ),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TrackStats(track: userTrack!)));
+                },
+                child: const Text('Dades',
+                    style: TextStyle(color: Colors.white, fontSize: 18))
+                // child: const Icon(
+                //   Icons.info,
+                //   size: 40,
+                //   color: redUdG,
+                // ),
+                ))
       ],
     );
   }

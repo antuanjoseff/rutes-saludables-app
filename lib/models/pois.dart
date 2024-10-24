@@ -16,10 +16,10 @@ var pointsOfInterest = [
       type: 'Feature',
       geometry: Geometry(type: 'Point', coordinates: [2.828182, 41.985358]),
       properties: Properties(
-          id: '',
+          id: '1',
           title: 'Préstec e-bicis',
           description:
-              '<p>Servei gratuït de préstec de bicicletes elèctriques pel PAS i PDI gestionat per la Biblioteca. <img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/947bf65e-bd87-41df-856c-e02502e63227.png" style="width: 100%; float: none;"',
+              '<p>Servei 1 gratuït de préstec de bicicletes elèctriques pel PAS i PDI gestionat per la Biblioteca. <img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/947bf65e-bd87-41df-856c-e02502e63227.png" style="width: 100%; float: none;"/>',
           //     icon: 'account_balance',
           url:
               'https://www.udg.edu/ca/compromis-social/Arees/Sostenibilitat/Mou-te-pel-campus')),
@@ -85,7 +85,7 @@ var pointsOfInterest = [
           id: '',
           title: 'Préstec e-bicis',
           description:
-              '<p>Servei gratuït de préstec de bicicletes elèctriques pel PAS i PDI gestionat per la Biblioteca. Flota: 3 ebicis&amp;nbsp;</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/1d99d13f-aa40-4a24-945f-67c242b44a89.png" style="width: 100%; float: none;"/>;',
+              '<p>Servei gratuït de préstec de bicicletes elèctriques pel PAS i PDI gestionat per la Biblioteca. Flota: 3 ebicis</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/1d99d13f-aa40-4a24-945f-67c242b44a89.png" style="width: 100%; float: none;"/>;',
           // icon: 'account_balance',
           url:
               'https://www.udg.edu/ca/compromis-social/Arees/Sostenibilitat/Mou-te-pel-campus')),
@@ -117,7 +117,7 @@ var pointsOfInterest = [
           id: '',
           title: 'Zona de pícnic CIAE',
           description:
-              '<p>Antic aparcament reconvertit en espai de relació: zona de pícnic amb manteniment sota criteris de jardineria ecològica. Mobiliari construït amb plàstic reciclat procedent de la recollida selectiva municipal.</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/38e86dae-48aa-4c80-99c8-2d841a267318.png" style="width: 100%; float: none;"/><Iframe src="//www.youtube.com/embed/c6gwvtORm9c" class="note-video-clip" width="640" height="360" frameborder="0"/>',
+              '<p>Antic aparcament reconvertit en espai de relació: zona de pícnic amb manteniment sota criteris de jardineria ecològica. Mobiliari construït amb plàstic reciclat procedent de la recollida selectiva municipal.</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/38e86dae-48aa-4c80-99c8-2d841a267318.png" style="width: 100%; float: none;"/><p></p><iframe src="//www.youtube.com/embed/c6gwvtORm9c" class="note-video-clip" width="640" height="360" frameborder="0"/>',
           // icon: 'account_balance',
           url:
               'https://www.udg.edu/ca/compromis-social/arees/sostenibilitat/en-que-treballem/espais/tractament-despais')),
@@ -128,7 +128,7 @@ var pointsOfInterest = [
         id: '',
         title: 'Zona de pícnic Biblio',
         description:
-            '<p>Zona de pícnic amb manteniment sota criteris de jardineria ecològica. Mobiliari construït amb plàstic reciclat procedent de la recollida selectiva municipal.</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/4d973fc5-c077-4228-8ec2-186656347a43.png" style="width: 100%; float: none;"/><Iframe src="//www.youtube.com/embed/6D6cwNKK6vU" class="note-video-clip" width="640" height="360" frameborder="0" />',
+            '<p>Zona de pícnic amb manteniment sota criteris de jardineria ecològica. Mobiliari construït amb plàstic reciclat procedent de la recollida selectiva municipal.</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/4d973fc5-c077-4228-8ec2-186656347a43.png" style="width: 100%; float: none;"/><p></p><Iframe src="//www.youtube.com/embed/6D6cwNKK6vU" class="note-video-clip" width="640" height="360" frameborder="0" />',
         // icon: 'account_balance',
         // url: ''
       )),
@@ -140,7 +140,7 @@ var pointsOfInterest = [
           id: '',
           title: 'Hort Ecosolidari',
           description:
-              '<p>Projecte d\'inserció social a través de l\'agricultura ecològica. Tota la producció es destina als menjadors socials de La Sopa. Usuaris/àries: voluntariat de la UdG, usuaris/àries de La Sopa i de la Fundació Ramon Noguera.</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/b62d7fe5-f122-4fb2-b509-0793236ce8e7.png" style="width: 100%; float: none;"/><iframe src="//www.youtube.com/embed/uD4DjY99FYc" class="note-video-clip" width="640" height="360" frameborder="0"/>',
+              '<p>Projecte d\'inserció social a través de l\'agricultura ecològica. Tota la producció es destina als menjadors socials de La Sopa. Usuaris/àries: voluntariat de la UdG, usuaris/àries de La Sopa i de la Fundació Ramon Noguera.</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/b62d7fe5-f122-4fb2-b509-0793236ce8e7.png" style="width: 100%; float: none;"/><p></p><iframe src="//www.youtube.com/embed/uD4DjY99FYc" class="note-video-clip" width="640" height="360" frameborder="0"/>',
           // icon: 'account_balance',
           url:
               'https://www.udg.edu/ca/compromis-social/Bloc-Hort-Ecosolidari')),
@@ -162,7 +162,7 @@ var pointsOfInterest = [
           id: '',
           title: 'Préstec e-bicis',
           description:
-              '<p>Servei gratuït de préstec de bicicletes elèctriques pel PAS i PDI gestionat per la Biblioteca.&amp;nbsp;</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/078774c2-f6a9-4d52-8626-c0cf3630556c.png" style="width: 100%; float: none;"/>;',
+              '<p>Servei gratuït de préstec de bicicletes elèctriques pel PAS i PDI gestionat per la Biblioteca.</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/078774c2-f6a9-4d52-8626-c0cf3630556c.png" style="width: 100%; float: none;"/>;',
           // icon: 'account_balance',
           url:
               'https://www.udg.edu/ca/compromis-social/Arees/Sostenibilitat/Mou-te-pel-campus')),
@@ -173,7 +173,7 @@ var pointsOfInterest = [
           id: '',
           title: 'Aparcabicis',
           description:
-              '<img src="https://free-images.com/lg/ca86/haematopus_ostralegus_bird_flight.jpg" style="width: 100%; float: none;"/>;',
+              '<p>Per una major seguretat utilitzar dos cadenats: un que abraci la roda del davant i el quadre a l\'aparcabicis, i un altre que agafi el seient amb el quadre i l’altra roda.</p><img src="https://mapscloud.udg.edu/apps/rutes-saludables/uploads/django-summernote/2020-03-09/b5217af1-51d5-4e11-a686-e71d93dafd3d.png" style="width: 100%; float: none;"/>;',
           // icon: 'account_balance',
           url:
               'https://www.udg.edu/ca/Portals/50/OpenContent/Files/18259/Bicicletes_i_seguretat2.pdf')),
@@ -195,7 +195,7 @@ var pointsOfInterest = [
         id: '',
         title: 'Parc Científic i Tecnològic',
         description:
-            '<p></span><span>&lt;i</span><span>frame frameborder="0" src="//www.youtube.com/embed/uD4DjY99FYc" width="640" height="360" class="note-video-clip"&gt;</span><span>&lt;/<span></span>i</span><span>frame/>;',
+            '<p><iframe frameborder="0" src="//www.youtube.com/embed/uD4DjY99FYc" width="640" height="360" class="note-video-clip"/>;',
         // icon: 'account_balance',
         // url: ''
       ))
