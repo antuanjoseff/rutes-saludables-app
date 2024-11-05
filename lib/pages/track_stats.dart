@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rutes_saludables/models/data.dart';
 import '../models/track.dart';
 import 'dart:async';
 import '../utils/user_simple_preferences.dart';
@@ -83,35 +84,57 @@ class _TrackStatsState extends State<TrackStats> {
           backgroundColor: Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
-        body: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(AppLocalizations.of(context)!.distance,
-                    style: TextStyle(fontSize: 25)),
-                Text(
-                  trackLength,
-                  style: const TextStyle(fontSize: 45),
+        body: Container(
+          color: ochreUdG,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DefaultTextStyle(
+                style: const TextStyle(
+                  color: blueUdG,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
-                SizedBox(height: 15),
-                Text(AppLocalizations.of(context)!.altitude,
-                    style: TextStyle(fontSize: 25)),
-                Text(
-                  trackAltitude,
-                  style: const TextStyle(fontSize: 45),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        Text(AppLocalizations.of(context)!.distance,
+                            style: const TextStyle(fontSize: 25)),
+                        Text(
+                          trackLength,
+                          style: const TextStyle(fontSize: 45),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    Column(
+                      children: [
+                        Text(AppLocalizations.of(context)!.altitude,
+                            style: TextStyle(fontSize: 25)),
+                        Text(
+                          trackAltitude,
+                          style: const TextStyle(fontSize: 45),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    Column(
+                      children: [
+                        Text(AppLocalizations.of(context)!.movingTime,
+                            style: TextStyle(fontSize: 25)),
+                        Text(
+                          trackTime,
+                          style: const TextStyle(fontSize: 45),
+                        )
+                      ],
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 15),
-                Text(AppLocalizations.of(context)!.movingTime,
-                    style: TextStyle(fontSize: 25)),
-                Text(
-                  trackTime,
-                  style: const TextStyle(fontSize: 45),
-                )
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ));
   }
 }

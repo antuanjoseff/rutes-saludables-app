@@ -71,11 +71,21 @@ class _MapWidgetState extends State<MapWidget> {
 
   int pointsOffTrack = 0;
   int pointsOnTrack = 0;
-  Location location = new Location();
+  Location location = Location();
   List<String> alreadyReached = [];
+
+  final stopwatch = Stopwatch();
+  bool _isMoving = false;
+  bool justStop = false;
+  bool justMoved = false;
+  int panTime = 0;
+  bool trackCameroMove = true;
+  bool userMovedMap = false;
 
   Track? track;
   late Track userTrack;
+  LocationData? lastLocation;
+  StreamSubscription? locationSubscription;
 
   double trackWidth = 6;
   Color trackColor = Colors.orange; // Selects a mid-range green.
@@ -88,23 +98,25 @@ class _MapWidgetState extends State<MapWidget> {
       backgroundColor: blueUdG, foregroundColor: Colors.white);
 
   final player = AudioPlayer();
-  final gps = new Gps();
+  final gps = Gps();
+
+  @override
+  void dispose() {
+    if (locationSubscription != null) {
+      locationSubscription!.cancel();
+    }
+    super.dispose();
+  }
 
   void initState() {
     super.initState(); //comes first for initState();
-    print('                    RESET USERTRACK');
+
     userTrack = Track([]);
     _campus = widget.itinerary.campus;
     _title = widget.itinerary.title;
     _path = widget.itinerary.path;
     _points = widget.itinerary.points;
     _pois = pointsOfInterest;
-
-    location.enableBackgroundMode(enable: true);
-    location.changeNotificationOptions(
-      title: 'Geolocation',
-      subtitle: 'Geolocation detection',
-    );
   }
 
   Future<void> _dialogMessageBuilder(BuildContext context, String msg) {
@@ -205,8 +217,31 @@ class _MapWidgetState extends State<MapWidget> {
     }
   }
 
+  void _onMapChanged() async {
+    final position = mapController!.cameraPosition;
+    _isMoving = mapController!.isCameraMoving;
+    if (_isMoving) {
+      if (!justMoved) {
+        justMoved = true;
+        stopwatch.start();
+      }
+    } else {
+      justMoved = false;
+      justStop = true;
+      panTime = stopwatch.elapsedMilliseconds;
+      stopwatch.stop();
+      stopwatch.reset();
+
+      if (trackCameroMove && panTime > 200) {
+        userMovedMap = true;
+        setState(() {});
+      }
+    }
+  }
+
   void _onMapCreated(MapLibreMapController controller) async {
     mapController = controller;
+    mapController!.addListener(_onMapChanged);
     mapController!.onFeatureTapped.add(onFeatureTap);
     List<Wpt> wpts = [];
     List lineCoords = _path.coordinates[0];
@@ -240,12 +275,31 @@ class _MapWidgetState extends State<MapWidget> {
       bool hasPermission = await gps.checkPermission();
 
       if (hasPermission!) {
-        gps.listenOnBackground(manageNewPosition);
+        location.enableBackgroundMode(enable: true);
+        location.changeNotificationOptions(
+          title: 'Geolocation',
+          subtitle: 'Geolocation detection',
+        );
+        location.changeSettings(
+          interval: 1000,
+          distanceFilter: 1,
+          accuracy: LocationAccuracy.high,
+        );
+        await gps.enableBackground('Geolocation', 'Geolocation detection');
+        locationSubscription = await gps.listenOnBackground(handleNewPosition);
+        setState(() {});
       }
     }
 
     await mapController!.setSymbolIconAllowOverlap(true);
     // await controller!.setSymbolTextAllowOverlap(_iconAllowOverlap);
+  }
+
+  void centerMap(LatLng location) {
+    mapController!.animateCamera(
+      CameraUpdate.newLatLng(location),
+      duration: const Duration(milliseconds: 100),
+    );
   }
 
   Future<void> playSound(String sound) async {
@@ -254,10 +308,10 @@ class _MapWidgetState extends State<MapWidget> {
     player.play(AssetSource(sound));
   }
 
-  void manageNewPosition(LocationData loc) async {
-    print(loc);
-    print(loc.altitude);
-
+  void handleNewPosition(LocationData loc) async {
+    lastLocation = loc;
+    print(
+        '*********Altitude      ${loc.altitude}           *******************');
     location.changeNotificationOptions(
       title: 'Geolocation ',
       subtitle: 'Current accuracy ' + loc.accuracy.toString(),
@@ -287,6 +341,10 @@ class _MapWidgetState extends State<MapWidget> {
         _dialogMessageBuilder(context, 'Moving away from track');
       } else {
         pointsOnTrack += 1;
+      }
+
+      if (!userMovedMap) {
+        centerMap(LatLng(loc.latitude!, loc.longitude!));
       }
     }
 
@@ -379,27 +437,46 @@ class _MapWidgetState extends State<MapWidget> {
         Positioned(
             left: 10,
             top: 20,
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size.zero,
-                  backgroundColor: redUdG,
-                  padding: const EdgeInsets.only(
-                      bottom: 6, top: 6, left: 15, right: 15), // and this
-                ),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => TrackStats(track: userTrack!)));
-                },
-                child: Text(AppLocalizations.of(context)!.trackData,
-                    style: TextStyle(color: Colors.white, fontSize: 18))
-                // child: const Icon(
-                //   Icons.info,
-                //   size: 40,
-                //   color: redUdG,
-                // ),
-                ))
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size.zero,
+                      backgroundColor: redUdG,
+                      padding: const EdgeInsets.only(
+                          bottom: 6, top: 6, left: 15, right: 15), // and this
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  TrackStats(track: userTrack!)));
+                    },
+                    child: Text(AppLocalizations.of(context)!.trackData,
+                        style: TextStyle(color: Colors.white, fontSize: 18))),
+                SizedBox(width: 10),
+                if (userMovedMap && lastLocation != null)
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.zero,
+                        backgroundColor: redUdG,
+                        padding: const EdgeInsets.only(
+                            bottom: 6, top: 6, left: 15, right: 15), // and this
+                      ),
+                      onPressed: () {
+                        userMovedMap = false;
+                        if (lastLocation != null) {
+                          centerMap(LatLng(lastLocation!.latitude!,
+                              lastLocation!.longitude!));
+                        }
+                        setState(() {});
+                      },
+                      child: Text(AppLocalizations.of(context)!.centerMap,
+                          style: TextStyle(color: Colors.white, fontSize: 18))),
+              ],
+            ))
       ],
     );
   }

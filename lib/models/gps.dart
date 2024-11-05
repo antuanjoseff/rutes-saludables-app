@@ -43,4 +43,22 @@ class Gps {
       managePosition(currentLocation);
     });
   }
+
+  enableBackground(String notificationTitle, String notificationContent) {
+    location.enableBackgroundMode(enable: true);
+
+    location.changeNotificationOptions(
+      title: notificationTitle,
+      subtitle: notificationContent,
+    );
+  }
+
+  changeSettings(
+      LocationAccuracy accuracy, int? interval, double? distanceFilter) {
+    location.changeSettings(
+      interval: interval ?? 1000,
+      distanceFilter: distanceFilter ?? 0,
+      accuracy: accuracy,
+    );
+  }
 }

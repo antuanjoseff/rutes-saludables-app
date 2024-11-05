@@ -825,3 +825,4 @@ List<Itinerary> itineraries = [
 
 const Color blueUdG = Color(0xff3242a0);
 const Color redUdG = Color(0xff6a1a32);
+const Color ochreUdG = Color(0xfff5e1a4);
