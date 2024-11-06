@@ -15,7 +15,7 @@
     "distance": "Distance",
     "distanceToTrack": "Track distance",
     "altitude": "Altitude",
-    "movingTime": "Moving time",
+    "movingTime": "Elapsed time",
     "alert": "Alert!",
     "movingAway": "You are moving away from track",
     "wantToSeeVideo": "Do you want to see a recommended exercise?",

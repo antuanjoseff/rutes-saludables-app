@@ -92,9 +92,12 @@ class _MapWidgetState extends State<MapWidget> {
 
   MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.none;
   MyLocationRenderMode _myLocationRenderMode = MyLocationRenderMode.normal;
+  bool _myLocationEnabled = false;
 
   ButtonStyle udgStyle = ElevatedButton.styleFrom(
       backgroundColor: blueUdG, foregroundColor: Colors.white);
+
+  LatLng initView = LatLng(42.0, 3.0);
 
   final player = AudioPlayer();
   final gps = Gps();
@@ -274,6 +277,14 @@ class _MapWidgetState extends State<MapWidget> {
       bool hasPermission = await gps.checkPermission();
 
       if (hasPermission!) {
+        location.getLocation().then((loc) {
+          _myLocationEnabled = true;
+          _myLocationRenderMode = MyLocationRenderMode.compass;
+          handleNewPosition(loc);
+          initView = LatLng(loc.latitude!, loc.longitude!);
+          setState(() {});
+        });
+
         location.enableBackgroundMode(enable: true);
         location.changeNotificationOptions(
           title: 'Geolocation',
@@ -286,7 +297,6 @@ class _MapWidgetState extends State<MapWidget> {
         );
         await gps.enableBackground('Geolocation', 'Geolocation detection');
         locationSubscription = await gps.listenOnBackground(handleNewPosition);
-        callSetState();
       }
     }
 
@@ -389,7 +399,7 @@ class _MapWidgetState extends State<MapWidget> {
           minMaxZoomPreference: MinMaxZoomPreference(8, 19),
           trackCameraPosition: true,
           onMapCreated: _onMapCreated,
-          myLocationEnabled: true,
+          myLocationEnabled: _myLocationEnabled,
           myLocationTrackingMode: _myLocationTrackingMode,
           myLocationRenderMode: _myLocationRenderMode,
           onStyleLoadedCallback: () async {
@@ -434,8 +444,8 @@ class _MapWidgetState extends State<MapWidget> {
               _pois[i].properties.id = sym[0].id;
             }
           },
-          initialCameraPosition: const CameraPosition(
-            target: LatLng(42.0, 3.0),
+          initialCameraPosition: CameraPosition(
+            target: initView,
             zoom: 13.0,
           ),
           styleString:
