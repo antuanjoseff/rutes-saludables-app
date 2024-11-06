@@ -13,6 +13,7 @@
     "long": "Largo",
     "trackData": "Datos",
     "distance": "Distancia",
+    "distanceToTrack": "Distància con el track",
     "altitude": "Altitud",
     "movingTime": "Tiempo en movimiento",
     "alert": "¡Aviso!",

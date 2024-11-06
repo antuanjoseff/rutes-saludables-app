@@ -19,6 +19,7 @@ class _TrackStatsState extends State<TrackStats> {
   late String trackLength;
   late String trackTime;
   late String trackAltitude;
+  late double trackDistance;
 
   String _formatDuration(Duration duration) {
     String negativeSign = duration.isNegative ? '-' : '';
@@ -52,11 +53,15 @@ class _TrackStatsState extends State<TrackStats> {
     trackLength = UserSimplePreferences.getTrackLength();
     trackTime = UserSimplePreferences.getTrackTime();
     trackAltitude = UserSimplePreferences.getTrackAltitude();
+    trackDistance = double.parse(_track.getTrackDistance().toStringAsFixed(0));
 
     // defines a timer
     _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
       setState(() {
         trackLength = formatDistance(_track.getLength());
+        trackDistance =
+            double.parse(_track.getTrackDistance().toStringAsFixed(0));
+
         trackTime =
             _formatDuration(DateTime.now().difference(_track.getStartTime()));
         trackAltitude = _track.getElevation() != null
@@ -104,6 +109,17 @@ class _TrackStatsState extends State<TrackStats> {
                             style: const TextStyle(fontSize: 25)),
                         Text(
                           trackLength,
+                          style: const TextStyle(fontSize: 45),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    Column(
+                      children: [
+                        Text(AppLocalizations.of(context)!.distanceToTrack,
+                            style: const TextStyle(fontSize: 25)),
+                        Text(
+                          '$trackDistance',
                           style: const TextStyle(fontSize: 45),
                         ),
                       ],

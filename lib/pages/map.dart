@@ -66,7 +66,7 @@ class _MapWidgetState extends State<MapWidget> {
   bool onTrack = false;
   int minAccuracy = 15; //meters
   int exerciseDistance = 15; //meters
-  int onTrackDistance = 10; //meters
+  int onTrackDistance = 7; //meters
   int offTrackDistance = 50; //meters
 
   int pointsOffTrack = 0;
@@ -90,9 +90,8 @@ class _MapWidgetState extends State<MapWidget> {
   double trackWidth = 6;
   Color trackColor = Colors.orange; // Selects a mid-range green.
 
-  MyLocationRenderMode _myLocationRenderMode = MyLocationRenderMode.compass;
-  MyLocationTrackingMode _myLocationTrackingMode =
-      MyLocationTrackingMode.trackingGps;
+  MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.none;
+  MyLocationRenderMode _myLocationRenderMode = MyLocationRenderMode.normal;
 
   ButtonStyle udgStyle = ElevatedButton.styleFrom(
       backgroundColor: blueUdG, foregroundColor: Colors.white);
@@ -287,7 +286,7 @@ class _MapWidgetState extends State<MapWidget> {
         );
         await gps.enableBackground('Geolocation', 'Geolocation detection');
         locationSubscription = await gps.listenOnBackground(handleNewPosition);
-        setState(() {});
+        callSetState();
       }
     }
 
@@ -310,17 +309,21 @@ class _MapWidgetState extends State<MapWidget> {
 
   void handleNewPosition(LocationData loc) async {
     lastLocation = loc;
-    print(
-        '*********Altitude      ${loc.altitude}           *******************');
+
     location.changeNotificationOptions(
       title: 'Geolocation ',
       subtitle: 'Current accuracy ' + loc.accuracy.toString(),
     );
-    userTrack.push(createWptFromLocation(loc));
 
-    // Check if location is in track
     double distanceToTrack =
         track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
+    debugPrint('Distance to track: ${distanceToTrack}');
+
+    userTrack.push(createWptFromLocation(loc));
+    userTrack.setTrackDistance(distanceToTrack);
+
+    // Check if location is in track
+
     if (!onTrack && (loc.accuracy! < minAccuracy)) {
       if (distanceToTrack < onTrackDistance) {
         onTrack = true;
@@ -371,6 +374,11 @@ class _MapWidgetState extends State<MapWidget> {
     final bytes = await rootBundle.load(assetName);
     final list = bytes.buffer.asUint8List();
     return mapController!.addImage(name, list);
+  }
+
+  void callSetState() {
+    _myLocationRenderMode = MyLocationRenderMode.compass;
+    setState(() {});
   }
 
   @override
@@ -452,7 +460,7 @@ class _MapWidgetState extends State<MapWidget> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  TrackStats(track: userTrack!)));
+                                  TrackStats(track: userTrack)));
                     },
                     child: Text(AppLocalizations.of(context)!.trackData,
                         style: TextStyle(color: Colors.white, fontSize: 18))),

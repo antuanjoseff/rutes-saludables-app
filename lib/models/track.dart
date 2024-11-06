@@ -17,8 +17,11 @@ class Track {
   // Track length
   double length = 0;
 
+  // Last distance to track
+  double trackDistance = -1;
+
   // Current altitud
-  int? altitude = null;
+  int? altitude;
 
   // Constructor
   Track(this.trackSegment);
@@ -65,6 +68,14 @@ class Track {
     return startAt;
   }
 
+  double getTrackDistance() {
+    return trackDistance;
+  }
+
+  void setTrackDistance(double d) {
+    trackDistance = d;
+  }
+
   void reset() {
     gpxCoords = [];
     trackSegment = [];
@@ -82,6 +93,7 @@ class Track {
     trackSegment.add(wpt);
     length += inc;
     altitude = wpt.ele!.floor();
+    debugPrint(' PUSH      $trackDistance');
   }
 
   void insert(int position, Wpt wpt) {

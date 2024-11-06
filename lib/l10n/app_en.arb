@@ -13,6 +13,7 @@
     "long": "Llarg",
     "trackData": "Data",
     "distance": "Distance",
+    "distanceToTrack": "Track distance",
     "altitude": "Altitude",
     "movingTime": "Moving time",
     "alert": "Alert!",
