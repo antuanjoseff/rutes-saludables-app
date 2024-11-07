@@ -10,8 +10,8 @@ import 'package:geoxml/geoxml.dart';
 import 'package:rutes_saludables/models/data.dart';
 
 import '../widgets/play_youtube.dart';
+import '../widgets/mapScale.dart';
 
-import '../utils/user_simple_preferences.dart';
 import '../utils/util.dart';
 
 import '../models/itinerary.dart';
@@ -57,6 +57,8 @@ class MapWidget extends StatefulWidget {
 
 class _MapWidgetState extends State<MapWidget> {
   MapLibreMapController? mapController;
+  double mapScaleWidth = 60;
+  String? mapScaleText;
   late Path _path;
   late Points _points;
   late List<Feature> _pois;
@@ -236,13 +238,22 @@ class _MapWidgetState extends State<MapWidget> {
 
       if (trackCameroMove && panTime > 200) {
         userMovedMap = true;
-        setState(() {});
       }
     }
+    double resolution = await mapController!.getMetersPerPixelAtLatitude(
+        mapController!.cameraPosition!.target.latitude);
+
+    mapScaleText = (mapScaleWidth * resolution).toStringAsFixed(0);
+    setState(() {});
   }
 
   void _onMapCreated(MapLibreMapController controller) async {
     mapController = controller;
+    controller!.addListener(_onMapChanged);
+    double resolution = await mapController!.getMetersPerPixelAtLatitude(
+        mapController!.cameraPosition!.target.latitude);
+
+    mapScaleText = (mapScaleWidth * resolution).toStringAsFixed(0);
     mapController!.addListener(_onMapChanged);
     mapController!.onFeatureTapped.add(onFeatureTap);
     List<Wpt> wpts = [];
@@ -452,6 +463,10 @@ class _MapWidgetState extends State<MapWidget> {
               // 'https://geoserveis.icgc.cat/contextmaps/icgc_mapa_base_gris_simplificat.json',
               'https://geoserveis.icgc.cat/contextmaps/icgc_orto_hibrida.json',
         ),
+        Positioned(
+            bottom: 30,
+            right: 10,
+            child: MapScale(barWidth: mapScaleWidth, text: mapScaleText)),
         Positioned(
             left: 10,
             top: 20,
