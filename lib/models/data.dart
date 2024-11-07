@@ -87,7 +87,7 @@ List<Itinerary> itineraries = [
         Feature(
             type: "Feature",
             geometry:
-                Geometry(type: "Point", coordinates: [2.827357, 41.985692]),
+                Geometry(type: "Point", coordinates: [2.827443, 41.985667]),
             properties: Properties(
                 id: "18",
                 title: "Exercici 1",
@@ -584,13 +584,6 @@ List<Itinerary> itineraries = [
         ]
       ]),
       points: Points(type: "FeatureCollection", features: [
-        Feature(
-            type: "Feature",
-            geometry: Geometry(type: "Point", coordinates: [2.81598, 41.98366]),
-            properties: Properties(
-                id: "1",
-                title: "Exercici 1",
-                description: "www.youtube.com/embed/2UaZWYCwx4k")),
         Feature(
             type: "Feature",
             geometry:
