@@ -25,5 +25,6 @@
     "trackUserInfo": "Dades",
     "centerMap": "Centrar mapa",
     "notificationTitle":  "UdGsalut",
-    "notificationContent": "Rutes saludables"
+    "notificationContent": "Rutes saludables",
+    "distToExercise": "Exercici més proper"
 }

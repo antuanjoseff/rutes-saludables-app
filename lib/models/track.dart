@@ -29,6 +29,17 @@ class Track {
   // Bbox del track
   my.Bounds? bounds;
 
+  //offPointTracks (Consecutive points off track)
+  int pointsOffTrack = 0;
+
+  //user is on track?
+  bool onTrack = false;
+
+  // Distance to closest point exercise
+  double distToExercise = 0;
+
+  //onPointTracks (Consecutive points on track)
+  int pointsOnTrack = 0;
   void init() async {
     LatLng cur;
 

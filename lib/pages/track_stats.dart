@@ -29,6 +29,37 @@ class _TrackStatsState extends State<TrackStats> {
     return "$negativeSign${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
+  List<String> getListItems() {
+    List<String> items = [];
+    items.add("On track");
+    items.add("Dist. to exercise");
+    items.add("Points on track");
+    items.add("Points off track");
+    items.add("Dist. to track");
+    items.add("Track length");
+    items.add("Altitude");
+    items.add("Time elapsed");
+    return items;
+  }
+
+  List<String> getListContent() {
+    List<String> items = [];
+    items.add('${_track.onTrack}');
+    items.add('${_track.distToExercise}');
+    items.add('${_track.pointsOnTrack}');
+    items.add('${_track.pointsOffTrack}');
+    items.add(formatDistance(_track.trackDistance));
+    items.add(formatDistance(_track.length));
+    items.add('${_track.altitude}');
+
+    String trackTime = UserSimplePreferences.getTrackTime();
+    trackTime =
+        _formatDuration(DateTime.now().difference(_track.getStartTime()));
+    items.add('${trackTime}');
+
+    return items;
+  }
+
   String formatDistance(double length) {
     int kms = (length / 1000).floor().toInt();
     int mts = (length - (kms * 1000)).toInt();
@@ -58,15 +89,15 @@ class _TrackStatsState extends State<TrackStats> {
     // defines a timer
     _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
       setState(() {
-        trackLength = formatDistance(_track.getLength());
-        trackDistance =
-            double.parse(_track.getTrackDistance().toStringAsFixed(0));
+        // trackLength = formatDistance(_track.getLength());
+        // trackDistance =
+        //     double.parse(_track.getTrackDistance().toStringAsFixed(0));
 
-        trackTime =
-            _formatDuration(DateTime.now().difference(_track.getStartTime()));
-        trackAltitude = _track.getElevation() != null
-            ? _track.getElevation().toString() + 'm'
-            : '--';
+        // trackTime =
+        //     _formatDuration(DateTime.now().difference(_track.getStartTime()));
+        // trackAltitude = _track.getElevation() != null
+        //     ? _track.getElevation().toString() + 'm'
+        //     : '--';
       });
     });
   }
@@ -83,73 +114,33 @@ class _TrackStatsState extends State<TrackStats> {
 
   @override
   Widget build(BuildContext context) {
+    var listItems = getListItems();
+    var listContent = getListContent();
+
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.trackUserInfo),
           backgroundColor: Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
-        body: Container(
-          color: ochreUdG,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              DefaultTextStyle(
-                style: const TextStyle(
-                  color: blueUdG,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        body: Center(
+          child: ListView.builder(
+            itemCount: listItems.length,
+            itemBuilder: (context, index) {
+              return Container(
+                color: index % 2 == 0 ? ochreUdG : greyUdG,
+                child: ListTile(
+                    title: Column(
                   children: [
-                    Column(
-                      children: [
-                        Text(AppLocalizations.of(context)!.distance,
-                            style: const TextStyle(fontSize: 25)),
-                        Text(
-                          trackLength,
-                          style: const TextStyle(fontSize: 45),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Column(
-                      children: [
-                        Text(AppLocalizations.of(context)!.distanceToTrack,
-                            style: const TextStyle(fontSize: 25)),
-                        Text(
-                          '$trackDistance',
-                          style: const TextStyle(fontSize: 45),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Column(
-                      children: [
-                        Text(AppLocalizations.of(context)!.altitude,
-                            style: TextStyle(fontSize: 25)),
-                        Text(
-                          trackAltitude,
-                          style: const TextStyle(fontSize: 45),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
-                    Column(
-                      children: [
-                        Text(AppLocalizations.of(context)!.movingTime,
-                            style: TextStyle(fontSize: 25)),
-                        Text(
-                          trackTime,
-                          style: const TextStyle(fontSize: 45),
-                        )
-                      ],
+                    Text(listItems[index]),
+                    Text(
+                      listContent[index],
+                      style: TextStyle(fontSize: 25),
                     ),
                   ],
-                ),
-              ),
-            ],
+                )),
+              );
+            },
           ),
         ));
   }

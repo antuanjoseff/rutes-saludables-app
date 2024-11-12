@@ -25,5 +25,6 @@
     "trackUserInfo": "Datos",
     "centerMap": "Center map",
     "notificationTitle":  "UdGsalut",
-    "notificationContent": "Rutas saludables"
+    "notificationContent": "Rutas saludables",
+    "distToExercise": "Ejercicio más cercano"
     }

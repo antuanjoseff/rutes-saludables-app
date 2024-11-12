@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -373,10 +374,10 @@ class _MapWidgetState extends State<MapWidget> {
     if (!onTrack && (loc.accuracy! < minAccuracy)) {
       // First time location is on track
       if (distanceToTrack < onTrackDistance) {
-        onTrack = true;
         pointsOffTrack = 0;
         pointsOnTrack += 1;
         if (pointsOnTrack > minNumberOfConsecutivePoints) {
+          onTrack = true;
           // five consecutive points on track (minus 5 metres)
           playSound('sounds/on_track.mp3');
         }
@@ -389,16 +390,17 @@ class _MapWidgetState extends State<MapWidget> {
       if (onTrack &&
           (distanceToTrack > offTrackDistance && loc.accuracy! < minAccuracy)) {
         // Location is moving away
-        onTrack = false;
         pointsOffTrack += 1;
         pointsOnTrack = 0;
         if (pointsOffTrack > minNumberOfConsecutivePoints) {
           playSound('sounds/off_track.mp3');
+          onTrack = false;
           _dialogMessageBuilder(
               context, AppLocalizations.of(context)!.movingAwayFromTrack);
         }
       } else {
         pointsOnTrack += 1;
+        pointsOffTrack = 0;
       }
 
       if (!userMovedMap) {
@@ -408,11 +410,16 @@ class _MapWidgetState extends State<MapWidget> {
 
     // Loop through all track points
     bool inRange = false;
+    double minDistance = double.infinity;
+
     for (var a = 0; a < _points.features.length && !inRange; a++) {
       var p = _points.features[a];
       var coords = p.geometry.coordinates;
       double distance = getDistanceFromLatLonInMeters(
           LatLng(coords[1], coords[0]), LatLng(loc.latitude!, loc.longitude!));
+      if (distance < minDistance) {
+        minDistance = distance;
+      }
       if (distance < exerciseDistance) {
         inRange = true;
         String url = getVideoUrl(p.properties.id, _points);
@@ -423,6 +430,10 @@ class _MapWidgetState extends State<MapWidget> {
         }
       }
     }
+    track!.pointsOffTrack = pointsOffTrack;
+    track!.pointsOnTrack = pointsOnTrack;
+    track!.onTrack = onTrack;
+    track!.distToExercise = minDistance;
   }
 
   Future<void> addImageFromAsset(String name, String assetName) async {
