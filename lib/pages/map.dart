@@ -430,10 +430,14 @@ class _MapWidgetState extends State<MapWidget> {
         }
       }
     }
-    track!.pointsOffTrack = pointsOffTrack;
-    track!.pointsOnTrack = pointsOnTrack;
-    track!.onTrack = onTrack;
-    track!.distToExercise = minDistance;
+    debugPrint('pointsOffTrack');
+    debugPrint('${pointsOffTrack}');
+
+    userTrack!.setPointsOnTrack(pointsOnTrack);
+    userTrack!.setPointsOffTrack(pointsOffTrack);
+    userTrack!.setOnTrack(onTrack);
+    userTrack!.setDistanteToExercise(minDistance);
+    userTrack.captures += 1;
   }
 
   Future<void> addImageFromAsset(String name, String assetName) async {

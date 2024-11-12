@@ -31,7 +31,7 @@ class _TrackStatsState extends State<TrackStats> {
 
   List<String> getListItems() {
     List<String> items = [];
-    items.add("On track");
+    items.add("On track (captures)");
     items.add("Dist. to exercise");
     items.add("Points on track");
     items.add("Points off track");
@@ -44,10 +44,10 @@ class _TrackStatsState extends State<TrackStats> {
 
   List<String> getListContent() {
     List<String> items = [];
-    items.add('${_track.onTrack}');
-    items.add('${_track.distToExercise}');
-    items.add('${_track.pointsOnTrack}');
-    items.add('${_track.pointsOffTrack}');
+    items.add('${_track.getOnTrack()} (${_track.captures})');
+    items.add('${formatDistance(_track.getDistToExercise())}');
+    items.add('${_track.getPointsOnTrack()}');
+    items.add('${_track.getPointsOffTrack()}');
     items.add(formatDistance(_track.trackDistance));
     items.add(formatDistance(_track.length));
     items.add('${_track.altitude}');

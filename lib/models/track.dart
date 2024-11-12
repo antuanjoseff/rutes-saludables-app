@@ -40,6 +40,10 @@ class Track {
 
   //onPointTracks (Consecutive points on track)
   int pointsOnTrack = 0;
+
+  // Total gps location captures
+  int captures = 0;
+
   void init() async {
     LatLng cur;
 
@@ -81,6 +85,38 @@ class Track {
 
   double getTrackDistance() {
     return trackDistance;
+  }
+
+  int getPointsOnTrack() {
+    return pointsOnTrack;
+  }
+
+  int getPointsOffTrack() {
+    return pointsOffTrack;
+  }
+
+  double getDistToExercise() {
+    return distToExercise;
+  }
+
+  bool getOnTrack() {
+    return onTrack;
+  }
+
+  setPointsOnTrack(int value) {
+    pointsOnTrack = value;
+  }
+
+  setPointsOffTrack(int value) {
+    pointsOffTrack = value;
+  }
+
+  setOnTrack(bool value) {
+    onTrack = value;
+  }
+
+  setDistanteToExercise(double distance) {
+    distToExercise = distance;
   }
 
   void setTrackDistance(double d) {
