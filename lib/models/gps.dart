@@ -20,7 +20,7 @@ class Gps {
     return true;
   }
 
-  Future<bool> checkPermission() async {
+  Future<bool> requestPermission() async {
     _permissionGranted = await location.hasPermission();
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();

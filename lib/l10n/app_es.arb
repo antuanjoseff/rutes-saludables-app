@@ -17,11 +17,13 @@
     "altitude": "Altitud",
     "movingTime": "Tiempo transcurrido",
     "alert": "¡Aviso!",
-    "movingAway": "Te estás alejando del track",
+    "movingAwayFromTrack": "Te estás alejando del track",
     "wantToSeeVideo": "¿Quieres ver el ejercicio recomendado?",
     "ok": "Acceptar",
     "cancel": "Cancelar",
     "information": "Información",
     "trackUserInfo": "Datos",
-    "centerMap": "Center map"
+    "centerMap": "Center map",
+    "notificationTitle":  "UdGsalut",
+    "notificationContent": "Rutas saludables"
     }

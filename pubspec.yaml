@@ -39,8 +39,9 @@ dependencies:
   youtube_player_flutter: ^8.1.2
   accordion: ^2.6.0
   geoxml: ^2.6.1
-  geolocator: ^13.0.1
   location: ^5.0.3
+  geolocator: ^13.0.1
+  background_location: ^0.13.0  
   maplibre_gl: ^0.20.0
   flutter:
     sdk: flutter
@@ -108,5 +109,5 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
 flutter_native_splash:
-  color: "ffffff"
+  color: "01148b"
   image: "assets/images/splashscreen.png"

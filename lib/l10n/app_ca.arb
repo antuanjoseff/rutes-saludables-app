@@ -17,11 +17,13 @@
     "altitude": "Altitud",
     "movingTime": "Temps transcorregut",
     "alert": "Atenció!",
-    "movingAway": "Te estàs allunyant del track",
+    "movingAwayFromTrack": "Te estàs allunyant del track",
     "wantToSeeVideo": "Vols veure l'exercici recomanat?",
     "ok": "Acceptar",
     "cancel": "Cancel·lar",
     "information": "Informació",
     "trackUserInfo": "Dades",
-    "centerMap": "Centrar mapa"
+    "centerMap": "Centrar mapa",
+    "notificationTitle":  "UdGsalut",
+    "notificationContent": "Rutes saludables"
 }

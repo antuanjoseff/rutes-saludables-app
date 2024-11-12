@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:background_location/background_location.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:flutter/material.dart';
@@ -35,11 +36,11 @@ class MapPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(this.itinerary.campus + ' - ' + this.itinerary.title),
-          backgroundColor: Color(0xff3242a0),
+          title: Text('${itinerary.campus}  -  ${itinerary.title}'),
+          backgroundColor: const Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
-        body: MapWidget(itinerary: this.itinerary));
+        body: MapWidget(itinerary: itinerary));
   }
 }
 
@@ -59,6 +60,7 @@ class _MapWidgetState extends State<MapWidget> {
   MapLibreMapController? mapController;
   double mapScaleWidth = 60;
   String? mapScaleText;
+  double? resolution;
   late Path _path;
   late Points _points;
   late List<Feature> _pois;
@@ -66,14 +68,15 @@ class _MapWidgetState extends State<MapWidget> {
   late String _campus;
   late Line trackLine;
   bool onTrack = false;
+  int minNumberOfConsecutivePoints = 5;
   int minAccuracy = 15; //meters
-  int exerciseDistance = 15; //meters
+  int exerciseDistance = 10; //meters
   int onTrackDistance = 7; //meters
   int offTrackDistance = 50; //meters
 
   int pointsOffTrack = 0;
   int pointsOnTrack = 0;
-  Location location = Location();
+
   List<String> alreadyReached = [];
 
   final stopwatch = Stopwatch();
@@ -86,7 +89,10 @@ class _MapWidgetState extends State<MapWidget> {
 
   Track? track;
   late Track userTrack;
-  LocationData? lastLocation;
+  bool serviceEnabled = false;
+  bool hasLocationPermission = false;
+  Position? initialLocation;
+  Location? lastLocation;
   StreamSubscription? locationSubscription;
 
   double trackWidth = 6;
@@ -106,21 +112,58 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   void dispose() {
-    if (locationSubscription != null) {
-      locationSubscription!.cancel();
-    }
+    BackgroundLocation.stopLocationService();
     super.dispose();
   }
 
-  void initState() {
-    super.initState(); //comes first for initState();
+  void showSnackbar(context, type, myText) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(type == 'success' ? Icons.thumb_up : Icons.warning_rounded,
+                color: Colors.white),
+            const SizedBox(width: 20),
+            Expanded(child: Text(myText))
+          ],
+        ),
+        backgroundColor: type == 'success' ? Colors.green : Colors.red,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
 
+  void initState() {
+    debugPrint('INIT STATE');
     userTrack = Track([]);
     _campus = widget.itinerary.campus;
     _title = widget.itinerary.title;
     _path = widget.itinerary.path;
     _points = widget.itinerary.points;
     _pois = pointsOfInterest;
+    debugPrint('BUILD!!!! ${_campus}');
+    List<Wpt> wpts = [];
+    List lineCoords = _path.coordinates[0];
+
+    for (var i = 0; i < lineCoords.length; i++) {
+      Wpt wpt = Wpt(lat: lineCoords[i][1], lon: lineCoords[i][0]);
+      wpts.add(wpt);
+    }
+
+    track = Track(wpts);
+    track!.init();
+
+    Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
+      if (status == ServiceStatus.enabled) {
+        showSnackbar(context, 'success', 'GPS enabled!!');
+        await listenBackgroundLocations();
+        debugPrint('GPS enabled!!');
+      } else {
+        showSnackbar(context, 'error', 'GPS disabled!!');
+        debugPrint('GPS disabled!!');
+      }
+    });
+    super.initState(); //comes first for initState();
   }
 
   Future<void> _dialogMessageBuilder(BuildContext context, String msg) {
@@ -240,34 +283,25 @@ class _MapWidgetState extends State<MapWidget> {
         userMovedMap = true;
       }
     }
-    double resolution = await mapController!.getMetersPerPixelAtLatitude(
+    resolution = await mapController!.getMetersPerPixelAtLatitude(
         mapController!.cameraPosition!.target.latitude);
 
-    mapScaleText = (mapScaleWidth * resolution).toStringAsFixed(0);
+    mapScaleText = (mapScaleWidth * resolution!).toStringAsFixed(0);
     setState(() {});
   }
 
   void _onMapCreated(MapLibreMapController controller) async {
+    if (!mounted) return;
+    debugPrint('MAP CREATED');
     mapController = controller;
     controller!.addListener(_onMapChanged);
-    double resolution = await mapController!.getMetersPerPixelAtLatitude(
+    resolution = await mapController!.getMetersPerPixelAtLatitude(
         mapController!.cameraPosition!.target.latitude);
 
-    mapScaleText = (mapScaleWidth * resolution).toStringAsFixed(0);
+    mapScaleText = (mapScaleWidth * resolution!).toStringAsFixed(0);
     mapController!.addListener(_onMapChanged);
     mapController!.onFeatureTapped.add(onFeatureTap);
-    List<Wpt> wpts = [];
-    List lineCoords = _path.coordinates[0];
-
-    for (var i = 0; i < lineCoords.length; i++) {
-      Wpt wpt = Wpt(lat: lineCoords[i][1], lon: lineCoords[i][0]);
-      wpts.add(wpt);
-    }
-
-    track = Track(wpts);
-
-    await track!.init();
-
+    await mapController!.setSymbolIconAllowOverlap(true);
     mapController!.moveCamera(
       CameraUpdate.newLatLngBounds(
         LatLngBounds(
@@ -280,39 +314,34 @@ class _MapWidgetState extends State<MapWidget> {
       ),
     );
 
-    // bool gpsEnabled = UserSimplePreferences.getGpsEnabled();
-    // bool gpsPermission = UserSimplePreferences.getHasPermission();
-
-    bool enabled = await gps.checkService();
-    if (enabled) {
-      bool hasPermission = await gps.checkPermission();
-
-      if (hasPermission!) {
-        location.getLocation().then((loc) {
-          _myLocationEnabled = true;
-          _myLocationRenderMode = MyLocationRenderMode.compass;
-          handleNewPosition(loc);
-          initView = LatLng(loc.latitude!, loc.longitude!);
-          setState(() {});
-        });
-
-        location.enableBackgroundMode(enable: true);
-        location.changeNotificationOptions(
-          title: 'Geolocation',
-          subtitle: 'Geolocation detection',
+    hasLocationPermission = await requestLocationService();
+    if (hasLocationPermission && initialLocation == null) {
+      initialLocation = await getCurrentLocation();
+      if (mounted) {
+        BackgroundLocation.setAndroidNotification(
+          title: AppLocalizations.of(context)!.notificationTitle,
+          message: AppLocalizations.of(context)!.notificationContent,
         );
-        location.changeSettings(
-          interval: 1000,
-          distanceFilter: 1,
-          accuracy: LocationAccuracy.high,
+      } else {
+        BackgroundLocation.setAndroidNotification(
+          title: 'UdGsalut',
+          message: 'Rutes saludables',
         );
-        await gps.enableBackground('Geolocation', 'Geolocation detection');
-        locationSubscription = await gps.listenOnBackground(handleNewPosition);
       }
-    }
 
-    await mapController!.setSymbolIconAllowOverlap(true);
-    // await controller!.setSymbolTextAllowOverlap(_iconAllowOverlap);
+      await listenBackgroundLocations();
+      _myLocationEnabled = true;
+      // setState(() {});
+    }
+  }
+
+  Future<void> listenBackgroundLocations() async {
+    BackgroundLocation
+        .stopLocationService(); //To ensure that previously started services have been stopped, if desired
+    BackgroundLocation.startLocationService(distanceFilter: 5);
+    BackgroundLocation.getLocationUpdates((location) {
+      handleNewLocation(location);
+    });
   }
 
   void centerMap(LatLng location) {
@@ -328,13 +357,9 @@ class _MapWidgetState extends State<MapWidget> {
     player.play(AssetSource(sound));
   }
 
-  void handleNewPosition(LocationData loc) async {
+  void handleNewLocation(Location loc) async {
+    debugPrint('HANDLE NEW LOCATION');
     lastLocation = loc;
-
-    location.changeNotificationOptions(
-      title: 'Geolocation ',
-      subtitle: 'Current accuracy ' + loc.accuracy.toString(),
-    );
 
     double distanceToTrack =
         track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
@@ -346,23 +371,32 @@ class _MapWidgetState extends State<MapWidget> {
     // Check if location is in track
 
     if (!onTrack && (loc.accuracy! < minAccuracy)) {
+      // First time location is on track
       if (distanceToTrack < onTrackDistance) {
         onTrack = true;
         pointsOffTrack = 0;
         pointsOnTrack += 1;
-        playSound('sounds/on_track.mp3');
+        if (pointsOnTrack > minNumberOfConsecutivePoints) {
+          // five consecutive points on track (minus 5 metres)
+          playSound('sounds/on_track.mp3');
+        }
       } else {
         pointsOffTrack += 1;
+        pointsOnTrack = 0;
       }
     } else {
+      // User is on track
       if (onTrack &&
           (distanceToTrack > offTrackDistance && loc.accuracy! < minAccuracy)) {
         // Location is moving away
         onTrack = false;
         pointsOffTrack += 1;
         pointsOnTrack = 0;
-        playSound('sounds/off_track.mp3');
-        _dialogMessageBuilder(context, 'Moving away from track');
+        if (pointsOffTrack > minNumberOfConsecutivePoints) {
+          playSound('sounds/off_track.mp3');
+          _dialogMessageBuilder(
+              context, AppLocalizations.of(context)!.movingAwayFromTrack);
+        }
       } else {
         pointsOnTrack += 1;
       }
@@ -402,6 +436,71 @@ class _MapWidgetState extends State<MapWidget> {
     setState(() {});
   }
 
+  Future<Position?> getCurrentLocation() async {
+    if (serviceEnabled && hasLocationPermission) {
+      return await Geolocator.getCurrentPosition();
+    } else {
+      return null;
+    }
+  }
+
+  Future<bool> requestLocationService() async {
+    serviceEnabled = await gps.checkService();
+    bool permission = false;
+    if (serviceEnabled) {
+      permission = await gps.requestPermission();
+    }
+    return permission;
+    // if (hasLocationPermission && initialLocation == null) {
+    //   _myLocationEnabled = true;
+    //   setState(() {});
+    // }
+  }
+
+  Future<void> _onStyleCallback() async {
+    debugPrint('CREATED CALLBACK..........................');
+    addImageFromAsset("exercisePoint", "assets/marker_salut.png");
+    addImageFromAsset("poi", "assets/marker_poi.png");
+
+    trackLine = await mapController!.addLine(LineOptions(
+      geometry: track!.getCoordsList(),
+      lineColor: trackColor.toHexStringRGB(),
+      lineWidth: trackWidth,
+      lineOpacity: 0.9,
+    ));
+
+    // ADD TRACK POINTS TO MAP. EXERCISES
+    var pts = _points.features;
+    for (var i = 0; i < pts.length; i++) {
+      final symbolOptions = <SymbolOptions>[];
+
+      symbolOptions.add(SymbolOptions(
+          iconImage: "exercisePoint",
+          iconAnchor: 'bottom',
+          geometry: LatLng(
+              pts[i].geometry.coordinates[1], pts[i].geometry.coordinates[0])));
+
+      var sym = await mapController!.addSymbols(symbolOptions);
+
+      pts[i].properties.id = sym[0].id;
+    }
+
+    // ADD POINTS OF INTEREST TO MAP
+    for (var i = 0; i < _pois.length; i++) {
+      final symbolOptions = <SymbolOptions>[];
+
+      symbolOptions.add(SymbolOptions(
+          iconImage: "poi",
+          iconAnchor: 'bottom',
+          geometry: LatLng(_pois[i].geometry.coordinates[1],
+              _pois[i].geometry.coordinates[0])));
+
+      var sym = await mapController!.addSymbols(symbolOptions);
+
+      _pois[i].properties.id = sym[0].id;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -413,60 +512,26 @@ class _MapWidgetState extends State<MapWidget> {
           myLocationEnabled: _myLocationEnabled,
           myLocationTrackingMode: _myLocationTrackingMode,
           myLocationRenderMode: _myLocationRenderMode,
-          onStyleLoadedCallback: () async {
-            addImageFromAsset("exercisePoint", "assets/marker_salut.png");
-            addImageFromAsset("poi", "assets/marker_poi.png");
-
-            trackLine = await mapController!.addLine(LineOptions(
-              geometry: track!.getCoordsList(),
-              lineColor: trackColor.toHexStringRGB(),
-              lineWidth: trackWidth,
-              lineOpacity: 0.9,
-            ));
-
-            // ADD TRACK POINTS TO MAP. EXERCISES
-            var pts = _points.features;
-            for (var i = 0; i < pts.length; i++) {
-              final symbolOptions = <SymbolOptions>[];
-
-              symbolOptions.add(SymbolOptions(
-                  iconImage: "exercisePoint",
-                  iconAnchor: 'bottom',
-                  geometry: LatLng(pts[i].geometry.coordinates[1],
-                      pts[i].geometry.coordinates[0])));
-
-              var sym = await mapController!.addSymbols(symbolOptions);
-
-              pts[i].properties.id = sym[0].id;
-            }
-
-            // ADD POINTS OF INTEREST TO MAP
-            for (var i = 0; i < _pois.length; i++) {
-              final symbolOptions = <SymbolOptions>[];
-
-              symbolOptions.add(SymbolOptions(
-                  iconImage: "poi",
-                  iconAnchor: 'bottom',
-                  geometry: LatLng(_pois[i].geometry.coordinates[1],
-                      _pois[i].geometry.coordinates[0])));
-
-              var sym = await mapController!.addSymbols(symbolOptions);
-
-              _pois[i].properties.id = sym[0].id;
-            }
-          },
+          onStyleLoadedCallback: _onStyleCallback,
           initialCameraPosition: CameraPosition(
-            target: initView,
+            target: (initialLocation != null)
+                ? LatLng(initialLocation!.latitude, initialLocation!.longitude)
+                : initView,
             zoom: 13.0,
           ),
           styleString:
               // 'https://geoserveis.icgc.cat/contextmaps/icgc_mapa_base_gris_simplificat.json',
               'https://geoserveis.icgc.cat/contextmaps/icgc_orto_hibrida.json',
         ),
-        Positioned(
-            bottom: 30,
-            right: 10,
-            child: MapScale(barWidth: mapScaleWidth, text: mapScaleText)),
+        resolution != null
+            ? Positioned(
+                bottom: 30,
+                right: 10,
+                child: MapScale(
+                  resolution: resolution!,
+                  mapscale: mapScaleText,
+                ))
+            : Container(),
         Positioned(
             left: 10,
             top: 20,
@@ -536,8 +601,8 @@ Properties? getPoiInfo(String id, List<Feature> pois) {
   return null;
 }
 
-Wpt createWptFromLocation(LocationData location) {
-  Wpt wpt = new Wpt();
+Wpt createWptFromLocation(Location location) {
+  Wpt wpt = Wpt();
   wpt.lat = location.latitude;
   wpt.lon = location.longitude;
   wpt.ele = location.altitude;

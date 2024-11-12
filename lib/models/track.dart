@@ -29,7 +29,7 @@ class Track {
   // Bbox del track
   my.Bounds? bounds;
 
-  Future<void> init() async {
+  void init() async {
     LatLng cur;
 
     // Init track bounds with first track point

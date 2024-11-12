@@ -17,12 +17,14 @@
     "altitude": "Altitude",
     "movingTime": "Elapsed time",
     "alert": "Alert!",
-    "movingAway": "You are moving away from track",
+    "movingAwayFromTrack": "You are moving away from track",
     "wantToSeeVideo": "Do you want to see a recommended exercise?",
     "ok": "OK",
     "cancel": "Cancel",
     "information": "Information",
     "trackUserInfo": "Data",
-    "centerMap": "Centrar mapa"
+    "centerMap": "Centrar mapa",
+    "notificationTitle":  "UdGsalut",
+    "notificationContent": "Healthy itineraries"
 }
 
