@@ -26,6 +26,7 @@
     "centerMap": "Centrar mapa",
     "notificationTitle":  "UdGsalut",
     "notificationContent": "Healthy itineraries",
-    "distToExercise": "Closest exercise"
+    "distToExercise": "Closest exercise",
+    "warningAccuracy": "La precisió del GPS és baixa"
 }
 

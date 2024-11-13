@@ -44,6 +44,12 @@ class Track {
   // Total gps location captures
   int captures = 0;
 
+  // Acuracy of last point
+  double accuracy = 0;
+
+  // Consecutive points low accuracy
+  double pointsOutOfAccuracy = 0;
+
   void init() async {
     LatLng cur;
 
@@ -103,6 +109,10 @@ class Track {
     return onTrack;
   }
 
+  double getAccuracy() {
+    return accuracy;
+  }
+
   setPointsOnTrack(int value) {
     pointsOnTrack = value;
   }
@@ -121,6 +131,10 @@ class Track {
 
   void setTrackDistance(double d) {
     trackDistance = d;
+  }
+
+  void setAccuracy(double value) {
+    accuracy = value;
   }
 
   void reset() {

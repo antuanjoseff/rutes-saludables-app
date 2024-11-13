@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:background_location/background_location.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -69,11 +70,13 @@ class _MapWidgetState extends State<MapWidget> {
   late String _campus;
   late Line trackLine;
   bool onTrack = false;
-  int minNumberOfConsecutivePoints = 5;
+  bool ignoreLowAccuracy = false;
+  int minNumberOfConsecutivePoints = 2;
   int minAccuracy = 15; //meters
   int exerciseDistance = 10; //meters
   int onTrackDistance = 7; //meters
   int offTrackDistance = 50; //meters
+  int pointsOutOfAccuracy = 0; //meters
 
   int pointsOffTrack = 0;
   int pointsOnTrack = 0;
@@ -106,6 +109,9 @@ class _MapWidgetState extends State<MapWidget> {
   ButtonStyle udgStyle = ElevatedButton.styleFrom(
       backgroundColor: blueUdG, foregroundColor: Colors.white);
 
+  ButtonStyle alertDialogButtons = ElevatedButton.styleFrom(
+      backgroundColor: Colors.white, foregroundColor: redUdG);
+
   LatLng initView = LatLng(42.0, 3.0);
 
   final player = AudioPlayer();
@@ -117,7 +123,7 @@ class _MapWidgetState extends State<MapWidget> {
     super.dispose();
   }
 
-  void showSnackbar(context, type, myText) {
+  void snackbar(context, type, myText) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -142,7 +148,7 @@ class _MapWidgetState extends State<MapWidget> {
     _path = widget.itinerary.path;
     _points = widget.itinerary.points;
     _pois = pointsOfInterest;
-    debugPrint('BUILD!!!! ${_campus}');
+
     List<Wpt> wpts = [];
     List lineCoords = _path.coordinates[0];
 
@@ -156,11 +162,11 @@ class _MapWidgetState extends State<MapWidget> {
 
     Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
       if (status == ServiceStatus.enabled) {
-        showSnackbar(context, 'success', 'GPS enabled!!');
+        snackbar(context, 'success', 'GPS enabled!!');
         await listenBackgroundLocations();
         debugPrint('GPS enabled!!');
       } else {
-        showSnackbar(context, 'error', 'GPS disabled!!');
+        snackbar(context, 'error', 'GPS disabled!!');
         debugPrint('GPS disabled!!');
       }
     });
@@ -173,10 +179,12 @@ class _MapWidgetState extends State<MapWidget> {
       builder: (BuildContext context) {
         return AlertDialog(
             title: Text(AppLocalizations.of(context)!.alert),
+            backgroundColor: redUdG,
             content: Text(msg),
             actions: [
-              FloatingActionButton(
+              ElevatedButton(
                 onPressed: () => Navigator.pop(context, false),
+                style: alertDialogButtons,
                 child: Text(AppLocalizations.of(context)!.ok),
               ),
             ]);
@@ -186,7 +194,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   Widget launchButton(contect, videoUrl) {
     return ElevatedButton(
-      style: udgStyle,
+      style: alertDialogButtons,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -206,8 +214,9 @@ class _MapWidgetState extends State<MapWidget> {
 
   Widget cancelButton(contect) {
     return ElevatedButton(
-      style: udgStyle,
-      child: Text(AppLocalizations.of(context)!.cancel),
+      style: alertDialogButtons,
+      child: Text(AppLocalizations.of(context)!.cancel,
+          style: TextStyle(color: redUdG)),
       onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
       },
@@ -224,7 +233,7 @@ class _MapWidgetState extends State<MapWidget> {
               children: [
                 Text(AppLocalizations.of(context)!.udgHealth,
                     style: const TextStyle(
-                      color: blueUdG,
+                      color: Colors.white,
                     )),
                 // SizedBox(width: 10),
                 // Image(
@@ -233,8 +242,11 @@ class _MapWidgetState extends State<MapWidget> {
                 // ),
               ],
             ),
+            backgroundColor: redUdG,
             content: Text(AppLocalizations.of(context)!.wantToSeeVideo,
-                style: TextStyle(color: blueUdG, fontSize: 18)),
+                style: const TextStyle(
+                  color: Colors.white,
+                )),
             actions: [
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 launchButton(context, url),
@@ -339,7 +351,7 @@ class _MapWidgetState extends State<MapWidget> {
   Future<void> listenBackgroundLocations() async {
     BackgroundLocation
         .stopLocationService(); //To ensure that previously started services have been stopped, if desired
-    BackgroundLocation.startLocationService(distanceFilter: 5);
+    BackgroundLocation.startLocationService(distanceFilter: 0);
     BackgroundLocation.getLocationUpdates((location) {
       handleNewLocation(location);
     });
@@ -353,14 +365,57 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> playSound(String sound) async {
-    await player.setVolume(0.8);
+    await player.setVolume(1);
     // await player.setReleaseMode(ReleaseMode.loop);
     player.play(AssetSource(sound));
+  }
+
+  Future<bool> isValidAccuracy(double accuracy) async {
+    return accuracy < minAccuracy;
+  }
+
+  Future<bool> openDialogConfirmWpt() async {
+    return await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+                title: Text(AppLocalizations.of(context)!.warningAccuracy,
+                    style: TextStyle(color: Colors.white)),
+                backgroundColor: redUdG,
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                          style: alertDialogButtons,
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                          child: Text(AppLocalizations.of(context)!.ok)),
+                    ],
+                  )
+                ]));
   }
 
   void handleNewLocation(Location loc) async {
     debugPrint('HANDLE NEW LOCATION');
     lastLocation = loc;
+    if (!ignoreLowAccuracy) {
+      bool locationIsValid = await isValidAccuracy(loc.accuracy!);
+      if (!locationIsValid) {
+        userTrack.pointsOutOfAccuracy += 1;
+        if (userTrack.pointsOutOfAccuracy > minNumberOfConsecutivePoints) {
+          ignoreLowAccuracy = true;
+          bool confirm = await openDialogConfirmWpt();
+          if (confirm) {
+            ignoreLowAccuracy = true;
+            minNumberOfConsecutivePoints += minNumberOfConsecutivePoints;
+          }
+          return;
+        }
+      } else {
+        userTrack.pointsOutOfAccuracy = 0;
+      }
+    }
 
     double distanceToTrack =
         track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
@@ -371,7 +426,7 @@ class _MapWidgetState extends State<MapWidget> {
 
     // Check if location is in track
 
-    if (!onTrack && (loc.accuracy! < minAccuracy)) {
+    if (!onTrack) {
       // First time location is on track
       if (distanceToTrack < onTrackDistance) {
         pointsOffTrack = 0;
@@ -387,8 +442,7 @@ class _MapWidgetState extends State<MapWidget> {
       }
     } else {
       // User is on track
-      if (onTrack &&
-          (distanceToTrack > offTrackDistance && loc.accuracy! < minAccuracy)) {
+      if (onTrack && (distanceToTrack > offTrackDistance)) {
         // Location is moving away
         pointsOffTrack += 1;
         pointsOnTrack = 0;
@@ -430,13 +484,12 @@ class _MapWidgetState extends State<MapWidget> {
         }
       }
     }
-    debugPrint('pointsOffTrack');
-    debugPrint('${pointsOffTrack}');
 
-    userTrack!.setPointsOnTrack(pointsOnTrack);
-    userTrack!.setPointsOffTrack(pointsOffTrack);
-    userTrack!.setOnTrack(onTrack);
-    userTrack!.setDistanteToExercise(minDistance);
+    userTrack.setPointsOnTrack(pointsOnTrack);
+    userTrack.setPointsOffTrack(pointsOffTrack);
+    userTrack.setOnTrack(onTrack);
+    userTrack.setDistanteToExercise(minDistance);
+    userTrack.setAccuracy(loc.accuracy!);
     userTrack.captures += 1;
   }
 

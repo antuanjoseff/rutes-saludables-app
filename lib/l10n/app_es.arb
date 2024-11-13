@@ -26,5 +26,6 @@
     "centerMap": "Center map",
     "notificationTitle":  "UdGsalut",
     "notificationContent": "Rutas saludables",
-    "distToExercise": "Ejercicio más cercano"
+    "distToExercise": "Ejercicio más cercano",
+    "warningAccuracy": "La precisión del GPS es baja"
     }

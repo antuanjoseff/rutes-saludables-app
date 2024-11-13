@@ -31,11 +31,10 @@ class _TrackStatsState extends State<TrackStats> {
 
   List<String> getListItems() {
     List<String> items = [];
-    items.add("On track (captures)");
-    items.add("Dist. to exercise");
-    items.add("Points on track");
-    items.add("Points off track");
-    items.add("Dist. to track");
+    items.add("Captures (on track)");
+    items.add("Dist. to track / exercise");
+    items.add("Accuracy /Points out of Accuracy");
+    items.add("Points on track / off track");
     items.add("Track length");
     items.add("Altitude");
     items.add("Time elapsed");
@@ -44,11 +43,12 @@ class _TrackStatsState extends State<TrackStats> {
 
   List<String> getListContent() {
     List<String> items = [];
-    items.add('${_track.getOnTrack()} (${_track.captures})');
-    items.add('${formatDistance(_track.getDistToExercise())}');
-    items.add('${_track.getPointsOnTrack()}');
-    items.add('${_track.getPointsOffTrack()}');
-    items.add(formatDistance(_track.trackDistance));
+    items.add('${_track.captures} (${_track.getOnTrack()})');
+    items.add(
+        '${formatDistance(_track.trackDistance)} / ${formatDistance(_track.getDistToExercise())}');
+    items.add(
+        '${_track.getAccuracy().toStringAsFixed(2)}m / ${_track.pointsOutOfAccuracy}');
+    items.add('${_track.getPointsOnTrack()} / ${_track.getPointsOffTrack()}');
     items.add(formatDistance(_track.length));
     items.add('${_track.altitude}');
 
