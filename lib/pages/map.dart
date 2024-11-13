@@ -71,11 +71,11 @@ class _MapWidgetState extends State<MapWidget> {
   late Line trackLine;
   bool onTrack = false;
   bool ignoreLowAccuracy = false;
-  int minNumberOfConsecutivePoints = 2;
+  int minNumberOfConsecutivePoints = 1;
   int minAccuracy = 15; //meters
   int exerciseDistance = 10; //meters
-  int onTrackDistance = 7; //meters
-  int offTrackDistance = 50; //meters
+  int onTrackDistance = 16; //meters
+  int offTrackDistance = 16; //meters
   int pointsOutOfAccuracy = 0; //meters
 
   int pointsOffTrack = 0;
@@ -178,9 +178,10 @@ class _MapWidgetState extends State<MapWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-            title: Text(AppLocalizations.of(context)!.alert),
+            title: Text(AppLocalizations.of(context)!.alert,
+                style: TextStyle(color: Colors.white)),
             backgroundColor: redUdG,
-            content: Text(msg),
+            content: Text(msg, style: TextStyle(color: Colors.white)),
             actions: [
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -329,7 +330,6 @@ class _MapWidgetState extends State<MapWidget> {
 
     hasLocationPermission = await requestLocationService();
     if (hasLocationPermission && initialLocation == null) {
-      initialLocation = await getCurrentLocation();
       if (mounted) {
         BackgroundLocation.setAndroidNotification(
           title: AppLocalizations.of(context)!.notificationTitle,
@@ -344,7 +344,12 @@ class _MapWidgetState extends State<MapWidget> {
 
       await listenBackgroundLocations();
       _myLocationEnabled = true;
-      // setState(() {});
+
+      getCurrentLocation().then((value) {
+        setState(() {
+          initialLocation = value;
+        });
+      });
     }
   }
 
@@ -435,6 +440,8 @@ class _MapWidgetState extends State<MapWidget> {
           onTrack = true;
           // five consecutive points on track (minus 5 metres)
           playSound('sounds/on_track.mp3');
+          snackbar(
+              context, 'success', AppLocalizations.of(context)!.trackReached);
         }
       } else {
         pointsOffTrack += 1;

@@ -17,6 +17,7 @@
     "altitude": "Altitude",
     "movingTime": "Elapsed time",
     "alert": "Alert!",
+    "trackReached": "You are on track",
     "movingAwayFromTrack": "You are moving away from track",
     "wantToSeeVideo": "Do you want to see a recommended exercise?",
     "ok": "OK",
