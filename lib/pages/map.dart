@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:background_location/background_location.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -25,6 +24,7 @@ import '../models/gps.dart';
 import 'poi_details.dart';
 import 'track_stats.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:vibration/vibration.dart';
 
 class MapPage extends StatelessWidget {
   final Itinerary itinerary;
@@ -72,7 +72,7 @@ class _MapWidgetState extends State<MapWidget> {
   bool onTrack = false;
   bool ignoreLowAccuracy = false;
   int minNumberOfConsecutivePoints = 1;
-  int minAccuracy = 15; //meters
+  int minAccuracy = 35; //meters
   int exerciseDistance = 10; //meters
   int onTrackDistance = 16; //meters
   int offTrackDistance = 16; //meters
@@ -353,7 +353,7 @@ class _MapWidgetState extends State<MapWidget> {
   Future<void> listenBackgroundLocations() async {
     BackgroundLocation
         .stopLocationService(); //To ensure that previously started services have been stopped, if desired
-    BackgroundLocation.startLocationService(distanceFilter: 0);
+    BackgroundLocation.startLocationService(distanceFilter: 5);
     BackgroundLocation.getLocationUpdates((location) {
       handleNewLocation(location);
     });
@@ -368,15 +368,23 @@ class _MapWidgetState extends State<MapWidget> {
 
   Future<void> playSound(String sound) async {
     await player.setVolume(1);
-    // await player.setReleaseMode(ReleaseMode.loop);
     player.play(AssetSource(sound));
+    bool? vibrate = await Vibration.hasVibrator();
+    bool? pattern = await Vibration.hasCustomVibrationsSupport();
+    if (vibrate == true) {
+      if (pattern == true) {
+        Vibration.vibrate(pattern: [500, 500, 500, 500]);
+      } else {
+        Vibration.vibrate();
+      }
+    }
   }
 
   Future<bool> isValidAccuracy(double accuracy) async {
     return accuracy < minAccuracy;
   }
 
-  Future<bool> openDialogConfirmWpt() async {
+  Future<bool> openAccuracyWarning() async {
     return await showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -399,6 +407,7 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   void handleNewLocation(Location loc) async {
+    playSound('sounds/on_track.mp3');
     lastLocation = loc;
     if (!ignoreLowAccuracy) {
       bool locationIsValid = await isValidAccuracy(loc.accuracy!);
@@ -406,7 +415,7 @@ class _MapWidgetState extends State<MapWidget> {
         userTrack.pointsOutOfAccuracy += 1;
         if (userTrack.pointsOutOfAccuracy > minNumberOfConsecutivePoints) {
           ignoreLowAccuracy = true;
-          bool confirm = await openDialogConfirmWpt();
+          bool confirm = await openAccuracyWarning();
           if (confirm) {
             ignoreLowAccuracy = true;
             minNumberOfConsecutivePoints += minNumberOfConsecutivePoints;
