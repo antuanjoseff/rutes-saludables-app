@@ -141,7 +141,6 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   void initState() {
-    debugPrint('INIT STATE');
     userTrack = Track([]);
     _campus = widget.itinerary.campus;
     _title = widget.itinerary.title;
@@ -164,10 +163,8 @@ class _MapWidgetState extends State<MapWidget> {
       if (status == ServiceStatus.enabled) {
         snackbar(context, 'success', 'GPS enabled!!');
         await listenBackgroundLocations();
-        debugPrint('GPS enabled!!');
       } else {
         snackbar(context, 'error', 'GPS disabled!!');
-        debugPrint('GPS disabled!!');
       }
     });
     super.initState(); //comes first for initState();
@@ -306,7 +303,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   void _onMapCreated(MapLibreMapController controller) async {
     if (!mounted) return;
-    debugPrint('MAP CREATED');
+
     mapController = controller;
     controller!.addListener(_onMapChanged);
     resolution = await mapController!.getMetersPerPixelAtLatitude(
@@ -402,7 +399,6 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   void handleNewLocation(Location loc) async {
-    debugPrint('HANDLE NEW LOCATION');
     lastLocation = loc;
     if (!ignoreLowAccuracy) {
       bool locationIsValid = await isValidAccuracy(loc.accuracy!);
@@ -424,7 +420,6 @@ class _MapWidgetState extends State<MapWidget> {
 
     double distanceToTrack =
         track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
-    debugPrint('Distance to track: ${distanceToTrack}');
 
     userTrack.push(createWptFromLocation(loc));
     userTrack.setTrackDistance(distanceToTrack);
@@ -533,7 +528,6 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> _onStyleCallback() async {
-    debugPrint('CREATED CALLBACK..........................');
     addImageFromAsset("exercisePoint", "assets/marker_salut.png");
     addImageFromAsset("poi", "assets/marker_poi.png");
 

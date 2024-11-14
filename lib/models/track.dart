@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geoxml/geoxml.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'bounds.dart' as my;
-import '../utils/util.dart';
+import 'dart:math';
 
 class Track {
   // Original track
@@ -154,7 +154,6 @@ class Track {
     trackSegment.add(wpt);
     length += inc;
     altitude = wpt.ele!.floor();
-    debugPrint(' PUSH      $trackDistance');
   }
 
   void insert(int position, Wpt wpt) {
@@ -190,12 +189,28 @@ class Track {
     int numSegment = getClosestSegmentToLatLng(gpxCoords, clickedPoint);
     print('Closest at ($numSegment) executed in ${stopwatch.elapsed}');
 
-    LatLng P = projectionPoint(
-        gpxCoords[numSegment], gpxCoords[numSegment + 1], clickedPoint);
+    LatLng A = gpxCoords[numSegment];
+    LatLng B = gpxCoords[numSegment + 1];
 
-    double dist = getDistanceFromLatLonInMeters(clickedPoint, P);
+    LatLng P = _pointProjectedToLine(A, B, clickedPoint);
 
-    return (dist, numSegment, P);
+    // Check if point is inside segment lint
+    if (P.latitude >= min(A.latitude, B.latitude) &&
+        (P.latitude <= max(A.latitude, B.latitude))) {
+      double dist = getDistanceFromLatLonInMeters(clickedPoint, P);
+      return (dist, numSegment, P);
+    } else {
+      // if point not inside segment line, then return the closest node of the segment
+      if (getDistanceFromLatLonInMeters(A, P) <
+          getDistanceFromLatLonInMeters(B, P)) {
+        double dist = getDistanceFromLatLonInMeters(clickedPoint, A);
+
+        return (dist, numSegment, A);
+      } else {
+        double dist = getDistanceFromLatLonInMeters(clickedPoint, B);
+        return (dist, numSegment, B);
+      }
+    }
   }
 
   double trackToPointDistance(LatLng location) {
@@ -211,7 +226,8 @@ class Track {
 
     // return 0;
     for (var i = 0; i < gpxCoords.length - 1; i++) {
-      distance = minDistance(gpxCoords[i], gpxCoords[i + 1], point);
+      distance = _distanceBetweenSegmentAndPoint(
+          gpxCoords[i], gpxCoords[i + 1], point);
 
       if (distance < minD) {
         minD = distance;
@@ -232,5 +248,97 @@ class Track {
 
   void setWptAt(int idx, Wpt wpt) {
     trackSegment[idx] = wpt;
+  }
+
+  double getDistanceFromLatLonInMeters(LatLng origin, LatLng target) {
+    double lat1 = origin.latitude;
+    double lat2 = target.latitude;
+    double lon1 = origin.longitude;
+    double lon2 = target.longitude;
+
+    int R = 6371; // Radius of the earth in km
+    double dLat = _deg2rad(lat2 - lat1); // deg2rad below
+    double dLon = _deg2rad(lon2 - lon1);
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(_deg2rad(lat1)) *
+            cos(_deg2rad(lat2)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double d = R * c; // Distance in km
+    return d * 1000; //distance in meters
+  }
+
+  double _deg2rad(double deg) {
+    return deg / 180.0 * pi;
+  }
+
+  LatLng _pointProjectedToLine(LatLng X, LatLng Y, LatLng P) {
+    double slope = (Y.latitude - X.latitude) / (Y.longitude - X.longitude);
+    double perpendicular = -1 / slope;
+
+    double b = X.latitude - slope * X.longitude;
+    double b2 = P.latitude + (P.longitude / slope);
+
+    double intersectionX = (b2 - b) / (slope - perpendicular);
+    double intersectionY = (slope * intersectionX) + b;
+
+    return LatLng(intersectionY, intersectionX);
+  }
+
+  double _distanceBetweenSegmentAndPoint(LatLng A, LatLng B, LatLng P) {
+    // vector AB
+    List<double> AB = [];
+
+    AB.add(B.longitude - A.longitude);
+    AB.add(B.latitude - A.latitude);
+
+    // vector BP
+    List<double> BP = [];
+    BP.add(P.longitude - B.longitude);
+    BP.add(P.latitude - B.latitude);
+
+    // vector AP
+    List<double> AP = [];
+    AP.add(P.longitude - A.longitude);
+    AP.add(P.latitude - A.latitude);
+
+    // Variables to store dot product
+    double AB_BP, AB_AP;
+
+    // Calculating the dot product
+    AB_BP = (AB[0] * BP[0] + AB[1] * BP[1]);
+    AB_AP = (AB[0] * AP[0] + AB[1] * AP[1]);
+
+    // Minimum distance from
+    // point E to the line segment
+    double reqAns = 0;
+
+    // Case 1
+    if (AB_BP > 0) {
+      // Finding the magnitude
+      double y = P.latitude - B.latitude;
+      double x = P.longitude - B.longitude;
+      reqAns = sqrt(x * x + y * y);
+    }
+
+    // Case 2
+    else if (AB_AP < 0) {
+      double y = P.latitude - A.latitude;
+      double x = P.longitude - A.longitude;
+      reqAns = sqrt(x * x + y * y);
+    }
+
+    // Case 3
+    else {
+      // Finding the perpendicular distance
+      double x1 = AB[0];
+      double y1 = AB[1];
+      double x2 = AP[0];
+      double y2 = AP[1];
+      double mod = sqrt(x1 * x1 + y1 * y1);
+      reqAns = ((x1 * y2 - y1 * x2) / mod).abs();
+    }
+    return reqAns;
   }
 }
