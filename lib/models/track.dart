@@ -184,38 +184,45 @@ class Track {
     gpxCoords[idx] = latlon;
   }
 
-  (double, int, LatLng) getCandidateNode(LatLng clickedPoint) {
+  void changeNodeAt(int idx, LatLng coordinate) {
+    gpxCoords[idx] = coordinate;
+  }
+
+  Wpt getWptAt(int idx) {
+    return trackSegment[idx];
+  }
+
+  void setWptAt(int idx, Wpt wpt) {
+    trackSegment[idx] = wpt;
+  }
+
+  double trackToPointDistance(LatLng point) {
     Stopwatch stopwatch = new Stopwatch()..start();
-    int numSegment = getClosestSegmentToLatLng(gpxCoords, clickedPoint);
+    int numSegment = getClosestSegmentToLatLng(gpxCoords, point);
     print('Closest at ($numSegment) executed in ${stopwatch.elapsed}');
 
     LatLng A = gpxCoords[numSegment];
     LatLng B = gpxCoords[numSegment + 1];
 
-    LatLng P = _pointProjectedToLine(A, B, clickedPoint);
+    LatLng P = _projectPointToSegment(A, B, point);
 
     // Check if point is inside segment lint
     if (P.latitude >= min(A.latitude, B.latitude) &&
         (P.latitude <= max(A.latitude, B.latitude))) {
-      double dist = getDistanceFromLatLonInMeters(clickedPoint, P);
-      return (dist, numSegment, P);
+      double dist = getDistanceFromLatLonInMeters(point, P);
+      return dist;
     } else {
       // if point not inside segment line, then return the closest node of the segment
       if (getDistanceFromLatLonInMeters(A, P) <
           getDistanceFromLatLonInMeters(B, P)) {
-        double dist = getDistanceFromLatLonInMeters(clickedPoint, A);
+        double dist = getDistanceFromLatLonInMeters(point, A);
 
-        return (dist, numSegment, A);
+        return dist;
       } else {
-        double dist = getDistanceFromLatLonInMeters(clickedPoint, B);
-        return (dist, numSegment, B);
+        double dist = getDistanceFromLatLonInMeters(point, B);
+        return dist;
       }
     }
-  }
-
-  double trackToPointDistance(LatLng location) {
-    var (distance, numSement, point) = getCandidateNode(location);
-    return distance;
   }
 
   int getClosestSegmentToLatLng(gpxCoords, point) {
@@ -236,18 +243,6 @@ class Track {
     }
 
     return closestSegment;
-  }
-
-  void changeNodeAt(int idx, LatLng coordinate) {
-    gpxCoords[idx] = coordinate;
-  }
-
-  Wpt getWptAt(int idx) {
-    return trackSegment[idx];
-  }
-
-  void setWptAt(int idx, Wpt wpt) {
-    trackSegment[idx] = wpt;
   }
 
   double getDistanceFromLatLonInMeters(LatLng origin, LatLng target) {
@@ -273,7 +268,7 @@ class Track {
     return deg / 180.0 * pi;
   }
 
-  LatLng _pointProjectedToLine(LatLng X, LatLng Y, LatLng P) {
+  LatLng _projectPointToSegment(LatLng X, LatLng Y, LatLng P) {
     double slope = (Y.latitude - X.latitude) / (Y.longitude - X.longitude);
     double perpendicular = -1 / slope;
 

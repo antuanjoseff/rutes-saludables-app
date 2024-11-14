@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 import 'package:flutter/rendering.dart';
@@ -10,6 +11,7 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:flutter/material.dart';
 import 'package:geoxml/geoxml.dart';
 import 'package:rutes_saludables/models/data.dart';
+import 'package:rutes_saludables/models/user_mobility.dart';
 
 import '../widgets/play_youtube.dart';
 import '../widgets/mapScale.dart';
@@ -20,6 +22,7 @@ import '../models/itinerary.dart';
 import '../models/track.dart';
 import '../models/pois.dart';
 import '../models/gps.dart';
+import '../models/user_mobility.dart';
 
 import 'poi_details.dart';
 import 'track_stats.dart';
@@ -69,19 +72,6 @@ class _MapWidgetState extends State<MapWidget> {
   late String _title;
   late String _campus;
   late Line trackLine;
-  bool onTrack = false;
-  bool ignoreLowAccuracy = false;
-  int minNumberOfConsecutivePoints = 1;
-  int minAccuracy = 35; //meters
-  int exerciseDistance = 10; //meters
-  int onTrackDistance = 16; //meters
-  int offTrackDistance = 16; //meters
-  int pointsOutOfAccuracy = 0; //meters
-
-  int pointsOffTrack = 0;
-  int pointsOnTrack = 0;
-
-  List<String> alreadyReached = [];
 
   final stopwatch = Stopwatch();
   bool _isMoving = false;
@@ -99,23 +89,16 @@ class _MapWidgetState extends State<MapWidget> {
   Location? lastLocation;
   StreamSubscription? locationSubscription;
 
-  double trackWidth = 6;
-  Color trackColor = Colors.orange; // Selects a mid-range green.
-
   MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.none;
   MyLocationRenderMode _myLocationRenderMode = MyLocationRenderMode.normal;
   bool _myLocationEnabled = false;
-
-  ButtonStyle udgStyle = ElevatedButton.styleFrom(
-      backgroundColor: blueUdG, foregroundColor: Colors.white);
-
-  ButtonStyle alertDialogButtons = ElevatedButton.styleFrom(
-      backgroundColor: Colors.white, foregroundColor: redUdG);
 
   LatLng initView = LatLng(42.0, 3.0);
 
   final player = AudioPlayer();
   final gps = Gps();
+
+  late UserMobility userMobility;
 
   @override
   void dispose() {
@@ -158,6 +141,13 @@ class _MapWidgetState extends State<MapWidget> {
 
     track = Track(wpts);
     track!.init();
+    userMobility = UserMobility(wpts, _points);
+    StreamSubscription<String> subscription =
+        userMobility.streamController.stream.listen(
+      (String eventName) {
+        handleMobilityEvent(eventName);
+      },
+    );
 
     Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
       if (status == ServiceStatus.enabled) {
@@ -170,15 +160,40 @@ class _MapWidgetState extends State<MapWidget> {
     super.initState(); //comes first for initState();
   }
 
+  void handleMobilityEvent(eventName) async {
+    switch (eventName) {
+      case 'accuracyWarning':
+        bool confirm = await openAccuracyWarning();
+        if (confirm) {}
+        break;
+      case 'userOnTrack':
+        playSound('sounds/on_track.mp3');
+        snackbar(
+            context, 'success', AppLocalizations.of(context)!.trackReached);
+        break;
+      case 'userOffTrack':
+        playSound('sounds/off_track.mp3');
+        _dialogMessageBuilder(
+            context, AppLocalizations.of(context)!.movingAwayFromTrack);
+        break;
+      case 'onExerciseDistance':
+        await playSound('sounds/small_sound.mp3');
+        _dialogBuilder(
+            context,
+            userMobility
+                .alreadyReached[userMobility.alreadyReached.length - 1]);
+    }
+  }
+
   Future<void> _dialogMessageBuilder(BuildContext context, String msg) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
             title: Text(AppLocalizations.of(context)!.alert,
-                style: TextStyle(color: Colors.white)),
+                style: fontColorWhite),
             backgroundColor: redUdG,
-            content: Text(msg, style: TextStyle(color: Colors.white)),
+            content: Text(msg, style: fontColorWhite),
             actions: [
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -213,8 +228,7 @@ class _MapWidgetState extends State<MapWidget> {
   Widget cancelButton(contect) {
     return ElevatedButton(
       style: alertDialogButtons,
-      child: Text(AppLocalizations.of(context)!.cancel,
-          style: TextStyle(color: redUdG)),
+      child: Text(AppLocalizations.of(context)!.cancel, style: fontColorRedUdg),
       onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
       },
@@ -230,9 +244,7 @@ class _MapWidgetState extends State<MapWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(AppLocalizations.of(context)!.udgHealth,
-                    style: const TextStyle(
-                      color: Colors.white,
-                    )),
+                    style: fontColorWhite),
                 // SizedBox(width: 10),
                 // Image(
                 //   image: AssetImage('assets/images/salut_no_text.png'),
@@ -242,9 +254,7 @@ class _MapWidgetState extends State<MapWidget> {
             ),
             backgroundColor: redUdG,
             content: Text(AppLocalizations.of(context)!.wantToSeeVideo,
-                style: const TextStyle(
-                  color: Colors.white,
-                )),
+                style: fontColorWhite),
             actions: [
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 launchButton(context, url),
@@ -254,6 +264,17 @@ class _MapWidgetState extends State<MapWidget> {
             ]);
       },
     );
+  }
+
+  String getVideoUrl(String id, Points pts) {
+    var features = pts.features;
+    for (var i = 0; i < features.length; i++) {
+      var f = features[i];
+      if (f.properties.id == id) {
+        return 'https://' + f.properties.description;
+      }
+    }
+    return '';
   }
 
   void onFeatureTap(dynamic featureId, Point<double> point, LatLng latLng) {
@@ -380,16 +401,12 @@ class _MapWidgetState extends State<MapWidget> {
     }
   }
 
-  Future<bool> isValidAccuracy(double accuracy) async {
-    return accuracy < minAccuracy;
-  }
-
   Future<bool> openAccuracyWarning() async {
     return await showDialog(
         context: context,
         builder: (context) => AlertDialog(
                 title: Text(AppLocalizations.of(context)!.warningAccuracy,
-                    style: TextStyle(color: Colors.white)),
+                    style: fontColorWhite),
                 backgroundColor: redUdG,
                 actions: [
                   Row(
@@ -408,23 +425,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   void handleNewLocation(Location loc) async {
     lastLocation = loc;
-    if (!ignoreLowAccuracy) {
-      bool locationIsValid = await isValidAccuracy(loc.accuracy!);
-      if (!locationIsValid) {
-        userTrack.pointsOutOfAccuracy += 1;
-        if (userTrack.pointsOutOfAccuracy > minNumberOfConsecutivePoints) {
-          ignoreLowAccuracy = true;
-          bool confirm = await openAccuracyWarning();
-          if (confirm) {
-            ignoreLowAccuracy = true;
-            minNumberOfConsecutivePoints += minNumberOfConsecutivePoints;
-          }
-          return;
-        }
-      } else {
-        userTrack.pointsOutOfAccuracy = 0;
-      }
-    }
+    userMobility.handleAccuray(loc);
 
     double distanceToTrack =
         track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
@@ -432,72 +433,17 @@ class _MapWidgetState extends State<MapWidget> {
     userTrack.push(createWptFromLocation(loc));
     userTrack.setTrackDistance(distanceToTrack);
 
-    // Check if location is in track
+    userMobility.handleOnTrack(distanceToTrack);
 
-    if (!onTrack) {
-      // First time location is on track
-      if (distanceToTrack < onTrackDistance) {
-        pointsOffTrack = 0;
-        pointsOnTrack += 1;
-        if (pointsOnTrack > minNumberOfConsecutivePoints) {
-          onTrack = true;
-          // five consecutive points on track (minus 5 metres)
-          playSound('sounds/on_track.mp3');
-          snackbar(
-              context, 'success', AppLocalizations.of(context)!.trackReached);
-        }
-      } else {
-        pointsOffTrack += 1;
-        pointsOnTrack = 0;
-      }
-    } else {
-      // User is on track
-      if (onTrack && (distanceToTrack > offTrackDistance)) {
-        // Location is moving away
-        pointsOffTrack += 1;
-        pointsOnTrack = 0;
-        if (pointsOffTrack > minNumberOfConsecutivePoints) {
-          playSound('sounds/off_track.mp3');
-          onTrack = false;
-          _dialogMessageBuilder(
-              context, AppLocalizations.of(context)!.movingAwayFromTrack);
-        }
-      } else {
-        pointsOnTrack += 1;
-        pointsOffTrack = 0;
-      }
-
-      if (!userMovedMap) {
-        centerMap(LatLng(loc.latitude!, loc.longitude!));
-      }
+    if (!userMovedMap) {
+      centerMap(LatLng(loc.latitude!, loc.longitude!));
     }
 
-    // Loop through all track points
-    bool inRange = false;
-    double minDistance = double.infinity;
+    double minDistance = userMobility.handleExercisePoints(loc);
 
-    for (var a = 0; a < _points.features.length && !inRange; a++) {
-      var p = _points.features[a];
-      var coords = p.geometry.coordinates;
-      double distance = getDistanceFromLatLonInMeters(
-          LatLng(coords[1], coords[0]), LatLng(loc.latitude!, loc.longitude!));
-      if (distance < minDistance) {
-        minDistance = distance;
-      }
-      if (distance < exerciseDistance) {
-        inRange = true;
-        String url = getVideoUrl(p.properties.id, _points);
-        if (!alreadyReached.contains(url)) {
-          await playSound('sounds/small_sound.mp3');
-          alreadyReached.add(url);
-          _dialogBuilder(context, url);
-        }
-      }
-    }
-
-    userTrack.setPointsOnTrack(pointsOnTrack);
-    userTrack.setPointsOffTrack(pointsOffTrack);
-    userTrack.setOnTrack(onTrack);
+    userTrack.setPointsOnTrack(userMobility.pointsOnTrack);
+    userTrack.setPointsOffTrack(userMobility.pointsOffTrack);
+    userTrack.setOnTrack(userMobility.onTrack);
     userTrack.setDistanteToExercise(minDistance);
     userTrack.setAccuracy(loc.accuracy!);
     userTrack.captures += 1;
@@ -655,17 +601,6 @@ class _MapWidgetState extends State<MapWidget> {
       ],
     );
   }
-}
-
-String getVideoUrl(String id, Points pts) {
-  var features = pts.features;
-  for (var i = 0; i < features.length; i++) {
-    var f = features[i];
-    if (f.properties.id == id) {
-      return 'https://' + f.properties.description;
-    }
-  }
-  return '';
 }
 
 Properties? getPoiInfo(String id, List<Feature> pois) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rutes_saludables/models/itinerary.dart';
-import 'coordinates.dart';
 import 'pois.dart';
+import 'dart:async';
 
 Points pois = Points(type: "FeatureCollection", features: pointsOfInterest);
 
@@ -910,3 +910,14 @@ const Color blueUdG = Color(0xff3242a0);
 const Color redUdG = Color(0xff6a1a32);
 const Color ochreUdG = Color(0xfff5e1a4);
 const Color greyUdG = Color(0xffd9d9d6);
+const Color trackColor = Colors.orange; // Selects a mid-range green.
+const double trackWidth = 6;
+
+TextStyle fontColorWhite = TextStyle(color: Colors.white);
+TextStyle fontColorRedUdg = TextStyle(color: redUdG);
+
+ButtonStyle udgStyle = ElevatedButton.styleFrom(
+    backgroundColor: blueUdG, foregroundColor: Colors.white);
+
+ButtonStyle alertDialogButtons = ElevatedButton.styleFrom(
+    backgroundColor: Colors.white, foregroundColor: redUdG);
