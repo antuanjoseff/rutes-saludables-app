@@ -913,8 +913,8 @@ const Color greyUdG = Color(0xffd9d9d6);
 const Color trackColor = Colors.orange; // Selects a mid-range green.
 const double trackWidth = 6;
 
-TextStyle fontColorWhite = TextStyle(color: Colors.white);
-TextStyle fontColorRedUdg = TextStyle(color: redUdG);
+TextStyle fontColorWhite = const TextStyle(color: Colors.white);
+TextStyle fontColorRedUdg = const TextStyle(color: redUdG);
 
 ButtonStyle udgStyle = ElevatedButton.styleFrom(
     backgroundColor: blueUdG, foregroundColor: Colors.white);

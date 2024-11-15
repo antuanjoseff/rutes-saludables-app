@@ -32,7 +32,7 @@ import 'package:vibration/vibration.dart';
 class MapPage extends StatelessWidget {
   final Itinerary itinerary;
 
-  MapPage({
+  const MapPage({
     super.key,
     required this.itinerary,
   });
@@ -89,11 +89,12 @@ class _MapWidgetState extends State<MapWidget> {
   Location? lastLocation;
   StreamSubscription? locationSubscription;
 
-  MyLocationTrackingMode _myLocationTrackingMode = MyLocationTrackingMode.none;
+  final MyLocationTrackingMode _myLocationTrackingMode =
+      MyLocationTrackingMode.none;
   MyLocationRenderMode _myLocationRenderMode = MyLocationRenderMode.normal;
   bool _myLocationEnabled = false;
 
-  LatLng initView = LatLng(42.0, 3.0);
+  LatLng initView = const LatLng(42.0, 3.0);
 
   final player = AudioPlayer();
   final gps = Gps();
@@ -118,11 +119,12 @@ class _MapWidgetState extends State<MapWidget> {
           ],
         ),
         backgroundColor: type == 'success' ? Colors.green : Colors.red,
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
 
+  @override
   void initState() {
     userTrack = Track([]);
     _campus = widget.itinerary.campus;
@@ -258,7 +260,7 @@ class _MapWidgetState extends State<MapWidget> {
             actions: [
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 launchButton(context, url),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 cancelButton(context),
               ])
             ]);
@@ -271,7 +273,7 @@ class _MapWidgetState extends State<MapWidget> {
     for (var i = 0; i < features.length; i++) {
       var f = features[i];
       if (f.properties.id == id) {
-        return 'https://' + f.properties.description;
+        return 'https://${f.properties.description}';
       }
     }
     return '';
@@ -326,7 +328,7 @@ class _MapWidgetState extends State<MapWidget> {
     if (!mounted) return;
 
     mapController = controller;
-    controller!.addListener(_onMapChanged);
+    controller.addListener(_onMapChanged);
     resolution = await mapController!.getMetersPerPixelAtLatitude(
         mapController!.cameraPosition!.target.latitude);
 
@@ -529,7 +531,7 @@ class _MapWidgetState extends State<MapWidget> {
     return Stack(
       children: [
         MapLibreMap(
-          minMaxZoomPreference: MinMaxZoomPreference(8, 19),
+          minMaxZoomPreference: const MinMaxZoomPreference(8, 19),
           trackCameraPosition: true,
           onMapCreated: _onMapCreated,
           myLocationEnabled: _myLocationEnabled,
@@ -576,8 +578,9 @@ class _MapWidgetState extends State<MapWidget> {
                                   TrackStats(track: userTrack)));
                     },
                     child: Text(AppLocalizations.of(context)!.trackData,
-                        style: TextStyle(color: Colors.white, fontSize: 18))),
-                SizedBox(width: 10),
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 18))),
+                const SizedBox(width: 10),
                 if (userMovedMap && lastLocation != null)
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -595,7 +598,8 @@ class _MapWidgetState extends State<MapWidget> {
                         setState(() {});
                       },
                       child: Text(AppLocalizations.of(context)!.centerMap,
-                          style: TextStyle(color: Colors.white, fontSize: 18))),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 18))),
               ],
             ))
       ],

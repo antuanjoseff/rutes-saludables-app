@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/home.dart';
 import 'package:location/location.dart';
-import './models/gps.dart';
 import 'utils/user_simple_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

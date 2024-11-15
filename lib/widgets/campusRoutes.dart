@@ -5,7 +5,7 @@ import 'package:rutes_saludables/pages/map.dart';
 class CampusRoutes extends StatefulWidget {
   final List campusRoutes;
 
-  CampusRoutes({
+  const CampusRoutes({
     super.key,
     required this.campusRoutes,
   });
@@ -39,22 +39,21 @@ class _CampusRoutesState extends State<CampusRoutes> {
                 children: [
                   Text(item.title, style: itineraryStyleText),
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Icon(Icons.directions_walk, color: Colors.white),
+                    const Icon(Icons.directions_walk, color: Colors.white),
                     const SizedBox(
                       width: 5,
                     ),
-                    Text(item.distance.toString() + 'km',
-                        style: itineraryStyleText),
+                    Text('${item.distance}km', style: itineraryStyleText),
                   ]),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.watch_later_outlined, color: Colors.white),
+                      const Icon(Icons.watch_later_outlined,
+                          color: Colors.white),
                       const SizedBox(
                         width: 5,
                       ),
-                      Text(item.duration.toString() + 'm',
-                          style: itineraryStyleText),
+                      Text('${item.duration}m', style: itineraryStyleText),
                     ],
                   ),
                   GestureDetector(

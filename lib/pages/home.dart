@@ -5,7 +5,7 @@ import '../widgets/NextPageAnimation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _MyHomePageState();
@@ -21,7 +21,7 @@ class _MyHomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Color(0xff3242a0),
+          backgroundColor: const Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
           // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(AppLocalizations.of(context)!.udgHealth)),
@@ -46,7 +46,7 @@ class _MyHomePageState extends State<HomePage> {
                 color: Colors.blue.withOpacity(0.7),
                 borderRadius: BorderRadius.circular(20),
               ),
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   Text(

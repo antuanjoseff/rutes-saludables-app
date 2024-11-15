@@ -8,13 +8,14 @@ class MapLegend extends StatelessWidget {
   const MapLegend({super.key});
 
   @override
-  static TextStyle defaultStyle = TextStyle(fontSize: 15);
+  static TextStyle defaultStyle = const TextStyle(fontSize: 15);
 
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Padding(padding: EdgeInsets.all(10)),
+        const Padding(padding: EdgeInsets.all(10)),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [

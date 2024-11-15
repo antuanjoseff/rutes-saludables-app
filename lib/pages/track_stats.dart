@@ -55,7 +55,7 @@ class _TrackStatsState extends State<TrackStats> {
     String trackTime = UserSimplePreferences.getTrackTime();
     trackTime =
         _formatDuration(DateTime.now().difference(_track.getStartTime()));
-    items.add('${trackTime}');
+    items.add(trackTime);
 
     return items;
   }
@@ -87,7 +87,7 @@ class _TrackStatsState extends State<TrackStats> {
     trackDistance = double.parse(_track.getTrackDistance().toStringAsFixed(0));
 
     // defines a timer
-    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
       setState(() {
         // trackLength = formatDistance(_track.getLength());
         // trackDistance =
@@ -120,7 +120,7 @@ class _TrackStatsState extends State<TrackStats> {
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.trackUserInfo),
-          backgroundColor: Color(0xff3242a0),
+          backgroundColor: const Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
         body: Center(
@@ -135,7 +135,7 @@ class _TrackStatsState extends State<TrackStats> {
                     Text(listItems[index]),
                     Text(
                       listContent[index],
-                      style: TextStyle(fontSize: 25),
+                      style: const TextStyle(fontSize: 25),
                     ),
                   ],
                 )),

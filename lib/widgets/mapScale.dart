@@ -114,6 +114,7 @@ class _MapScaleState extends State<MapScale> {
 class LinePainter extends CustomPainter {
   @override
   double padding = 3;
+  @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = scaleForeground

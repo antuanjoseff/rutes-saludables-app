@@ -30,6 +30,7 @@ class AccordionPage extends StatefulWidget //__
 
 class _AccordionPageState extends State<AccordionPage> {
   late List _data;
+  @override
   void initState() {
     widget.itineraries.sort((a, b) => a.campus.compareTo(b.campus));
     _data = organizeRoutes(widget.itineraries);
@@ -41,7 +42,7 @@ class _AccordionPageState extends State<AccordionPage> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.healthyTracks),
-          backgroundColor: Color(0xff3242a0),
+          backgroundColor: const Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
         body: Accordion(

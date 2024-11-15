@@ -149,7 +149,7 @@ class UserMobility {
     for (var i = 0; i < features.length; i++) {
       var f = features[i];
       if (f.properties.id == id) {
-        return 'https://' + f.properties.description;
+        return 'https://${f.properties.description}';
       }
     }
     return '';

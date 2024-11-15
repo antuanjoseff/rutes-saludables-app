@@ -19,7 +19,7 @@ class _LegendPageState extends State<LegendPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xff3242a0),
+          backgroundColor: const Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
           title: Text(AppLocalizations.of(context)!.mapLegendTitle),
         ),
@@ -44,7 +44,7 @@ class _LegendPageState extends State<LegendPage> {
                         Text(AppLocalizations.of(context)!.wellcomePart2),
                         const Padding(padding: EdgeInsets.all(10)),
                         Text(AppLocalizations.of(context)!.mapIconsText),
-                        MapLegend()
+                        const MapLegend()
                       ],
                     ),
                   ),

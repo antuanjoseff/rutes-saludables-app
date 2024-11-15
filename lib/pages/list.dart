@@ -27,7 +27,7 @@ class _ListPageState extends State<ListPage> {
           title: const Text('Llistat de rutes'),
         ),
         body: Padding(
-          padding: EdgeInsets.all(30),
+          padding: const EdgeInsets.all(30),
           child: Column(
             children: data.map((item) => Text(item['campus'])).toList(),
           ),

@@ -197,7 +197,7 @@ class Track {
   }
 
   double trackToPointDistance(LatLng point) {
-    Stopwatch stopwatch = new Stopwatch()..start();
+    Stopwatch stopwatch = Stopwatch()..start();
     int numSegment = getClosestSegmentToLatLng(gpxCoords, point);
     print('Closest at ($numSegment) executed in ${stopwatch.elapsed}');
 
@@ -299,18 +299,18 @@ class Track {
     AP.add(P.latitude - A.latitude);
 
     // Variables to store dot product
-    double AB_BP, AB_AP;
+    double abBp, abAp;
 
     // Calculating the dot product
-    AB_BP = (AB[0] * BP[0] + AB[1] * BP[1]);
-    AB_AP = (AB[0] * AP[0] + AB[1] * AP[1]);
+    abBp = (AB[0] * BP[0] + AB[1] * BP[1]);
+    abAp = (AB[0] * AP[0] + AB[1] * AP[1]);
 
     // Minimum distance from
     // point E to the line segment
     double reqAns = 0;
 
     // Case 1
-    if (AB_BP > 0) {
+    if (abBp > 0) {
       // Finding the magnitude
       double y = P.latitude - B.latitude;
       double x = P.longitude - B.longitude;
@@ -318,7 +318,7 @@ class Track {
     }
 
     // Case 2
-    else if (AB_AP < 0) {
+    else if (abAp < 0) {
       double y = P.latitude - A.latitude;
       double x = P.longitude - A.longitude;
       reqAns = sqrt(x * x + y * y);

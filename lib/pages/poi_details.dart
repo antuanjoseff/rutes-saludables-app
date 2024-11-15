@@ -8,7 +8,7 @@ class PoiDetails extends StatefulWidget {
   final String content;
   final String? moreInfo;
 
-  PoiDetails({
+  const PoiDetails({
     super.key,
     required this.title,
     required this.content,
@@ -36,11 +36,11 @@ class _PoiDetailsState extends State<PoiDetails> {
 
   @override
   Widget build(BuildContext context) {
-    double _imgWidth = MediaQuery.of(context).size.width - 14;
+    double imgWidth = MediaQuery.of(context).size.width - 14;
     return Scaffold(
         appBar: AppBar(
           title: Text(_title),
-          backgroundColor: Color(0xff3242a0),
+          backgroundColor: const Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
         body: SingleChildScrollView(

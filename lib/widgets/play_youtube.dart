@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class MyVideo extends StatefulWidget {
-  MyVideo({
+  const MyVideo({
     super.key,
     required this.url,
     required this.title,
@@ -47,8 +47,8 @@ class _MyVideoState extends State<MyVideo> {
         if (orientation == Orientation.portrait) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(_campus + ' - ' + _title),
-              backgroundColor: Color(0xff3242a0),
+              title: Text('$_campus - $_title'),
+              backgroundColor: const Color(0xff3242a0),
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
             ),
             body: Column(

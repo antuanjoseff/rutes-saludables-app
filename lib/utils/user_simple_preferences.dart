@@ -16,27 +16,27 @@ class UserSimplePreferences {
   // GETTERS
   static bool getGpsEnabled() {
     final gpsEnabled = _preferences.getBool(_gpsEnabled);
-    return gpsEnabled == null ? false : gpsEnabled;
+    return gpsEnabled ?? false;
   }
 
   static bool getHasPermission() {
     final hasPermission = _preferences.getBool(_hasPermission);
-    return hasPermission == null ? false : hasPermission;
+    return hasPermission ?? false;
   }
 
   static String getTrackLength() {
     final trackLength = _preferences.getString(_trackLength);
-    return trackLength == null ? '0' : trackLength;
+    return trackLength ?? '0';
   }
 
   static String getTrackTime() {
     final trackTime = _preferences.getString(_trackTime);
-    return trackTime == null ? '' : trackTime;
+    return trackTime ?? '';
   }
 
   static String getTrackAltitude() {
     final trackAltitude = _preferences.getString(_trackAltitude);
-    return trackAltitude == null ? '' : trackAltitude;
+    return trackAltitude ?? '';
   }
 
   // SETTERS
