@@ -119,6 +119,11 @@ class _TrackStatsState extends State<TrackStats> {
 
     return Scaffold(
         appBar: AppBar(
+          leading: BackButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
           title: Text(AppLocalizations.of(context)!.trackUserInfo),
           backgroundColor: const Color(0xff3242a0),
           foregroundColor: Theme.of(context).colorScheme.onPrimary,

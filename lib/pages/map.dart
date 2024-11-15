@@ -80,6 +80,7 @@ class _MapWidgetState extends State<MapWidget> {
   int panTime = 0;
   bool trackCameroMove = true;
   bool userMovedMap = false;
+  bool exerciseDialogIsOpen = false;
 
   Track? track;
   late Track userTrack;
@@ -100,6 +101,13 @@ class _MapWidgetState extends State<MapWidget> {
   final gps = Gps();
 
   late UserMobility userMobility;
+  int currentEvent = 0;
+  List<String> events = [
+    'accuracyWarning',
+    'userOnTrack',
+    'userOffTrack',
+    'onExerciseDistance'
+  ];
 
   @override
   void dispose() {
@@ -107,19 +115,35 @@ class _MapWidgetState extends State<MapWidget> {
     super.dispose();
   }
 
-  void snackbar(context, type, myText) {
+  void snackbar(context, Icon icon, Color color, Text myText) {
+    // Close previous snackbar
+    if (exerciseDialogIsOpen) {
+      Navigator.pop(context);
+    }
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Row(
+        content: Column(
           children: [
-            Icon(type == 'success' ? Icons.thumb_up : Icons.warning_rounded,
-                color: Colors.white),
-            const SizedBox(width: 20),
-            Expanded(child: Text(myText))
+            Row(
+              children: [icon, const SizedBox(width: 10), myText],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, foregroundColor: color),
+                child: Text(
+                  AppLocalizations.of(context)!.ok,
+                ))
           ],
         ),
-        backgroundColor: type == 'success' ? Colors.green : Colors.red,
-        duration: const Duration(seconds: 3),
+        backgroundColor: color,
+        duration: Duration(minutes: 1),
       ),
     );
   }
@@ -144,6 +168,7 @@ class _MapWidgetState extends State<MapWidget> {
     track = Track(wpts);
     track!.init();
     userMobility = UserMobility(wpts, _points);
+    userMobility.alreadyReached = ["7"];
     StreamSubscription<String> subscription =
         userMobility.streamController.stream.listen(
       (String eventName) {
@@ -153,10 +178,20 @@ class _MapWidgetState extends State<MapWidget> {
 
     Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
       if (status == ServiceStatus.enabled) {
-        snackbar(context, 'success', 'GPS enabled!!');
+        snackbar(
+            context,
+            const Icon(Icons.satellite_alt_outlined, color: Colors.white),
+            blueUdG,
+            Text('GPS Enabled', style: fontColorWhite));
         await listenBackgroundLocations();
       } else {
-        snackbar(context, 'error', 'GPS disabled!!');
+        serviceEnabled = false;
+        hasLocationPermission = false;
+        snackbar(
+            context,
+            const Icon(Icons.satellite_alt_outlined, color: Colors.white),
+            redUdG,
+            Text('GPS disabled', style: fontColorWhite));
       }
     });
     super.initState(); //comes first for initState();
@@ -165,46 +200,45 @@ class _MapWidgetState extends State<MapWidget> {
   void handleMobilityEvent(eventName) async {
     switch (eventName) {
       case 'accuracyWarning':
-        bool confirm = await openAccuracyWarning();
-        if (confirm) {}
+        snackbar(
+          context,
+          const Icon(Icons.satellite_alt_rounded, color: Colors.white),
+          redUdG,
+          Text(AppLocalizations.of(context)!.warningAccuracy,
+              style: fontColorWhite),
+        );
+        // bool confirm = await openAccuracyWarning();
+        // if (confirm) {}
         break;
       case 'userOnTrack':
         playSound('sounds/on_track.mp3');
         snackbar(
-            context, 'success', AppLocalizations.of(context)!.trackReached);
+            context,
+            const Icon(Icons.directions_walk_rounded, color: Colors.white),
+            blueUdG,
+            Text(AppLocalizations.of(context)!.trackReached,
+                style: fontColorWhite));
+
         break;
       case 'userOffTrack':
         playSound('sounds/off_track.mp3');
-        _dialogMessageBuilder(
-            context, AppLocalizations.of(context)!.movingAwayFromTrack);
+        snackbar(
+            context,
+            const Icon(Icons.warning, color: Colors.white),
+            redUdG,
+            Text(AppLocalizations.of(context)!.movingAwayFromTrack,
+                style: fontColorWhite));
+        // _dialogMessageBuilder(
+        //     context, AppLocalizations.of(context)!.movingAwayFromTrack);
         break;
       case 'onExerciseDistance':
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         await playSound('sounds/small_sound.mp3');
-        _dialogBuilder(
+        exerciseDialog(
             context,
             userMobility
                 .alreadyReached[userMobility.alreadyReached.length - 1]);
     }
-  }
-
-  Future<void> _dialogMessageBuilder(BuildContext context, String msg) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-            title: Text(AppLocalizations.of(context)!.alert,
-                style: fontColorWhite),
-            backgroundColor: redUdG,
-            content: Text(msg, style: fontColorWhite),
-            actions: [
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, false),
-                style: alertDialogButtons,
-                child: Text(AppLocalizations.of(context)!.ok),
-              ),
-            ]);
-      },
-    );
   }
 
   Widget launchButton(contect, videoUrl) {
@@ -237,7 +271,9 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
-  Future<void> _dialogBuilder(BuildContext context, String url) {
+  Future<void> exerciseDialog(BuildContext context, String url) {
+    exerciseDialogIsOpen = true;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -247,11 +283,6 @@ class _MapWidgetState extends State<MapWidget> {
               children: [
                 Text(AppLocalizations.of(context)!.udgHealth,
                     style: fontColorWhite),
-                // SizedBox(width: 10),
-                // Image(
-                //   image: AssetImage('assets/images/salut_no_text.png'),
-                //   height: 25,
-                // ),
               ],
             ),
             backgroundColor: redUdG,
@@ -265,7 +296,9 @@ class _MapWidgetState extends State<MapWidget> {
               ])
             ]);
       },
-    );
+    ).then((_) {
+      exerciseDialogIsOpen = false;
+    });
   }
 
   String getVideoUrl(String id, Points pts) {
@@ -282,7 +315,7 @@ class _MapWidgetState extends State<MapWidget> {
   void onFeatureTap(dynamic featureId, Point<double> point, LatLng latLng) {
     var url = getVideoUrl(featureId, _points);
     if (url != '') {
-      _dialogBuilder(context, url);
+      exerciseDialog(context, url);
     }
     //check if tap on some POI
     Properties? info = getPoiInfo(featureId, _pois);
@@ -376,7 +409,7 @@ class _MapWidgetState extends State<MapWidget> {
   Future<void> listenBackgroundLocations() async {
     BackgroundLocation
         .stopLocationService(); //To ensure that previously started services have been stopped, if desired
-    BackgroundLocation.startLocationService(distanceFilter: 5);
+    BackgroundLocation.startLocationService(distanceFilter: 0);
     BackgroundLocation.getLocationUpdates((location) {
       handleNewLocation(location);
     });
@@ -390,7 +423,7 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> playSound(String sound) async {
-    await player.setVolume(1);
+    await player.setVolume(1.0);
     player.play(AssetSource(sound));
     bool? vibrate = await Vibration.hasVibrator();
     bool? pattern = await Vibration.hasCustomVibrationsSupport();
@@ -403,30 +436,9 @@ class _MapWidgetState extends State<MapWidget> {
     }
   }
 
-  Future<bool> openAccuracyWarning() async {
-    return await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-                title: Text(AppLocalizations.of(context)!.warningAccuracy,
-                    style: fontColorWhite),
-                backgroundColor: redUdG,
-                actions: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                          style: alertDialogButtons,
-                          onPressed: () {
-                            Navigator.of(context).pop(true);
-                          },
-                          child: Text(AppLocalizations.of(context)!.ok)),
-                    ],
-                  )
-                ]));
-  }
-
   void handleNewLocation(Location loc) async {
     lastLocation = loc;
+
     userMobility.handleAccuray(loc);
 
     double distanceToTrack =
@@ -570,12 +582,16 @@ class _MapWidgetState extends State<MapWidget> {
                       padding: const EdgeInsets.only(
                           bottom: 6, top: 6, left: 15, right: 15), // and this
                     ),
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
                                   TrackStats(track: userTrack)));
+                      if (lastLocation != null) {
+                        centerMap(LatLng(
+                            lastLocation!.latitude!, lastLocation!.longitude!));
+                      }
                     },
                     child: Text(AppLocalizations.of(context)!.trackData,
                         style: const TextStyle(

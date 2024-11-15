@@ -32,13 +32,15 @@ class UserMobility {
   bool onTrack = false;
   bool ignoreLowAccuracy = false;
   int minNumberOfConsecutivePoints = 1;
-  int minAccuracy = 35; //meters
-  int exerciseDistance = 10; //meters
-  int onTrackDistance = 16; //meters
-  int offTrackDistance = 16; //meters
-  int pointsOutOfAccuracy = 0; //meters
-  int pointsOffTrack = 0;
-  int pointsOnTrack = 0;
+  int minAccuracy = 35; // Minimum acceptable gps accuracy
+  int exerciseDistance =
+      10; //Minimum distance to be considered on exercise point
+  int onTrackDistance = 7; //Minimum distance to be considered on track
+  int offTrackDistance = 50; //Minimum distance to be considered off track
+  int pointsOutOfAccuracy =
+      0; // Number of consecutive captured points with unacceptable gps accuracy
+  int pointsOffTrack = 0; // Number of consecutive captured points on track
+  int pointsOnTrack = 0; // Number of consecutive captured points off track
 
   List<String> alreadyReached = [];
 
@@ -126,7 +128,11 @@ class UserMobility {
 
     for (var a = 0; a < itineraryPoints.features.length && !inRange; a++) {
       var p = itineraryPoints.features[a];
+      if (alreadyReached.contains(p.properties.id)) {
+        continue;
+      }
       var coords = p.geometry.coordinates;
+
       double distance = getDistanceFromLatLonInMeters(
           LatLng(coords[1], coords[0]), LatLng(loc.latitude!, loc.longitude!));
       if (distance < minDistance) {
@@ -135,8 +141,8 @@ class UserMobility {
       if (minDistance < exerciseDistance) {
         inRange = true;
         String url = getVideoUrl(p.properties.id, itineraryPoints);
-        if (!alreadyReached.contains(url)) {
-          alreadyReached.add(url);
+        if (!alreadyReached.contains(p.properties.id)) {
+          alreadyReached.add(p.properties.id);
           createEvent('onExerciseDistance');
         }
       }
