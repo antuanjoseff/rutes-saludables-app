@@ -95,7 +95,7 @@ class UserMobility {
   }
 
   handleOnTrack(double distanceToTrack) {
-    if (!onTrack && isGettingAway()) {
+    if (!onTrack) {
       // First time location is on track
       if (distanceToTrack < onTrackDistance) {
         pointsOffTrack = 0;
