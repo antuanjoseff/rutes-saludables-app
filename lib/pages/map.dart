@@ -211,7 +211,7 @@ class _MapWidgetState extends State<MapWidget> {
         // if (confirm) {}
         break;
       case 'userOnTrack':
-        playSound('sounds/on_track.mp3');
+        playSound('sounds/on_track.wav');
         snackbar(
             context,
             const Icon(Icons.directions_walk_rounded, color: Colors.white),
@@ -221,7 +221,7 @@ class _MapWidgetState extends State<MapWidget> {
 
         break;
       case 'userOffTrack':
-        playSound('sounds/off_track.mp3');
+        playSound('sounds/off_track.wav');
         snackbar(
             context,
             const Icon(Icons.warning, color: Colors.white),
@@ -233,7 +233,8 @@ class _MapWidgetState extends State<MapWidget> {
         break;
       case 'onExerciseDistance':
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        await playSound('sounds/small_sound.mp3');
+        await playSound('sounds/off_track.wav');
+
         exerciseDialog(
             context,
             userMobility
