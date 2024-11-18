@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:background_location/background_location.dart';
 import '../models/itinerary.dart';
 import '../utils/util.dart';
+import 'dart:collection';
+import 'package:collection/collection.dart';
 
 class UserMobility {
   // Original path
@@ -43,6 +45,8 @@ class UserMobility {
   int pointsOnTrack = 0; // Number of consecutive captured points off track
 
   List<String> alreadyReached = [];
+  Queue<double> lastFiveDistances = Queue<double>();
+  int queueLength = 5;
 
   // Constructor
   UserMobility(this.referencePath, this.itineraryPoints) {
@@ -76,12 +80,12 @@ class UserMobility {
         pointsOutOfAccuracy += 1;
         if (pointsOutOfAccuracy > minNumberOfConsecutivePoints) {
           ignoreLowAccuracy = true;
-          bool confirm =
+          bool? confirm =
               createEvent('accuracyWarning'); //await openAccuracyWarning();
-          if (confirm) {
-            ignoreLowAccuracy = true;
-            minNumberOfConsecutivePoints += minNumberOfConsecutivePoints;
-          }
+
+          ignoreLowAccuracy = true;
+          minNumberOfConsecutivePoints += minNumberOfConsecutivePoints;
+
           return;
         }
       } else {
@@ -91,7 +95,7 @@ class UserMobility {
   }
 
   handleOnTrack(double distanceToTrack) {
-    if (!onTrack) {
+    if (!onTrack && isGettingAway()) {
       // First time location is on track
       if (distanceToTrack < onTrackDistance) {
         pointsOffTrack = 0;
@@ -106,7 +110,7 @@ class UserMobility {
       }
     } else {
       // User is on track
-      if (onTrack && (distanceToTrack > offTrackDistance)) {
+      if (onTrack && (isGettingAway())) {
         // Location is moving away
         pointsOffTrack += 1;
         pointsOnTrack = 0;
@@ -118,6 +122,28 @@ class UserMobility {
         pointsOnTrack += 1;
         pointsOffTrack = 0;
       }
+    }
+  }
+
+  addLastLocationDistance(double distance) {
+    if (lastFiveDistances.length >= queueLength) {
+      lastFiveDistances.removeFirst();
+    }
+    lastFiveDistances.add(distance);
+  }
+
+  bool isGettingAway() {
+    Function eq = const ListEquality().equals;
+    if (lastFiveDistances.length < 5) {
+      return false;
+    } else {
+      List tmpA = lastFiveDistances.toList();
+      List<double> tmpB = List<double>.from(tmpA);
+      tmpB.sort();
+      print('LAST FIVE POSITIONS UNSORTED ${tmpA}');
+      print('LAST FIVE POSITIONS SORTED ${tmpB}');
+      print('Equals ${eq(tmpA, tmpB)}');
+      return eq(tmpA, tmpB);
     }
   }
 

@@ -446,7 +446,7 @@ class _MapWidgetState extends State<MapWidget> {
 
     userTrack.push(createWptFromLocation(loc));
     userTrack.setTrackDistance(distanceToTrack);
-
+    userMobility.addLastLocationDistance(distanceToTrack);
     userMobility.handleOnTrack(distanceToTrack);
 
     if (!userMovedMap) {
