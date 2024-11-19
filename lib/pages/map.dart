@@ -547,6 +547,14 @@ class _MapWidgetState extends State<MapWidget> {
           minMaxZoomPreference: const MinMaxZoomPreference(8, 19),
           trackCameraPosition: true,
           onMapCreated: _onMapCreated,
+          onMapLongClick: (point, coordinates) {
+            debugPrint('${point}    ${coordinates}   ${initialLocation}');
+
+            mapController!.animateCamera(
+              CameraUpdate.newLatLngZoom(coordinates, 18),
+              duration: const Duration(milliseconds: 200),
+            );
+          },
           myLocationEnabled: _myLocationEnabled,
           myLocationTrackingMode: _myLocationTrackingMode,
           myLocationRenderMode: _myLocationRenderMode,
