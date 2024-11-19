@@ -33,7 +33,8 @@ class UserMobility {
 
   bool onTrack = false;
   bool ignoreLowAccuracy = false;
-  int minNumberOfConsecutivePoints = 1;
+  int minNumberOfConsecutivePoints = 2;
+  int minNumberOfConsecutivePointsOutOfAccuracy = 50;
   int minAccuracy = 35; // Minimum acceptable gps accuracy
   int exerciseDistance =
       10; //Minimum distance to be considered on exercise point
@@ -78,7 +79,7 @@ class UserMobility {
       bool locationIsValid = await isValidAccuracy(loc.accuracy!);
       if (!locationIsValid) {
         pointsOutOfAccuracy += 1;
-        if (pointsOutOfAccuracy > minNumberOfConsecutivePoints) {
+        if (pointsOutOfAccuracy > minNumberOfConsecutivePointsOutOfAccuracy) {
           ignoreLowAccuracy = true;
           bool? confirm =
               createEvent('accuracyWarning'); //await openAccuracyWarning();
@@ -132,9 +133,10 @@ class UserMobility {
     lastFiveDistances.add(distance);
   }
 
+  Function eq = const ListEquality().equals;
+
   bool isGettingAway() {
-    Function eq = const ListEquality().equals;
-    if (lastFiveDistances.length < 5) {
+    if (lastFiveDistances.length < queueLength) {
       return false;
     } else {
       List tmpA = lastFiveDistances.toList();

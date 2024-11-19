@@ -112,6 +112,7 @@ class _MapWidgetState extends State<MapWidget> {
   @override
   void dispose() {
     BackgroundLocation.stopLocationService();
+    player.dispose();
     super.dispose();
   }
 
@@ -410,7 +411,7 @@ class _MapWidgetState extends State<MapWidget> {
   Future<void> listenBackgroundLocations() async {
     BackgroundLocation
         .stopLocationService(); //To ensure that previously started services have been stopped, if desired
-    BackgroundLocation.startLocationService(distanceFilter: 0);
+    BackgroundLocation.startLocationService(distanceFilter: 8);
     BackgroundLocation.getLocationUpdates((location) {
       handleNewLocation(location);
     });
@@ -424,8 +425,7 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> playSound(String sound) async {
-    await player.setVolume(1.0);
-    player.play(AssetSource(sound));
+    player.play(AssetSource(sound), volume: 1);
     bool? vibrate = await Vibration.hasVibrator();
     bool? pattern = await Vibration.hasCustomVibrationsSupport();
     if (vibrate == true) {
