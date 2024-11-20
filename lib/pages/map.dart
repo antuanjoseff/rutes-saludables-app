@@ -169,13 +169,9 @@ class _MapWidgetState extends State<MapWidget> {
     track = Track(wpts);
     track!.init();
     userMobility = UserMobility(wpts, _points);
-    userMobility.alreadyReached = ["7"];
-    StreamSubscription<String> subscription =
-        userMobility.streamController.stream.listen(
-      (String eventName) {
-        handleMobilityEvent(eventName);
-      },
-    );
+
+    StreamSubscription<(String, String?)> subscription =
+        userMobility.streamController.stream.listen(handleMobilityEvent);
 
     Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
       if (status == ServiceStatus.enabled) {
@@ -198,7 +194,9 @@ class _MapWidgetState extends State<MapWidget> {
     super.initState(); //comes first for initState();
   }
 
-  void handleMobilityEvent(eventName) async {
+  void handleMobilityEvent(eventTupple) async {
+    var (eventName, eventData) = eventTupple;
+
     switch (eventName) {
       case 'accuracyWarning':
         snackbar(
@@ -233,13 +231,15 @@ class _MapWidgetState extends State<MapWidget> {
         //     context, AppLocalizations.of(context)!.movingAwayFromTrack);
         break;
       case 'onExerciseDistance':
+        var featureId = eventData;
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        await playSound('sounds/off_track.wav');
-
-        exerciseDialog(
-            context,
-            userMobility
-                .alreadyReached[userMobility.alreadyReached.length - 1]);
+        await playSound('sounds/on_track.wav');
+        var url = getVideoUrl(eventData, _points);
+        bool? confirmation = await exerciseDialog(context, url);
+        exerciseDialogIsOpen = false;
+        if (confirmation != null) {
+          userMobility.alreadyReached.add(featureId);
+        }
     }
   }
 
@@ -253,7 +253,7 @@ class _MapWidgetState extends State<MapWidget> {
         ],
       ),
       onPressed: () {
-        Navigator.of(context).pop(); // dismiss dialog
+        Navigator.of(context).pop(true); // dismiss dialog
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -263,20 +263,20 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
-  Widget cancelButton(contect) {
+  Widget cancelButton(context) {
     return ElevatedButton(
       style: alertDialogButtons,
       child: Text(AppLocalizations.of(context)!.cancel, style: fontColorRedUdg),
       onPressed: () {
-        Navigator.of(context).pop(); // dismiss dialog
+        Navigator.of(context).pop(false); // dismiss dialog
       },
     );
   }
 
-  Future<void> exerciseDialog(BuildContext context, String url) {
+  Future<bool?> exerciseDialog(BuildContext context, String url) async {
     exerciseDialogIsOpen = true;
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    return showDialog<void>(
+    return await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -298,9 +298,7 @@ class _MapWidgetState extends State<MapWidget> {
               ])
             ]);
       },
-    ).then((_) {
-      exerciseDialogIsOpen = false;
-    });
+    );
   }
 
   String getVideoUrl(String id, Points pts) {
@@ -314,22 +312,25 @@ class _MapWidgetState extends State<MapWidget> {
     return '';
   }
 
-  void onFeatureTap(dynamic featureId, Point<double> point, LatLng latLng) {
+  void onFeatureTap(
+      dynamic featureId, Point<double> point, LatLng latLng) async {
     var url = getVideoUrl(featureId, _points);
     if (url != '') {
-      exerciseDialog(context, url);
-    }
-    //check if tap on some POI
-    Properties? info = getPoiInfo(featureId, _pois);
-    if (info != null) {
-      print(info.description);
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => PoiDetails(
-                  title: info.title,
-                  content: info.description,
-                  moreInfo: info.url)));
+      await exerciseDialog(context, url);
+      exerciseDialogIsOpen = false;
+    } else {
+      //check if tap on some POI
+      Properties? info = getPoiInfo(featureId, _pois);
+      if (info != null) {
+        print(info.description);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PoiDetails(
+                    title: info.title,
+                    content: info.description,
+                    moreInfo: info.url)));
+      }
     }
   }
 
@@ -411,7 +412,7 @@ class _MapWidgetState extends State<MapWidget> {
   Future<void> listenBackgroundLocations() async {
     BackgroundLocation
         .stopLocationService(); //To ensure that previously started services have been stopped, if desired
-    BackgroundLocation.startLocationService(distanceFilter: 8);
+    BackgroundLocation.startLocationService(distanceFilter: 5);
     BackgroundLocation.getLocationUpdates((location) {
       handleNewLocation(location);
     });
@@ -519,7 +520,7 @@ class _MapWidgetState extends State<MapWidget> {
               pts[i].geometry.coordinates[1], pts[i].geometry.coordinates[0])));
 
       var sym = await mapController!.addSymbols(symbolOptions);
-
+      // Replace property.id for the id of the symbol associated to this point
       pts[i].properties.id = sym[0].id;
     }
 
@@ -547,14 +548,6 @@ class _MapWidgetState extends State<MapWidget> {
           minMaxZoomPreference: const MinMaxZoomPreference(8, 19),
           trackCameraPosition: true,
           onMapCreated: _onMapCreated,
-          onMapLongClick: (point, coordinates) {
-            debugPrint('${point}    ${coordinates}   ${initialLocation}');
-
-            mapController!.animateCamera(
-              CameraUpdate.newLatLngZoom(coordinates, 18),
-              duration: const Duration(milliseconds: 200),
-            );
-          },
           myLocationEnabled: _myLocationEnabled,
           myLocationTrackingMode: _myLocationTrackingMode,
           myLocationRenderMode: _myLocationRenderMode,

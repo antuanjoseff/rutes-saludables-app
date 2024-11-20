@@ -28,8 +28,9 @@ class UserMobility {
 // Bbox del track
   myBounds.Bounds? bounds;
 
-// Stream to throw events
-  StreamController<String> streamController = StreamController<String>();
+// Stream to throw events(name + data)
+  StreamController<(String, String?)> streamController =
+      StreamController<(String, String?)>();
 
   bool onTrack = false;
   bool ignoreLowAccuracy = false;
@@ -37,9 +38,9 @@ class UserMobility {
   int minNumberOfConsecutivePointsOutOfAccuracy = 50;
   int minAccuracy = 35; // Minimum acceptable gps accuracy
   int exerciseDistance =
-      10; //Minimum distance to be considered on exercise point
-  int onTrackDistance = 7; //Minimum distance to be considered on track
-  int offTrackDistance = 50; //Minimum distance to be considered off track
+      15; //Minimum distance to be considered on exercise point
+  int onTrackDistance = 10; //Minimum distance to be considered on track
+  int offTrackDistance = 40; //Minimum distance to be considered off track
   int pointsOutOfAccuracy =
       0; // Number of consecutive captured points with unacceptable gps accuracy
   int pointsOffTrack = 0; // Number of consecutive captured points on track
@@ -63,11 +64,11 @@ class UserMobility {
 
       bounds!.expand(cur);
     }
-    streamController.add('track has been init');
+    streamController.add(('trackInitialized', null));
   }
 
-  createEvent(String name) {
-    streamController.add(name);
+  createEvent(String name, String? data) {
+    streamController.add((name, data));
   }
 
   Future<bool> isValidAccuracy(double accuracy) async {
@@ -81,8 +82,8 @@ class UserMobility {
         pointsOutOfAccuracy += 1;
         if (pointsOutOfAccuracy > minNumberOfConsecutivePointsOutOfAccuracy) {
           ignoreLowAccuracy = true;
-          bool? confirm =
-              createEvent('accuracyWarning'); //await openAccuracyWarning();
+          bool? confirm = createEvent(
+              'accuracyWarning', null); //await openAccuracyWarning();
 
           ignoreLowAccuracy = true;
           minNumberOfConsecutivePoints += minNumberOfConsecutivePoints;
@@ -103,7 +104,7 @@ class UserMobility {
         pointsOnTrack += 1;
         if (pointsOnTrack > minNumberOfConsecutivePoints) {
           onTrack = true;
-          createEvent('userOnTrack');
+          createEvent('userOnTrack', null);
         }
       } else {
         pointsOffTrack += 1;
@@ -116,7 +117,7 @@ class UserMobility {
         pointsOffTrack += 1;
         pointsOnTrack = 0;
         if (pointsOffTrack > minNumberOfConsecutivePoints) {
-          createEvent('userOffTrack');
+          createEvent('userOffTrack', null);
           onTrack = false;
         }
       } else {
@@ -142,10 +143,7 @@ class UserMobility {
       List tmpA = lastFiveDistances.toList();
       List<double> tmpB = List<double>.from(tmpA);
       tmpB.sort();
-      print('LAST FIVE POSITIONS UNSORTED ${tmpA}');
-      print('LAST FIVE POSITIONS SORTED ${tmpB}');
-      print('Equals ${eq(tmpA, tmpB)}');
-      return eq(tmpA, tmpB);
+      return eq(tmpA, tmpB) && (lastFiveDistances.first > offTrackDistance);
     }
   }
 
@@ -168,10 +166,8 @@ class UserMobility {
       }
       if (minDistance < exerciseDistance) {
         inRange = true;
-        String url = getVideoUrl(p.properties.id, itineraryPoints);
         if (!alreadyReached.contains(p.properties.id)) {
-          alreadyReached.add(p.properties.id);
-          createEvent('onExerciseDistance');
+          createEvent('onExerciseDistance', p.properties.id);
         }
       }
     }
