@@ -147,31 +147,12 @@ class UserMobility {
     }
   }
 
-  double handleExercisePoints(Location loc) {
-// Loop through all track points
-    bool inRange = false;
-    double minDistance = double.infinity;
-
-    for (var a = 0; a < itineraryPoints.features.length && !inRange; a++) {
-      var p = itineraryPoints.features[a];
-      if (alreadyReached.contains(p.properties.id)) {
-        continue;
-      }
-      var coords = p.geometry.coordinates;
-
-      double distance = getDistanceFromLatLonInMeters(
-          LatLng(coords[1], coords[0]), LatLng(loc.latitude!, loc.longitude!));
-      if (distance < minDistance) {
-        minDistance = distance;
-      }
-      if (minDistance < exerciseDistance) {
-        inRange = true;
-        if (!alreadyReached.contains(p.properties.id)) {
-          createEvent('onExerciseDistance', p.properties.id);
-        }
+  void handleExercisePoints(double distance, Feature p) {
+    if (distance < exerciseDistance) {
+      if (!alreadyReached.contains(p.properties.id)) {
+        createEvent('onExerciseDistance', p.properties.id);
       }
     }
-    return minDistance;
   }
 
   String getVideoUrl(String id, Points pts) {

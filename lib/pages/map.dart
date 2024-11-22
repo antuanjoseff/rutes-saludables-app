@@ -17,6 +17,7 @@ import '../widgets/play_youtube.dart';
 import '../widgets/mapScale.dart';
 
 import '../utils/util.dart';
+import '../utils/geom.dart';
 
 import '../models/itinerary.dart';
 import '../models/track.dart';
@@ -28,6 +29,7 @@ import 'poi_details.dart';
 import 'track_stats.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:vibration/vibration.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 class MapPage extends StatelessWidget {
   final Itinerary itinerary;
@@ -84,6 +86,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   Track? track;
   late Track userTrack;
+  List<LatLng> coords = [];
   bool serviceEnabled = false;
   bool hasLocationPermission = false;
   Position? initialLocation;
@@ -95,6 +98,7 @@ class _MapWidgetState extends State<MapWidget> {
   MyLocationRenderMode _myLocationRenderMode = MyLocationRenderMode.normal;
   bool _myLocationEnabled = false;
 
+  List<(int, Feature)> exerciseNodesPosition = [];
   LatLng initView = const LatLng(42.0, 3.0);
 
   final player = AudioPlayer();
@@ -149,6 +153,43 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
+  Future<List> addExercisesNodesToPath(List coords, Points _points) async {
+    // For each _points add a node to track
+    int exerciseIndex = 0;
+    for (var i = 0; i < _points.features.length; i++) {
+      LatLng P = LatLng(
+        _points.features[i].geometry.coordinates[1],
+        _points.features[i].geometry.coordinates[0],
+      );
+
+      int numSegment = getClosestSegmentToLatLng(coords, P);
+      LatLng A = coords[numSegment];
+      LatLng B = coords[numSegment + 1];
+
+      LatLng newP = projectPointToSegment(A, B, P);
+      if (P.latitude >= min(A.latitude, B.latitude) &&
+          (P.latitude <= max(A.latitude, B.latitude))) {
+        exerciseIndex = numSegment + 1;
+        coords.insert(exerciseIndex, newP);
+        debugPrint('LENGTH NEW NODE');
+      } else {
+        debugPrint('LENGTH KEEP NODE');
+        // if point not inside segment line, then return the closest node of the segment
+        if (getDistanceFromLatLonInMeters(A, P) <
+            getDistanceFromLatLonInMeters(B, P)) {
+          exerciseIndex = numSegment;
+        } else {
+          exerciseIndex = numSegment + 1;
+        }
+      }
+
+      // Save exerciseNodePosition
+      exerciseNodesPosition.add((exerciseIndex, _points.features[i]));
+    }
+
+    return coords;
+  }
+
   @override
   void initState() {
     userTrack = Track([]);
@@ -159,19 +200,27 @@ class _MapWidgetState extends State<MapWidget> {
     _pois = pointsOfInterest;
 
     List<Wpt> wpts = [];
-    List lineCoords = _path.coordinates[0];
 
-    for (var i = 0; i < lineCoords.length; i++) {
-      Wpt wpt = Wpt(lat: lineCoords[i][1], lon: lineCoords[i][0]);
-      wpts.add(wpt);
+    for (var i = 0; i < _path.coordinates[0].length; i++) {
+      coords
+          .add(LatLng(_path.coordinates[0][i][1], _path.coordinates[0][i][0]));
     }
 
-    track = Track(wpts);
-    track!.init();
-    userMobility = UserMobility(wpts, _points);
+    // Add snapped exercise points to coords
+    debugPrint('ORIGINAL LENGTH ${coords.length}');
+    addExercisesNodesToPath(coords, _points).then((coords) {
+      debugPrint('ORIGINAL LENGTH ${coords.length}');
+      for (var i = 0; i < coords.length; i++) {
+        Wpt wpt = Wpt(lat: coords[i].latitude, lon: coords[i].longitude);
+        wpts.add(wpt);
+      }
 
-    StreamSubscription<(String, String?)> subscription =
-        userMobility.streamController.stream.listen(handleMobilityEvent);
+      track = Track(wpts);
+      track!.init();
+      userMobility = UserMobility(wpts, _points);
+      StreamSubscription<(String, String?)> subscription =
+          userMobility.streamController.stream.listen(handleMobilityEvent);
+    });
 
     Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
       if (status == ServiceStatus.enabled) {
@@ -191,6 +240,7 @@ class _MapWidgetState extends State<MapWidget> {
             Text('GPS disabled', style: fontColorWhite));
       }
     });
+
     super.initState(); //comes first for initState();
   }
 
@@ -426,7 +476,9 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> playSound(String sound) async {
-    player.play(AssetSource(sound), volume: 1);
+    // player.play(AssetSource(sound), volume: 1);
+    VolumeController().setVolume(1);
+    player.play(AssetSource(sound));
     bool? vibrate = await Vibration.hasVibrator();
     bool? pattern = await Vibration.hasCustomVibrationsSupport();
     if (vibrate == true) {
@@ -436,6 +488,54 @@ class _MapWidgetState extends State<MapWidget> {
         Vibration.vibrate();
       }
     }
+  }
+
+  (Feature, double) getMinDistanceToExercises(Location loc) {
+    LatLng P = LatLng(loc.latitude!, loc.longitude!);
+    int numSegment = getClosestSegmentToLatLng(coords, P);
+    LatLng A = coords[numSegment];
+    LatLng B = coords[numSegment + 1];
+
+    int start = 0;
+    int end = coords.length - 1;
+
+    List<LatLng> clone = [];
+    for (int i = 0; i < coords.length; i++) {
+      clone.add(coords[i]);
+    }
+
+    LatLng newP = projectPointToSegment(A, B, P);
+    if (P.latitude >= min(A.latitude, B.latitude) &&
+        (P.latitude <= max(A.latitude, B.latitude))) {
+      clone.insert(numSegment + 1, P);
+      start = numSegment + 1;
+    } else {
+      debugPrint('LENGTH KEEP NODE');
+      // if point not inside segment line, then return the closest node of the segment
+      if (getDistanceFromLatLonInMeters(A, P) <
+          getDistanceFromLatLonInMeters(B, P)) {
+        start = numSegment;
+      } else {
+        start = numSegment + 1;
+      }
+    }
+    double minDistance = double.infinity;
+    var index, feature;
+    for (int i = 0; i < exerciseNodesPosition.length; i++) {
+      (index, feature) = exerciseNodesPosition[i];
+      List idx = [start, index];
+      idx.sort();
+      List<LatLng> subCoords = coords.sublist(idx[0], idx[1]);
+      double d = getLengthFromCoordsList(subCoords);
+      debugPrint('DISTANCE TO EXERCISES $d');
+      if (d < minDistance &&
+          !userMobility.alreadyReached.contains(feature.properties.id)) {
+        minDistance = d;
+        (index, feature) = exerciseNodesPosition[i];
+      }
+    }
+
+    return (feature, minDistance);
   }
 
   void handleNewLocation(Location loc) async {
@@ -455,12 +555,13 @@ class _MapWidgetState extends State<MapWidget> {
       centerMap(LatLng(loc.latitude!, loc.longitude!));
     }
 
-    double minDistance = userMobility.handleExercisePoints(loc);
+    var (exercise, distanceToExercise) = getMinDistanceToExercises(loc);
+    userMobility.handleExercisePoints(distanceToExercise, exercise);
 
     userTrack.setPointsOnTrack(userMobility.pointsOnTrack);
     userTrack.setPointsOffTrack(userMobility.pointsOffTrack);
     userTrack.setOnTrack(userMobility.onTrack);
-    userTrack.setDistanteToExercise(minDistance);
+    userTrack.setDistanteToExercise(distanceToExercise);
     userTrack.setAccuracy(loc.accuracy!);
     userTrack.captures += 1;
   }
@@ -548,6 +649,9 @@ class _MapWidgetState extends State<MapWidget> {
           minMaxZoomPreference: const MinMaxZoomPreference(8, 19),
           trackCameraPosition: true,
           onMapCreated: _onMapCreated,
+          onMapLongClick: (point, coordinates) {
+            playSound('sounds/on_track.wav');
+          },
           myLocationEnabled: _myLocationEnabled,
           myLocationTrackingMode: _myLocationTrackingMode,
           myLocationRenderMode: _myLocationRenderMode,

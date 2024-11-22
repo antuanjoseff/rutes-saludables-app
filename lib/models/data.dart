@@ -670,7 +670,21 @@ List<Itinerary> itineraries = [
           [2.818725197813716, 41.98978724597892, 0],
           [2.818953246666598, 41.98979592024428, 0],
           [2.8191180838004, 41.98979613174758, 0],
-          [2.819321426457213, 41.98982607797813, 0]
+          [2.8205987544025444, 41.98984318413098],
+          [2.820603071313627, 41.98984463160758],
+          [2.8208437742353, 41.989738654106134],
+          [2.8210610416720954, 41.990001776071495],
+          [2.8219027326130117, 41.98963401449939],
+          [2.822044032414283, 41.98967241011073],
+          [2.8222309127960727, 41.98968709077863],
+          [2.8224618544071802, 41.989645307328885],
+          [2.8224907221078865, 41.98963062665052],
+          [2.8226229029741035, 41.98955383496519],
+          [2.8228128220624455, 41.98950075857482],
+          [2.823580869649362, 41.98953828056577],
+          [2.823915127243481, 41.989975312247935],
+          [2.8240457915749744, 41.98993014115368],
+          [2.8245263884058147, 41.9904183483377]
         ]
       ]),
       points: Points(type: "FeatureCollection", features: [
@@ -689,7 +703,52 @@ List<Itinerary> itineraries = [
             properties: Properties(
                 id: "8",
                 title: "Exercici 2",
-                description: "www.youtube.com/embed/Jw9jvHiVBmE"))
+                description: "www.youtube.com/embed/Jw9jvHiVBmE")),
+        Feature(
+            type: "Feature",
+            geometry: Geometry(
+                type: "Point",
+                coordinates: [2.8128000192830314, 41.984502023647025]),
+            properties: Properties(
+                id: "8",
+                title: "Exercici 2",
+                description: "www.youtube.com/embed/Jw9jvHiVBmE")),
+        Feature(
+            type: "Feature",
+            geometry: Geometry(
+                type: "Point",
+                coordinates: [2.8115304149814904, 41.98638598388612]),
+            properties: Properties(
+                id: "8",
+                title: "Exercici 2",
+                description: "www.youtube.com/embed/Jw9jvHiVBmE")),
+        Feature(
+            type: "Feature",
+            geometry: Geometry(
+                type: "Point",
+                coordinates: [2.8160374960000354, 41.9890799495079]),
+            properties: Properties(
+                id: "8",
+                title: "Exercici 2",
+                description: "www.youtube.com/embed/Jw9jvHiVBmE")),
+        Feature(
+            type: "Feature",
+            geometry: Geometry(
+                type: "Point",
+                coordinates: [2.819347525081156, 41.98980116980374]),
+            properties: Properties(
+                id: "8",
+                title: "Exercici 2",
+                description: "www.youtube.com/embed/Jw9jvHiVBmE")),
+        Feature(
+            type: "Feature",
+            geometry: Geometry(
+                type: "Point",
+                coordinates: [2.8210580642216883, 41.99000686659562]),
+            properties: Properties(
+                id: "8",
+                title: "Exercici 2",
+                description: "www.youtube.com/embed/Jw9jvHiVBmE")),
       ])),
   Itinerary(
       campus: "Campus centre",
