@@ -69,7 +69,7 @@ class _MapWidgetState extends State<MapWidget> {
   String? mapScaleText;
   double? resolution;
   late Path _path;
-  late Points _points;
+  late Points trackFeatures;
   late List<Feature> _pois;
   late String _title;
   late String _campus;
@@ -153,13 +153,13 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
-  Future<List> addExercisesNodesToPath(List coords, Points _points) async {
-    // For each _points add a node to track
+  Future<List<LatLng>> addExercisesNodesToPath() async {
+    // For each trackFeatures add a node to track
     int exerciseIndex = 0;
-    for (var i = 0; i < _points.features.length; i++) {
+    for (var i = 0; i < trackFeatures.features.length; i++) {
       LatLng P = LatLng(
-        _points.features[i].geometry.coordinates[1],
-        _points.features[i].geometry.coordinates[0],
+        trackFeatures.features[i].geometry.coordinates[1],
+        trackFeatures.features[i].geometry.coordinates[0],
       );
 
       int numSegment = getClosestSegmentToLatLng(coords, P);
@@ -171,9 +171,7 @@ class _MapWidgetState extends State<MapWidget> {
           (P.latitude <= max(A.latitude, B.latitude))) {
         exerciseIndex = numSegment + 1;
         coords.insert(exerciseIndex, newP);
-        debugPrint('LENGTH NEW NODE');
       } else {
-        debugPrint('LENGTH KEEP NODE');
         // if point not inside segment line, then return the closest node of the segment
         if (getDistanceFromLatLonInMeters(A, P) <
             getDistanceFromLatLonInMeters(B, P)) {
@@ -184,9 +182,24 @@ class _MapWidgetState extends State<MapWidget> {
       }
 
       // Save exerciseNodePosition
-      exerciseNodesPosition.add((exerciseIndex, _points.features[i]));
+      exerciseNodesPosition.add((exerciseIndex, trackFeatures.features[i]));
+      debugPrint('Feture id ${trackFeatures.features[i].properties.id}');
+    }
+    for (var i = 0; i < exerciseNodesPosition.length; i++) {
+      var (idx, feature) = exerciseNodesPosition[i];
     }
 
+    List<Wpt> wpts = [];
+    for (var i = 0; i < coords.length; i++) {
+      Wpt wpt = Wpt(lat: coords[i].latitude, lon: coords[i].longitude);
+      wpts.add(wpt);
+    }
+
+    track = Track(wpts);
+    track!.init();
+    userMobility = UserMobility(wpts, trackFeatures);
+    StreamSubscription<(String, String?)> subscription =
+        userMobility.streamController.stream.listen(handleMobilityEvent);
     return coords;
   }
 
@@ -196,10 +209,8 @@ class _MapWidgetState extends State<MapWidget> {
     _campus = widget.itinerary.campus;
     _title = widget.itinerary.title;
     _path = widget.itinerary.path;
-    _points = widget.itinerary.points;
+    trackFeatures = widget.itinerary.points;
     _pois = pointsOfInterest;
-
-    List<Wpt> wpts = [];
 
     for (var i = 0; i < _path.coordinates[0].length; i++) {
       coords
@@ -207,20 +218,6 @@ class _MapWidgetState extends State<MapWidget> {
     }
 
     // Add snapped exercise points to coords
-    debugPrint('ORIGINAL LENGTH ${coords.length}');
-    addExercisesNodesToPath(coords, _points).then((coords) {
-      debugPrint('ORIGINAL LENGTH ${coords.length}');
-      for (var i = 0; i < coords.length; i++) {
-        Wpt wpt = Wpt(lat: coords[i].latitude, lon: coords[i].longitude);
-        wpts.add(wpt);
-      }
-
-      track = Track(wpts);
-      track!.init();
-      userMobility = UserMobility(wpts, _points);
-      StreamSubscription<(String, String?)> subscription =
-          userMobility.streamController.stream.listen(handleMobilityEvent);
-    });
 
     Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
       if (status == ServiceStatus.enabled) {
@@ -284,7 +281,7 @@ class _MapWidgetState extends State<MapWidget> {
         var featureId = eventData;
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         await playSound('sounds/on_track.wav');
-        var url = getVideoUrl(eventData, _points);
+        var url = getVideoUrl(eventData, trackFeatures);
         bool? confirmation = await exerciseDialog(context, url);
         exerciseDialogIsOpen = false;
         if (confirmation != null) {
@@ -364,7 +361,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   void onFeatureTap(
       dynamic featureId, Point<double> point, LatLng latLng) async {
-    var url = getVideoUrl(featureId, _points);
+    var url = getVideoUrl(featureId, trackFeatures);
     if (url != '') {
       await exerciseDialog(context, url);
       exerciseDialogIsOpen = false;
@@ -422,41 +419,6 @@ class _MapWidgetState extends State<MapWidget> {
     mapController!.addListener(_onMapChanged);
     mapController!.onFeatureTapped.add(onFeatureTap);
     await mapController!.setSymbolIconAllowOverlap(true);
-    mapController!.moveCamera(
-      CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-          southwest: track!.getBounds().southEast,
-          northeast: track!.getBounds().northWest,
-        ),
-        left: 10,
-        top: 5,
-        bottom: 25,
-      ),
-    );
-
-    hasLocationPermission = await requestLocationService();
-    if (hasLocationPermission && initialLocation == null) {
-      if (mounted) {
-        BackgroundLocation.setAndroidNotification(
-          title: AppLocalizations.of(context)!.notificationTitle,
-          message: AppLocalizations.of(context)!.notificationContent,
-        );
-      } else {
-        BackgroundLocation.setAndroidNotification(
-          title: 'UdGsalut',
-          message: 'Rutes saludables',
-        );
-      }
-
-      await listenBackgroundLocations();
-      _myLocationEnabled = true;
-
-      getCurrentLocation().then((value) {
-        setState(() {
-          initialLocation = value;
-        });
-      });
-    }
   }
 
   Future<void> listenBackgroundLocations() async {
@@ -477,7 +439,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   Future<void> playSound(String sound) async {
     // player.play(AssetSource(sound), volume: 1);
-    VolumeController().setVolume(1);
+    VolumeController().setVolume(0.1);
     player.play(AssetSource(sound));
     bool? vibrate = await Vibration.hasVibrator();
     bool? pattern = await Vibration.hasCustomVibrationsSupport();
@@ -490,8 +452,7 @@ class _MapWidgetState extends State<MapWidget> {
     }
   }
 
-  (Feature, double) getMinDistanceToExercises(Location loc) {
-    LatLng P = LatLng(loc.latitude!, loc.longitude!);
+  (Feature, double) getMinDistanceToExercises(LatLng P) {
     int numSegment = getClosestSegmentToLatLng(coords, P);
     LatLng A = coords[numSegment];
     LatLng B = coords[numSegment + 1];
@@ -499,18 +460,18 @@ class _MapWidgetState extends State<MapWidget> {
     int start = 0;
     int end = coords.length - 1;
 
-    List<LatLng> clone = [];
+    List<LatLng> clone = [P];
     for (int i = 0; i < coords.length; i++) {
       clone.add(coords[i]);
     }
 
     LatLng newP = projectPointToSegment(A, B, P);
+
     if (P.latitude >= min(A.latitude, B.latitude) &&
         (P.latitude <= max(A.latitude, B.latitude))) {
-      clone.insert(numSegment + 1, P);
+      clone.insert(numSegment + 1, newP);
       start = numSegment + 1;
     } else {
-      debugPrint('LENGTH KEEP NODE');
       // if point not inside segment line, then return the closest node of the segment
       if (getDistanceFromLatLonInMeters(A, P) <
           getDistanceFromLatLonInMeters(B, P)) {
@@ -519,15 +480,18 @@ class _MapWidgetState extends State<MapWidget> {
         start = numSegment + 1;
       }
     }
+
     double minDistance = double.infinity;
     var index, feature;
     for (int i = 0; i < exerciseNodesPosition.length; i++) {
       (index, feature) = exerciseNodesPosition[i];
       List idx = [start, index];
+
       idx.sort();
-      List<LatLng> subCoords = coords.sublist(idx[0], idx[1]);
+      List<LatLng> subCoords = clone.sublist(idx[0], idx[1] + 1);
+
       double d = getLengthFromCoordsList(subCoords);
-      debugPrint('DISTANCE TO EXERCISES $d');
+
       if (d < minDistance &&
           !userMobility.alreadyReached.contains(feature.properties.id)) {
         minDistance = d;
@@ -555,7 +519,8 @@ class _MapWidgetState extends State<MapWidget> {
       centerMap(LatLng(loc.latitude!, loc.longitude!));
     }
 
-    var (exercise, distanceToExercise) = getMinDistanceToExercises(loc);
+    var (exercise, distanceToExercise) =
+        getMinDistanceToExercises(LatLng(loc.latitude!, loc.longitude!));
     userMobility.handleExercisePoints(distanceToExercise, exercise);
 
     userTrack.setPointsOnTrack(userMobility.pointsOnTrack);
@@ -602,15 +567,23 @@ class _MapWidgetState extends State<MapWidget> {
     addImageFromAsset("exercisePoint", "assets/marker_salut.png");
     addImageFromAsset("poi", "assets/marker_poi.png");
 
-    trackLine = await mapController!.addLine(LineOptions(
-      geometry: track!.getCoordsList(),
-      lineColor: trackColor.toHexStringRGB(),
-      lineWidth: trackWidth,
-      lineOpacity: 0.9,
-    ));
+    // ADD POINTS OF INTEREST TO MAP
+    for (var i = 0; i < _pois.length; i++) {
+      final symbolOptions = <SymbolOptions>[];
 
-    // ADD TRACK POINTS TO MAP. EXERCISES
-    var pts = _points.features;
+      symbolOptions.add(SymbolOptions(
+          iconImage: "poi",
+          iconAnchor: 'bottom',
+          geometry: LatLng(_pois[i].geometry.coordinates[1],
+              _pois[i].geometry.coordinates[0])));
+
+      var sym = await mapController!.addSymbols(symbolOptions);
+
+      _pois[i].properties.id = sym[0].id;
+    }
+
+    // ADD TRACK EXERCISE POINTS TO MAP.
+    var pts = trackFeatures.features;
     for (var i = 0; i < pts.length; i++) {
       final symbolOptions = <SymbolOptions>[];
 
@@ -625,19 +598,50 @@ class _MapWidgetState extends State<MapWidget> {
       pts[i].properties.id = sym[0].id;
     }
 
-    // ADD POINTS OF INTEREST TO MAP
-    for (var i = 0; i < _pois.length; i++) {
-      final symbolOptions = <SymbolOptions>[];
+    //Snap exercise points to track
+    addExercisesNodesToPath();
 
-      symbolOptions.add(SymbolOptions(
-          iconImage: "poi",
-          iconAnchor: 'bottom',
-          geometry: LatLng(_pois[i].geometry.coordinates[1],
-              _pois[i].geometry.coordinates[0])));
+    trackLine = await mapController!.addLine(LineOptions(
+      geometry: track!.getCoordsList(),
+      lineColor: trackColor.toHexStringRGB(),
+      lineWidth: trackWidth,
+      lineOpacity: 0.9,
+    ));
 
-      var sym = await mapController!.addSymbols(symbolOptions);
+    mapController!.moveCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: track!.getBounds().southEast,
+          northeast: track!.getBounds().northWest,
+        ),
+        left: 10,
+        top: 5,
+        bottom: 25,
+      ),
+    );
 
-      _pois[i].properties.id = sym[0].id;
+    hasLocationPermission = await requestLocationService();
+    if (hasLocationPermission && initialLocation == null) {
+      if (mounted) {
+        BackgroundLocation.setAndroidNotification(
+          title: AppLocalizations.of(context)!.notificationTitle,
+          message: AppLocalizations.of(context)!.notificationContent,
+        );
+      } else {
+        BackgroundLocation.setAndroidNotification(
+          title: 'UdGsalut',
+          message: 'Rutes saludables',
+        );
+      }
+
+      await listenBackgroundLocations();
+      _myLocationEnabled = true;
+
+      getCurrentLocation().then((value) {
+        setState(() {
+          initialLocation = value;
+        });
+      });
     }
   }
 

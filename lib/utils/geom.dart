@@ -41,11 +41,16 @@ double getDistanceFromLatLonInMeters(LatLng origin, LatLng target) {
 
 double getLengthFromCoordsList(List<LatLng> coords) {
   double total = 0;
-
-  for (int i = 0; i < coords.length - 1; i++) {
-    double partial = getDistanceFromLatLonInMeters(coords[i], coords[i + 1]);
-    total += partial;
+  // When only 2 coords, no loop required
+  if (coords.length == 2) {
+    total = getDistanceFromLatLonInMeters(coords[0], coords[1]);
+  } else {
+    for (int i = 0; i < coords.length - 1; i++) {
+      double partial = getDistanceFromLatLonInMeters(coords[i], coords[i + 1]);
+      total += partial;
+    }
   }
+
   return total;
 }
 
