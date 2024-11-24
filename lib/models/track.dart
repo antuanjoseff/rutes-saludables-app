@@ -200,7 +200,6 @@ class Track {
   double trackToPointDistance(LatLng point) {
     Stopwatch stopwatch = Stopwatch()..start();
     int numSegment = getClosestSegmentToLatLng(gpxCoords, point);
-    print('Closest at ($numSegment) executed in ${stopwatch.elapsed}');
 
     LatLng A = gpxCoords[numSegment];
     LatLng B = gpxCoords[numSegment + 1];

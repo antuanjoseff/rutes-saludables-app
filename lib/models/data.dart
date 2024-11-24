@@ -711,7 +711,7 @@ List<Itinerary> itineraries = [
                 coordinates: [2.8128000192830314, 41.984502023647025]),
             properties: Properties(
                 id: "8",
-                title: "Exercici 2",
+                title: "Exercici 3",
                 description: "www.youtube.com/embed/Jw9jvHiVBmE")),
         Feature(
             type: "Feature",
@@ -720,7 +720,7 @@ List<Itinerary> itineraries = [
                 coordinates: [2.8115304149814904, 41.98638598388612]),
             properties: Properties(
                 id: "8",
-                title: "Exercici 2",
+                title: "Exercici 4",
                 description: "www.youtube.com/embed/Jw9jvHiVBmE")),
         Feature(
             type: "Feature",
@@ -729,7 +729,7 @@ List<Itinerary> itineraries = [
                 coordinates: [2.8160374960000354, 41.9890799495079]),
             properties: Properties(
                 id: "8",
-                title: "Exercici 2",
+                title: "Exercici 5",
                 description: "www.youtube.com/embed/Jw9jvHiVBmE")),
         Feature(
             type: "Feature",
@@ -738,7 +738,7 @@ List<Itinerary> itineraries = [
                 coordinates: [2.819347525081156, 41.98980116980374]),
             properties: Properties(
                 id: "8",
-                title: "Exercici 2",
+                title: "Exercici 6",
                 description: "www.youtube.com/embed/Jw9jvHiVBmE")),
         Feature(
             type: "Feature",
@@ -747,7 +747,7 @@ List<Itinerary> itineraries = [
                 coordinates: [2.8210580642216883, 41.99000686659562]),
             properties: Properties(
                 id: "8",
-                title: "Exercici 2",
+                title: "Exercici 7",
                 description: "www.youtube.com/embed/Jw9jvHiVBmE")),
       ])),
   Itinerary(
