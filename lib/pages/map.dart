@@ -153,6 +153,16 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
+  bool pointInSegment(List<LatLng> segment, LatLng P) {
+    LatLng A = segment[0];
+    LatLng B = segment[1];
+
+    return (P.latitude >= min(A.latitude, B.latitude)) &&
+        (P.latitude <= max(A.latitude, B.latitude)) &&
+        (P.longitude >= min(A.longitude, B.longitude)) &&
+        (P.longitude <= max(A.longitude, B.longitude));
+  }
+
   Future<List<LatLng>> addExercisesNodesToPath() async {
     // For each trackFeatures add a node to track
     int newExerciseIndex = 0;
@@ -168,8 +178,8 @@ class _MapWidgetState extends State<MapWidget> {
       LatLng B = coords[numSegment + 1];
 
       LatLng newP = projectPointToSegment(A, B, P);
-      if (P.latitude >= min(A.latitude, B.latitude) &&
-          (P.latitude <= max(A.latitude, B.latitude))) {
+
+      if (pointInSegment([A, B], newP)) {
         newExerciseIndex = numSegment + 1;
 
         coords.insert(newExerciseIndex, newP);
@@ -470,7 +480,6 @@ class _MapWidgetState extends State<MapWidget> {
     LatLng B = coords[numSegment + 1];
 
     int start = numSegment;
-    int end = coords.length - 1;
 
     List<LatLng> clone = [P];
     for (int i = 0; i < coords.length; i++) {
@@ -478,21 +487,31 @@ class _MapWidgetState extends State<MapWidget> {
     }
 
     LatLng newP = projectPointToSegment(A, B, P);
+
     bool addNewP = false;
-    if (newP.latitude >= min(A.latitude, B.latitude) &&
-        (newP.latitude <= max(A.latitude, B.latitude))) {
+
+    if (pointInSegment([A, B], newP)) {
       addNewP = true;
-      start = numSegment + 1;
     }
 
     double minDistance = double.infinity;
-    var index, feature;
+    late Feature closestFeature;
     for (int i = 0; i < exerciseNodesPosition.length; i++) {
-      (index, feature) = exerciseNodesPosition[i];
+      var (index, feature) = exerciseNodesPosition[i];
+      if (userMobility.alreadyReached.contains(feature.properties.id)) {
+        continue;
+      }
+      // Check which segment coordinate is closer to exercise Node
+      int inc = 0;
+      if (numSegment < index) {
+        start += 1;
+        inc = 1;
+      }
+
       List idx = [start, index];
 
       idx.sort();
-      List<LatLng> subCoords = coords.sublist(idx[0], idx[1] + 1);
+      List<LatLng> subCoords = coords.sublist(idx[0], idx[1] + inc);
       if (addNewP) {
         subCoords.insert(0, newP);
       }
@@ -503,11 +522,11 @@ class _MapWidgetState extends State<MapWidget> {
       if (d < minDistance &&
           !userMobility.alreadyReached.contains(feature.properties.id)) {
         minDistance = d;
-        (index, feature) = exerciseNodesPosition[i];
+        closestFeature = feature;
       }
     }
 
-    return (feature, minDistance);
+    return (closestFeature, minDistance);
   }
 
   void handleNewLocation(Location loc) async {
@@ -528,6 +547,7 @@ class _MapWidgetState extends State<MapWidget> {
 
     var (exercise, distanceToExercise) =
         getMinDistanceToExercises(LatLng(loc.latitude!, loc.longitude!));
+    // getMinDistanceToExercises(LatLng(loc.latitude!, loc.longitude!));
 
     userMobility.handleExercisePoints(distanceToExercise, exercise);
     userTrack.setPointsOnTrack(userMobility.pointsOnTrack);
@@ -606,7 +626,7 @@ class _MapWidgetState extends State<MapWidget> {
     }
 
     //Snap exercise points to track
-    addExercisesNodesToPath();
+    coords = await addExercisesNodesToPath();
 
     trackLine = await mapController!.addLine(LineOptions(
       geometry: track!.getCoordsList(),
