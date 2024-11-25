@@ -40,7 +40,7 @@ class UserMobility {
   int exerciseDistance =
       15; //Minimum distance to be considered on exercise point
   int onTrackDistance = 10; //Minimum distance to be considered on track
-  int offTrackDistance = 40; //Minimum distance to be considered off track
+  int offTrackDistance = 30; //Minimum distance to be considered off track
   int pointsOutOfAccuracy =
       0; // Number of consecutive captured points with unacceptable gps accuracy
   int pointsOffTrack = 0; // Number of consecutive captured points on track
