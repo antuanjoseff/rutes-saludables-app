@@ -102,7 +102,7 @@ class UserMobility {
       if (distanceToTrack < onTrackDistance) {
         pointsOffTrack = 0;
         pointsOnTrack += 1;
-        if (pointsOnTrack > minNumberOfConsecutivePoints) {
+        if (pointsOnTrack >= minNumberOfConsecutivePoints) {
           onTrack = true;
           createEvent('userOnTrack', null);
         }
