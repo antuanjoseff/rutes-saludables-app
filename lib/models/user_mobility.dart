@@ -37,9 +37,11 @@ class UserMobility {
   int minNumberOfConsecutivePoints = 2;
   int minNumberOfConsecutivePointsOutOfAccuracy = 50;
   int minAccuracy = 35; // Minimum acceptable gps accuracy
+  double? averageAccuracy;
   int exerciseDistance =
       15; //Minimum distance to be considered on exercise point
-  int onTrackDistance = 10; //Minimum distance to be considered on track
+  int onTrackDistance = 12; //Minimum distance to be considered on track
+
   int offTrackDistance = 30; //Minimum distance to be considered off track
   int pointsOutOfAccuracy =
       0; // Number of consecutive captured points with unacceptable gps accuracy
@@ -47,8 +49,9 @@ class UserMobility {
   int pointsOnTrack = 0; // Number of consecutive captured points off track
 
   List<String> alreadyReached = [];
+  Queue<double> lastFiveAccuracies = Queue<double>();
   Queue<double> lastFiveDistances = Queue<double>();
-  int queueLength = 5;
+  int queueLength = 4;
 
   // Constructor
   UserMobility(this.referencePath, this.itineraryPoints) {
@@ -96,13 +99,16 @@ class UserMobility {
     }
   }
 
-  handleOnTrack(double distanceToTrack) {
+  handleOnTrack(double distanceToTrack, double accuracy) async {
+    await addLastLocationDistanceAndAccuracy(distanceToTrack, accuracy);
     if (!onTrack) {
       // First time location is on track
       if (distanceToTrack < onTrackDistance) {
         pointsOffTrack = 0;
         pointsOnTrack += 1;
-        if (pointsOnTrack >= minNumberOfConsecutivePoints) {
+        if ((pointsOnTrack >= minNumberOfConsecutivePoints) ||
+            (distanceToTrack < onTrackDistance / 2 &&
+                accuracy < (onTrackDistance / 2))) {
           onTrack = true;
           createEvent('userOnTrack', null);
         }
@@ -127,23 +133,35 @@ class UserMobility {
     }
   }
 
-  addLastLocationDistance(double distance) {
+  double avgAccuracies(accuracies) {
+    double sum = 0;
+    for (int i = 0; i < accuracies.length; i++) {
+      sum += accuracies[i];
+    }
+    return sum / accuracies.length;
+  }
+
+  addLastLocationDistanceAndAccuracy(double distance, double accuracy) {
     if (lastFiveDistances.length >= queueLength) {
       lastFiveDistances.removeFirst();
+      lastFiveAccuracies.removeFirst();
     }
     lastFiveDistances.add(distance);
+    lastFiveAccuracies.add(accuracy);
+    averageAccuracy = avgAccuracies(lastFiveAccuracies);
   }
 
   Function eq = const ListEquality().equals;
 
   bool isGettingAway() {
-    if (lastFiveDistances.length < queueLength) {
+    if (lastFiveDistances.length < queueLength || averageAccuracy == null) {
       return false;
     } else {
       List tmpA = lastFiveDistances.toList();
       List<double> tmpB = List<double>.from(tmpA);
       tmpB.sort();
-      return eq(tmpA, tmpB) && (lastFiveDistances.first > offTrackDistance);
+      return eq(tmpA, tmpB) &&
+          (lastFiveDistances.first > (3 * averageAccuracy!));
     }
   }
 
