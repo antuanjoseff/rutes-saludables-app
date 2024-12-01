@@ -480,7 +480,7 @@ class _MapWidgetState extends State<MapWidget> {
     LatLng A = coords[numSegment];
     LatLng B = coords[numSegment + 1];
 
-    int start = numSegment;
+    int userIndex = numSegment;
 
     List<LatLng> clone = [P];
     for (int i = 0; i < coords.length; i++) {
@@ -499,24 +499,28 @@ class _MapWidgetState extends State<MapWidget> {
     late Feature closestFeature;
     late List<LatLng> minSubCoords;
     for (int i = 0; i < exerciseNodesPosition.length; i++) {
-      var (index, feature) = exerciseNodesPosition[i];
+      var (exerciseIndex, feature) = exerciseNodesPosition[i];
 
-      if (userMobility.alreadyReached.contains(feature.properties.id)) {
+      // check if exercise point is not in user walking direction
+      if ((userMobility.userFollowingTrackDirection &&
+              userIndex > exerciseIndex) ||
+          userMobility.alreadyReached.contains(feature.properties.id)) {
         continue;
       }
+
       // Check which segment coordinate is closer to exercise Node
       int inc = 0;
-      if (numSegment < index) {
-        start += 1;
+      if (numSegment < exerciseIndex) {
+        userIndex += 1;
         inc = 1;
       }
 
-      List idx = [start, index];
+      List idx = [userIndex, exerciseIndex];
 
       idx.sort();
       List<LatLng> subCoords = coords.sublist(idx[0], idx[1] + inc);
       if (subCoords.isEmpty) {
-        subCoords.add(coords[start]);
+        subCoords.add(coords[userIndex]);
       }
       if (addNewP) {
         subCoords.insert(0, newP);
@@ -543,10 +547,10 @@ class _MapWidgetState extends State<MapWidget> {
     double distanceToTrack =
         track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
 
-    userTrack.push(createWptFromLocation(loc));
+    double walkedDistance = await userTrack.push(createWptFromLocation(loc));
     userTrack.setTrackDistance(distanceToTrack);
 
-    userMobility.handleOnTrack(distanceToTrack, loc.accuracy!);
+    userMobility.handleOnTrack(distanceToTrack, walkedDistance, loc.accuracy!);
 
     if (!userMovedMap) {
       centerMap(LatLng(loc.latitude!, loc.longitude!));

@@ -143,7 +143,7 @@ class Track {
     trackSegment = [];
   }
 
-  void push(Wpt wpt) {
+  Future<double> push(Wpt wpt) async {
     double inc = 0;
     LatLng P = LatLng(wpt.lat!, wpt.lon!);
     if (gpxCoords.isNotEmpty) {
@@ -155,6 +155,7 @@ class Track {
     trackSegment.add(wpt);
     length += inc;
     altitude = wpt.ele!.floor();
+    return length;
   }
 
   void insert(int position, Wpt wpt) {

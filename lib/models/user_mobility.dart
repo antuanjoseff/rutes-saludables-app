@@ -13,6 +13,9 @@ class UserMobility {
   List<Wpt> referencePath = [];
   List<Wpt> donePath = [];
   Points itineraryPoints;
+
+  // Sugested track direction. False means going backwards in reference to track coordinates
+  bool userFollowingTrackDirection = true;
   // Start recording time
   DateTime startAt = DateTime.now();
 
@@ -50,7 +53,9 @@ class UserMobility {
 
   List<String> alreadyReached = [];
   Queue<double> lastFiveAccuracies = Queue<double>();
-  Queue<double> lastFiveDistances = Queue<double>();
+  Queue<double> lastFiveDistancesToTrack = Queue<double>();
+  Queue<double> lastFiveTrackLengths = Queue<
+      double>(); // Used to determine user location. Towards track start o track end
   int queueLength = 4;
 
   // Constructor
@@ -99,8 +104,10 @@ class UserMobility {
     }
   }
 
-  handleOnTrack(double distanceToTrack, double accuracy) async {
+  handleOnTrack(
+      double distanceToTrack, double walkedDistance, double accuracy) async {
     await addLastLocationDistanceAndAccuracy(distanceToTrack, accuracy);
+    registerUserDirection(walkedDistance);
     if (!onTrack) {
       // First time location is on track
       if (distanceToTrack < onTrackDistance) {
@@ -142,12 +149,26 @@ class UserMobility {
     return sum / accuracies.length;
   }
 
+  registerUserDirection(double distance) {
+    if (lastFiveTrackLengths.length >= queueLength) {
+      lastFiveTrackLengths.removeFirst();
+    }
+    lastFiveTrackLengths.add(distance);
+
+    List lengthList = lastFiveTrackLengths.toList();
+    if (lengthList[0] <= lengthList[lengthList.length - 1]) {
+      userFollowingTrackDirection = true;
+    } else {
+      userFollowingTrackDirection = false;
+    }
+  }
+
   addLastLocationDistanceAndAccuracy(double distance, double accuracy) {
-    if (lastFiveDistances.length >= queueLength) {
-      lastFiveDistances.removeFirst();
+    if (lastFiveDistancesToTrack.length >= queueLength) {
+      lastFiveDistancesToTrack.removeFirst();
       lastFiveAccuracies.removeFirst();
     }
-    lastFiveDistances.add(distance);
+    lastFiveDistancesToTrack.add(distance);
     lastFiveAccuracies.add(accuracy);
     averageAccuracy = avgAccuracies(lastFiveAccuracies);
   }
@@ -155,14 +176,15 @@ class UserMobility {
   Function eq = const ListEquality().equals;
 
   bool isGettingAway() {
-    if (lastFiveDistances.length < queueLength || averageAccuracy == null) {
+    if (lastFiveDistancesToTrack.length < queueLength ||
+        averageAccuracy == null) {
       return false;
     } else {
-      List tmpA = lastFiveDistances.toList();
+      List tmpA = lastFiveDistancesToTrack.toList();
       List<double> tmpB = List<double>.from(tmpA);
       tmpB.sort();
       return eq(tmpA, tmpB) &&
-          (lastFiveDistances.first > (3 * averageAccuracy!));
+          (lastFiveDistancesToTrack.first > (3 * averageAccuracy!));
     }
   }
 
