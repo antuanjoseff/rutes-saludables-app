@@ -136,8 +136,9 @@ class UserMobility {
   double avgAccuracies(accuracies) {
     double sum = 0;
     for (int i = 0; i < accuracies.length; i++) {
-      sum += accuracies[i];
+      sum += accuracies.elementAt(i);
     }
+
     return sum / accuracies.length;
   }
 

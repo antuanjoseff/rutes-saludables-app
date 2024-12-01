@@ -74,6 +74,7 @@ class _MapWidgetState extends State<MapWidget> {
   late String _title;
   late String _campus;
   late Line trackLine;
+  late Line subLine;
 
   final stopwatch = Stopwatch();
   bool _isMoving = false;
@@ -496,8 +497,10 @@ class _MapWidgetState extends State<MapWidget> {
 
     double minDistance = double.infinity;
     late Feature closestFeature;
+    late List<LatLng> minSubCoords;
     for (int i = 0; i < exerciseNodesPosition.length; i++) {
       var (index, feature) = exerciseNodesPosition[i];
+
       if (userMobility.alreadyReached.contains(feature.properties.id)) {
         continue;
       }
@@ -512,6 +515,9 @@ class _MapWidgetState extends State<MapWidget> {
 
       idx.sort();
       List<LatLng> subCoords = coords.sublist(idx[0], idx[1] + inc);
+      if (subCoords.isEmpty) {
+        subCoords.add(coords[start]);
+      }
       if (addNewP) {
         subCoords.insert(0, newP);
       }
@@ -523,6 +529,7 @@ class _MapWidgetState extends State<MapWidget> {
           !userMobility.alreadyReached.contains(feature.properties.id)) {
         minDistance = d;
         closestFeature = feature;
+        minSubCoords = subCoords;
       }
     }
 
@@ -538,8 +545,7 @@ class _MapWidgetState extends State<MapWidget> {
 
     userTrack.push(createWptFromLocation(loc));
     userTrack.setTrackDistance(distanceToTrack);
-    userMobility.addLastLocationDistanceAndAccuracy(
-        distanceToTrack, loc.accuracy!);
+
     userMobility.handleOnTrack(distanceToTrack, loc.accuracy!);
 
     if (!userMovedMap) {
@@ -548,7 +554,6 @@ class _MapWidgetState extends State<MapWidget> {
 
     var (exercise, distanceToExercise) =
         getMinDistanceToExercises(LatLng(loc.latitude!, loc.longitude!));
-    // getMinDistanceToExercises(LatLng(loc.latitude!, loc.longitude!));
 
     userMobility.handleExercisePoints(distanceToExercise, exercise);
     userTrack.setPointsOnTrack(userMobility.pointsOnTrack);
