@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
-class UserSimplePreferences {
+class UserPreferences {
   static late SharedPreferences _preferences;
 
   static const _gpsEnabled = 'gpsEnabled';
@@ -9,6 +9,7 @@ class UserSimplePreferences {
   static const _trackLength = 'trackLength';
   static const _trackTime = 'trackTime';
   static const _trackAltitude = 'trackAltitude';
+  static const _trackDirection = 'trackDirection';
 
   static Future init() async =>
       _preferences = await SharedPreferences.getInstance();
@@ -34,6 +35,11 @@ class UserSimplePreferences {
     return trackTime ?? '';
   }
 
+  static bool getTrackDirection() {
+    final trackDirection = _preferences.getBool(_trackDirection);
+    return trackDirection ?? true;
+  }
+
   static String getTrackAltitude() {
     final trackAltitude = _preferences.getString(_trackAltitude);
     return trackAltitude ?? '';
@@ -54,4 +60,7 @@ class UserSimplePreferences {
 
   static Future setTrackAltitude(String altitude) async =>
       await _preferences.setString(_trackAltitude, altitude);
+
+  static Future setTrackDirection(bool direction) async =>
+      await _preferences.setBool(_trackDirection, direction);
 }

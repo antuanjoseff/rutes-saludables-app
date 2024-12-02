@@ -54,7 +54,7 @@ class UserMobility {
   List<String> alreadyReached = [];
   Queue<double> lastFiveAccuracies = Queue<double>();
   Queue<double> lastFiveDistancesToTrack = Queue<double>();
-  Queue<double> lastFiveTrackLengths = Queue<
+  Queue<double> lastFiveDistanceToOrigin = Queue<
       double>(); // Used to determine user location. Towards track start o track end
   int queueLength = 4;
 
@@ -105,9 +105,9 @@ class UserMobility {
   }
 
   handleOnTrack(
-      double distanceToTrack, double walkedDistance, double accuracy) async {
-    await addLastLocationDistanceAndAccuracy(distanceToTrack, accuracy);
-    registerUserDirection(walkedDistance);
+      double distanceToTrack, double accuracy, double distanceToOrigin) async {
+    await updateQueues(distanceToTrack, accuracy, distanceToOrigin);
+    registerUserDirection();
     if (!onTrack) {
       // First time location is on track
       if (distanceToTrack < onTrackDistance) {
@@ -149,13 +149,8 @@ class UserMobility {
     return sum / accuracies.length;
   }
 
-  registerUserDirection(double distance) {
-    if (lastFiveTrackLengths.length >= queueLength) {
-      lastFiveTrackLengths.removeFirst();
-    }
-    lastFiveTrackLengths.add(distance);
-
-    List lengthList = lastFiveTrackLengths.toList();
+  registerUserDirection() {
+    List lengthList = lastFiveDistancesToTrack.toList();
     if (lengthList[0] <= lengthList[lengthList.length - 1]) {
       userFollowingTrackDirection = true;
     } else {
@@ -163,13 +158,15 @@ class UserMobility {
     }
   }
 
-  addLastLocationDistanceAndAccuracy(double distance, double accuracy) {
+  updateQueues(double distance, double accuracy, double distanceToOrigin) {
     if (lastFiveDistancesToTrack.length >= queueLength) {
       lastFiveDistancesToTrack.removeFirst();
       lastFiveAccuracies.removeFirst();
+      lastFiveDistanceToOrigin.removeFirst();
     }
     lastFiveDistancesToTrack.add(distance);
     lastFiveAccuracies.add(accuracy);
+    lastFiveDistanceToOrigin.add(distanceToOrigin);
     averageAccuracy = avgAccuracies(lastFiveAccuracies);
   }
 

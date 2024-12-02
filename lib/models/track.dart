@@ -143,7 +143,7 @@ class Track {
     trackSegment = [];
   }
 
-  Future<double> push(Wpt wpt) async {
+  void push(Wpt wpt) async {
     double inc = 0;
     LatLng P = LatLng(wpt.lat!, wpt.lon!);
     if (gpxCoords.isNotEmpty) {
@@ -155,7 +155,6 @@ class Track {
     trackSegment.add(wpt);
     length += inc;
     altitude = wpt.ele!.floor();
-    return length;
   }
 
   void insert(int position, Wpt wpt) {
@@ -196,33 +195,5 @@ class Track {
 
   void setWptAt(int idx, Wpt wpt) {
     trackSegment[idx] = wpt;
-  }
-
-  double trackToPointDistance(LatLng point) {
-    Stopwatch stopwatch = Stopwatch()..start();
-    int numSegment = getClosestSegmentToLatLng(gpxCoords, point);
-
-    LatLng A = gpxCoords[numSegment];
-    LatLng B = gpxCoords[numSegment + 1];
-
-    LatLng P = projectPointToSegment(A, B, point);
-
-    // Check if point is inside segment lint
-    if (P.latitude >= min(A.latitude, B.latitude) &&
-        (P.latitude <= max(A.latitude, B.latitude))) {
-      double dist = getDistanceFromLatLonInMeters(point, P);
-      return dist;
-    } else {
-      // if point not inside segment line, then return the closest node of the segment
-      if (getDistanceFromLatLonInMeters(A, P) <
-          getDistanceFromLatLonInMeters(B, P)) {
-        double dist = getDistanceFromLatLonInMeters(point, A);
-
-        return dist;
-      } else {
-        double dist = getDistanceFromLatLonInMeters(point, B);
-        return dist;
-      }
-    }
   }
 }

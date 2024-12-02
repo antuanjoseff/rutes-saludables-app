@@ -70,7 +70,20 @@ LatLng projectPointToSegment(LatLng X, LatLng Y, LatLng P) {
   double intersectionX = (b2 - b) / (slope - perpendicular);
   double intersectionY = (slope * intersectionX) + b;
 
-  return LatLng(intersectionY, intersectionX);
+  LatLng newP = LatLng(intersectionY, intersectionX);
+  if (newP.latitude >= min(X.latitude, Y.latitude) &&
+      newP.latitude <= max(X.latitude, Y.latitude) &&
+      newP.longitude >= min(X.longitude, Y.longitude) &&
+      newP.longitude <= max(X.longitude, Y.longitude)) {
+    return LatLng(intersectionY, intersectionX);
+  } else {
+    if (getDistanceFromLatLonInMeters(X, newP) <
+        getDistanceFromLatLonInMeters(Y, newP)) {
+      return X;
+    } else {
+      return Y;
+    }
+  }
 }
 
 double _distanceBetweenSegmentAndPoint(LatLng A, LatLng B, LatLng P) {
@@ -202,4 +215,19 @@ LatLng projectionPoint(LatLng X, LatLng Y, LatLng P) {
 
 double deg2rad(double deg) {
   return deg / 180.0 * pi;
+}
+
+// This function returns three values.
+// int: The closest segment from point to Coords
+// double: The distance from point to coords
+// LatLng: point projected (snapped) to coords
+(int, double, LatLng) trackToPointDistance(List<LatLng> Coords, LatLng point) {
+  Stopwatch stopwatch = Stopwatch()..start();
+  int numSegment = getClosestSegmentToLatLng(Coords, point);
+
+  LatLng A = Coords[numSegment];
+  LatLng B = Coords[numSegment + 1];
+
+  LatLng P = projectPointToSegment(A, B, point);
+  return (numSegment, getDistanceFromLatLonInMeters(point, P), P);
 }

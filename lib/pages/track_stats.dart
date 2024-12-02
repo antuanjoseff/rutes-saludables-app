@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rutes_saludables/models/data.dart';
 import '../models/track.dart';
 import 'dart:async';
-import '../utils/user_simple_preferences.dart';
+import '../utils/user_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrackStats extends StatefulWidget {
@@ -20,6 +20,7 @@ class _TrackStatsState extends State<TrackStats> {
   late String trackTime;
   late String trackAltitude;
   late double trackDistance;
+  late bool trackDirection;
 
   String _formatDuration(Duration duration) {
     String negativeSign = duration.isNegative ? '-' : '';
@@ -36,6 +37,7 @@ class _TrackStatsState extends State<TrackStats> {
     items.add("Accuracy /Points out of Accuracy");
     items.add("Points on track / off track");
     items.add("Track length");
+    items.add("Track direction");
     items.add("Altitude");
     items.add("Time elapsed");
     return items;
@@ -50,9 +52,10 @@ class _TrackStatsState extends State<TrackStats> {
         '${_track.getAccuracy().toStringAsFixed(2)}m / ${_track.pointsOutOfAccuracy}');
     items.add('${_track.getPointsOnTrack()} / ${_track.getPointsOffTrack()}');
     items.add(formatDistance(_track.length));
+    items.add('${UserPreferences.getTrackDirection()}');
     items.add('${_track.altitude}');
 
-    String trackTime = UserSimplePreferences.getTrackTime();
+    String trackTime = UserPreferences.getTrackTime();
     trackTime =
         _formatDuration(DateTime.now().difference(_track.getStartTime()));
     items.add(trackTime);
@@ -81,9 +84,9 @@ class _TrackStatsState extends State<TrackStats> {
     super.initState();
     _track = widget.track;
 
-    trackLength = UserSimplePreferences.getTrackLength();
-    trackTime = UserSimplePreferences.getTrackTime();
-    trackAltitude = UserSimplePreferences.getTrackAltitude();
+    trackLength = UserPreferences.getTrackLength();
+    trackTime = UserPreferences.getTrackTime();
+    trackAltitude = UserPreferences.getTrackAltitude();
     trackDistance = double.parse(_track.getTrackDistance().toStringAsFixed(0));
 
     // defines a timer
@@ -107,9 +110,9 @@ class _TrackStatsState extends State<TrackStats> {
     // TODO: implement dispose
     _timer?.cancel();
     super.dispose();
-    await UserSimplePreferences.setTrackLength(trackLength);
-    await UserSimplePreferences.setTrackTime(trackTime);
-    await UserSimplePreferences.setTrackAltitude(trackAltitude);
+    await UserPreferences.setTrackLength(trackLength);
+    await UserPreferences.setTrackTime(trackTime);
+    await UserPreferences.setTrackAltitude(trackAltitude);
   }
 
   @override

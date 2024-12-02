@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  disable_battery_optimization: ^1.1.1
   vibration: ^1.8.4
   volume_controller: ^2.0.8
   intl: any

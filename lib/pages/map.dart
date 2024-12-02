@@ -18,6 +18,7 @@ import '../widgets/mapScale.dart';
 
 import '../utils/util.dart';
 import '../utils/geom.dart';
+import '../utils/user_preferences.dart';
 
 import '../models/itinerary.dart';
 import '../models/track.dart';
@@ -180,31 +181,31 @@ class _MapWidgetState extends State<MapWidget> {
 
       LatLng newP = projectPointToSegment(A, B, P);
 
-      if (pointInSegment([A, B], newP)) {
-        newExerciseIndex = numSegment + 1;
+      // if (pointInSegment([A, B], newP)) {
+      newExerciseIndex = numSegment + 1;
 
-        coords.insert(newExerciseIndex, newP);
-        exerciseNodesPosition
-            .add((newExerciseIndex, trackFeatures.features[i]));
+      coords.insert(newExerciseIndex, newP);
+      exerciseNodesPosition.add((newExerciseIndex, trackFeatures.features[i]));
 
-        // increment exercise indexs that go after the new one
-        for (var i = 0; i < exerciseNodesPosition.length; i++) {
-          var (idx, feature) = exerciseNodesPosition[i];
-          if (idx > newExerciseIndex) {
-            exerciseNodesPosition[i] = (idx + 1, feature);
-          }
+      // increment exercise index that go after the new one
+      for (var i = 0; i < exerciseNodesPosition.length; i++) {
+        var (idx, feature) = exerciseNodesPosition[i];
+        if (idx > newExerciseIndex) {
+          exerciseNodesPosition[i] = (idx + 1, feature);
         }
-      } else {
-        // if point not inside segment line, then return the closest node of the segment
-        if (getDistanceFromLatLonInMeters(A, P) <
-            getDistanceFromLatLonInMeters(B, P)) {
-          newExerciseIndex = numSegment + 1;
-        } else {
-          newExerciseIndex = numSegment + 1;
-        }
-        exerciseNodesPosition
-            .add((newExerciseIndex, trackFeatures.features[i]));
       }
+      // }
+      //  else {
+      //   // if point not inside segment line, then return the closest node of the segment
+      //   if (getDistanceFromLatLonInMeters(A, P) <
+      //       getDistanceFromLatLonInMeters(B, P)) {
+      //     newExerciseIndex = numSegment + 1;
+      //   } else {
+      //     newExerciseIndex = numSegment + 1;
+      //   }
+      //   exerciseNodesPosition
+      //       .add((newExerciseIndex, trackFeatures.features[i]));
+      // }
     }
 
     List<Wpt> wpts = [];
@@ -497,7 +498,7 @@ class _MapWidgetState extends State<MapWidget> {
 
     double minDistance = double.infinity;
     late Feature closestFeature;
-    late List<LatLng> minSubCoords;
+
     for (int i = 0; i < exerciseNodesPosition.length; i++) {
       var (exerciseIndex, feature) = exerciseNodesPosition[i];
 
@@ -533,7 +534,6 @@ class _MapWidgetState extends State<MapWidget> {
           !userMobility.alreadyReached.contains(feature.properties.id)) {
         minDistance = d;
         closestFeature = feature;
-        minSubCoords = subCoords;
       }
     }
 
@@ -544,17 +544,19 @@ class _MapWidgetState extends State<MapWidget> {
     lastLocation = loc;
     userMobility.handleAccuray(loc);
 
-    double distanceToTrack =
-        track!.trackToPointDistance(LatLng(loc.latitude!, loc.longitude!));
+    var (closestSegment, distanceToTrack, P) = trackToPointDistance(
+        track!.getCoordsList(), LatLng(loc.latitude!, loc.longitude!));
 
-    double walkedDistance = await userTrack.push(createWptFromLocation(loc));
+    List<LatLng> subCoords =
+        track!.getCoordsList().sublist(0, closestSegment + 1);
+    subCoords.add(P);
+
+    double dist = getLengthFromCoordsList(subCoords);
+    await userMobility.handleOnTrack(distanceToTrack, loc.accuracy!, dist);
+    UserPreferences.setTrackDirection(userMobility.userFollowingTrackDirection);
+
+    userTrack.push(createWptFromLocation(loc));
     userTrack.setTrackDistance(distanceToTrack);
-
-    userMobility.handleOnTrack(distanceToTrack, walkedDistance, loc.accuracy!);
-
-    if (!userMovedMap) {
-      centerMap(LatLng(loc.latitude!, loc.longitude!));
-    }
 
     var (exercise, distanceToExercise) =
         getMinDistanceToExercises(LatLng(loc.latitude!, loc.longitude!));
@@ -566,6 +568,10 @@ class _MapWidgetState extends State<MapWidget> {
     userTrack.setDistanteToExercise(distanceToExercise);
     userTrack.setAccuracy(loc.accuracy!);
     userTrack.captures += 1;
+
+    if (!userMovedMap) {
+      centerMap(LatLng(loc.latitude!, loc.longitude!));
+    }
   }
 
   Future<void> addImageFromAsset(String name, String assetName) async {
