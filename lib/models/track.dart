@@ -17,6 +17,7 @@ class Track {
 
   // Track length
   double length = 0;
+  double distanceToOrigin = 0;
 
   // Last distance to track
   double trackDistance = -1;

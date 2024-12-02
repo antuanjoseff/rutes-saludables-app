@@ -16,9 +16,7 @@ class TrackStats extends StatefulWidget {
 class _TrackStatsState extends State<TrackStats> {
   late Track _track;
   Timer? _timer;
-  late String trackLength;
   late String trackTime;
-  late String trackAltitude;
   late double trackDistance;
   late bool trackDirection;
 
@@ -36,7 +34,7 @@ class _TrackStatsState extends State<TrackStats> {
     items.add("Dist. to track / exercise");
     items.add("Accuracy /Points out of Accuracy");
     items.add("Points on track / off track");
-    items.add("Track length");
+    items.add("Track length / Dist.origin");
     items.add("Track direction");
     items.add("Altitude");
     items.add("Time elapsed");
@@ -51,7 +49,8 @@ class _TrackStatsState extends State<TrackStats> {
     items.add(
         '${_track.getAccuracy().toStringAsFixed(2)}m / ${_track.pointsOutOfAccuracy}');
     items.add('${_track.getPointsOnTrack()} / ${_track.getPointsOffTrack()}');
-    items.add(formatDistance(_track.length));
+    items.add(
+        '${formatDistance(_track.length)} / ${formatDistance(_track.distanceToOrigin)}');
     items.add('${UserPreferences.getTrackDirection()}');
     items.add('${_track.altitude}');
 
@@ -84,9 +83,7 @@ class _TrackStatsState extends State<TrackStats> {
     super.initState();
     _track = widget.track;
 
-    trackLength = UserPreferences.getTrackLength();
     trackTime = UserPreferences.getTrackTime();
-    trackAltitude = UserPreferences.getTrackAltitude();
     trackDistance = double.parse(_track.getTrackDistance().toStringAsFixed(0));
 
     // defines a timer
@@ -110,9 +107,7 @@ class _TrackStatsState extends State<TrackStats> {
     // TODO: implement dispose
     _timer?.cancel();
     super.dispose();
-    await UserPreferences.setTrackLength(trackLength);
     await UserPreferences.setTrackTime(trackTime);
-    await UserPreferences.setTrackAltitude(trackAltitude);
   }
 
   @override

@@ -552,6 +552,8 @@ class _MapWidgetState extends State<MapWidget> {
     subCoords.add(P);
 
     double dist = getLengthFromCoordsList(subCoords);
+    track!.distanceToOrigin = dist;
+
     await userMobility.handleOnTrack(distanceToTrack, loc.accuracy!, dist);
     UserPreferences.setTrackDirection(userMobility.userFollowingTrackDirection);
 

@@ -52,9 +52,9 @@ class UserMobility {
   int pointsOnTrack = 0; // Number of consecutive captured points off track
 
   List<String> alreadyReached = [];
-  Queue<double> lastFiveAccuracies = Queue<double>();
-  Queue<double> lastFiveDistancesToTrack = Queue<double>();
-  Queue<double> lastFiveDistanceToOrigin = Queue<
+  Queue<double> queueAccuracies = Queue<double>();
+  Queue<double> queueDistancesToTrack = Queue<double>();
+  Queue<double> queueDistanceToOrigin = Queue<
       double>(); // Used to determine user location. Towards track start o track end
   int queueLength = 4;
 
@@ -150,7 +150,7 @@ class UserMobility {
   }
 
   registerUserDirection() {
-    List lengthList = lastFiveDistancesToTrack.toList();
+    List lengthList = queueDistancesToTrack.toList();
     if (lengthList[0] <= lengthList[lengthList.length - 1]) {
       userFollowingTrackDirection = true;
     } else {
@@ -159,29 +159,28 @@ class UserMobility {
   }
 
   updateQueues(double distance, double accuracy, double distanceToOrigin) {
-    if (lastFiveDistancesToTrack.length >= queueLength) {
-      lastFiveDistancesToTrack.removeFirst();
-      lastFiveAccuracies.removeFirst();
-      lastFiveDistanceToOrigin.removeFirst();
+    if (queueDistancesToTrack.length >= queueLength) {
+      queueDistancesToTrack.removeFirst();
+      queueAccuracies.removeFirst();
+      queueDistanceToOrigin.removeFirst();
     }
-    lastFiveDistancesToTrack.add(distance);
-    lastFiveAccuracies.add(accuracy);
-    lastFiveDistanceToOrigin.add(distanceToOrigin);
-    averageAccuracy = avgAccuracies(lastFiveAccuracies);
+    queueDistancesToTrack.add(distance);
+    queueAccuracies.add(accuracy);
+    queueDistanceToOrigin.add(distanceToOrigin);
+    averageAccuracy = avgAccuracies(queueAccuracies);
   }
 
   Function eq = const ListEquality().equals;
 
   bool isGettingAway() {
-    if (lastFiveDistancesToTrack.length < queueLength ||
-        averageAccuracy == null) {
+    if (queueDistancesToTrack.length < queueLength || averageAccuracy == null) {
       return false;
     } else {
-      List tmpA = lastFiveDistancesToTrack.toList();
+      List tmpA = queueDistancesToTrack.toList();
       List<double> tmpB = List<double>.from(tmpA);
       tmpB.sort();
       return eq(tmpA, tmpB) &&
-          (lastFiveDistancesToTrack.first > (3 * averageAccuracy!));
+          (queueDistancesToTrack.first > (3 * averageAccuracy!));
     }
   }
 
