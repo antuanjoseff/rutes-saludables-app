@@ -36,7 +36,7 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_widget_from_html: ^0.15.2
   shared_preferences: ^2.3.2
-  audioplayers: ^6.1.0
+  # audioplayers: ^6.1.0
   flutter_svg: ^2.0.10+1
   youtube_player_flutter: ^8.1.2
   accordion: ^2.6.0

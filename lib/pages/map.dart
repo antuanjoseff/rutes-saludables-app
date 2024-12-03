@@ -6,7 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:background_location/background_location.dart';
-import 'package:audioplayers/audioplayers.dart';
+// import 'package:audioplayers/audioplayers.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:flutter/material.dart';
 import 'package:geoxml/geoxml.dart';
@@ -102,7 +102,7 @@ class _MapWidgetState extends State<MapWidget> {
   List<(int, Feature)> exerciseNodesPosition = [];
   LatLng initView = const LatLng(42.0, 3.0);
 
-  final player = AudioPlayer();
+  // final player = AudioPlayer();
   final gps = Gps();
 
   late UserMobility userMobility;
@@ -117,7 +117,7 @@ class _MapWidgetState extends State<MapWidget> {
   @override
   void dispose() {
     BackgroundLocation.stopLocationService();
-    player.dispose();
+    // player.dispose();
     super.dispose();
   }
 
@@ -238,24 +238,24 @@ class _MapWidgetState extends State<MapWidget> {
 
     // Add snapped exercise points to coords
 
-    Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
-      if (status == ServiceStatus.enabled) {
-        snackbar(
-            context,
-            const Icon(Icons.satellite_alt_outlined, color: Colors.white),
-            blueUdG,
-            Text('GPS Enabled', style: fontColorWhite));
-        await listenBackgroundLocations();
-      } else {
-        serviceEnabled = false;
-        hasLocationPermission = false;
-        snackbar(
-            context,
-            const Icon(Icons.satellite_alt_outlined, color: Colors.white),
-            redUdG,
-            Text('GPS disabled', style: fontColorWhite));
-      }
-    });
+    // Geolocator.getServiceStatusStream().listen((ServiceStatus status) async {
+    //   if (status == ServiceStatus.enabled) {
+    //     snackbar(
+    //         context,
+    //         const Icon(Icons.satellite_alt_outlined, color: Colors.white),
+    //         blueUdG,
+    //         Text('GPS Enabled', style: fontColorWhite));
+    //     await listenBackgroundLocations();
+    //   } else {
+    //     serviceEnabled = false;
+    //     hasLocationPermission = false;
+    //     snackbar(
+    //         context,
+    //         const Icon(Icons.satellite_alt_outlined, color: Colors.white),
+    //         redUdG,
+    //         Text('GPS disabled', style: fontColorWhite));
+    //   }
+    // });
 
     super.initState(); //comes first for initState();
   }
@@ -447,7 +447,7 @@ class _MapWidgetState extends State<MapWidget> {
   Future<void> listenBackgroundLocations() async {
     BackgroundLocation
         .stopLocationService(); //To ensure that previously started services have been stopped, if desired
-    BackgroundLocation.startLocationService(distanceFilter: 5);
+    BackgroundLocation.startLocationService(distanceFilter: 0);
     BackgroundLocation.getLocationUpdates((location) {
       handleNewLocation(location);
     });
@@ -463,7 +463,7 @@ class _MapWidgetState extends State<MapWidget> {
   Future<void> playSound(String sound) async {
     // player.play(AssetSource(sound), volume: 1);
     VolumeController().setVolume(0.5);
-    player.play(AssetSource(sound));
+    // player.play(AssetSource(sound));
     bool? vibrate = await Vibration.hasVibrator();
     bool? pattern = await Vibration.hasCustomVibrationsSupport();
     if (vibrate == true) {
@@ -496,8 +496,9 @@ class _MapWidgetState extends State<MapWidget> {
     }
 
     double minDistance = double.infinity;
-    late Feature closestFeature;
     late List<LatLng> minSubCoords;
+    var (exerciseIndex, closestFeature) = exerciseNodesPosition[0];
+
     for (int i = 0; i < exerciseNodesPosition.length; i++) {
       var (exerciseIndex, feature) = exerciseNodesPosition[i];
 
@@ -542,6 +543,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   void handleNewLocation(Location loc) async {
     lastLocation = loc;
+    debugPrint('LOCATION ${loc.latitude}  ${loc.longitude}');
     userMobility.handleAccuray(loc);
 
     double distanceToTrack =
@@ -687,7 +689,7 @@ class _MapWidgetState extends State<MapWidget> {
     return Stack(
       children: [
         MapLibreMap(
-          minMaxZoomPreference: const MinMaxZoomPreference(8, 19),
+          minMaxZoomPreference: const MinMaxZoomPreference(1, 19),
           trackCameraPosition: true,
           onMapCreated: _onMapCreated,
           onMapLongClick: (point, coordinates) {

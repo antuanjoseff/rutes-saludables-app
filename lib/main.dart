@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: const [
         Locale('ca'), // catalan
         Locale('es'), // Spanish
-        Locale('en'), // English
+        Locale('en'), // English  
       ],
       debugShowCheckedModeBanner: false,
       title: 'UdG Salut',
@@ -43,5 +43,5 @@ class MyApp extends StatelessWidget {
       ),
       home: HomePage(),
     );
-  }
+  }   
 }
