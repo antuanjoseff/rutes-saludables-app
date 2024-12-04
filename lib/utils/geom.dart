@@ -1,6 +1,4 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
-import 'package:geoxml/geoxml.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 int getClosestSegmentToLatLng(gpxCoords, point) {

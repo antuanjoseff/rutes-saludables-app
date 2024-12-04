@@ -4,7 +4,6 @@ import 'bounds.dart' as myBounds;
 import 'dart:async';
 import 'package:background_location/background_location.dart';
 import '../models/itinerary.dart';
-import '../utils/util.dart';
 import 'dart:collection';
 import 'package:collection/collection.dart';
 
