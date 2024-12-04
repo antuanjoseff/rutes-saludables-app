@@ -21,7 +21,9 @@ class Gps {
   }
 
   Future<bool> requestPermission() async {
+    print('INSIDE REQUESTPERMISSION');
     _permissionGranted = await location.hasPermission();
+    print('PERMISSION GRANGTED $_permissionGranted');
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
       if (_permissionGranted != PermissionStatus.granted) {

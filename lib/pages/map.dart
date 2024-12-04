@@ -591,9 +591,12 @@ class _MapWidgetState extends State<MapWidget> {
 
   Future<bool> requestLocationService() async {
     serviceEnabled = await gps.checkService();
+    debugPrint('gps check service $serviceEnabled');
     bool permission = false;
     if (serviceEnabled) {
+      debugPrint('REQUEST PERMISSION');
       permission = await gps.requestPermission();
+      debugPrint('GPS REQUEST PERMISSION $permission');
     }
     return permission;
     // if (hasLocationPermission && initialLocation == null) {
@@ -603,8 +606,8 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> _onStyleCallback() async {
-    addImageFromAsset("exercisePoint", "assets/marker_salut.png");
-    addImageFromAsset("poi", "assets/marker_poi.png");
+    await addImageFromAsset("exercisePoint", "assets/marker_salut.png");
+    await addImageFromAsset("poi", "assets/marker_poi.png");
 
     // ADD POINTS OF INTEREST TO MAP
     for (var i = 0; i < _pois.length; i++) {
